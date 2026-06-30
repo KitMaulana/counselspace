@@ -19,6 +19,7 @@ Route::put('/chats/{sessionId}/read', [ChatController::class, 'markRead']);
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register']);
 
 // Admin routes
 Route::prefix('admin')->group(function () {

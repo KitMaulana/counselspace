@@ -9,13 +9,38 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Admin user
-        DB::table('admin_users')->insert([
-            'username' => 'admin',
-            'password' => Hash::make('admin123'),
-            'full_name' => 'Administrator',
-            'role' => 'admin',
-            'created_at' => now(),
+        // Users (Admin, Guru BK, Siswa)
+        DB::table('users')->insert([
+            [
+                'name' => 'Admin Utama',
+                'email' => 'admin@counselspace.ai',
+                'username' => 'admin',
+                'password' => Hash::make('smancir123'),
+                'role' => 'admin',
+                'student_class' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Guru BK',
+                'email' => 'guru@counselspace.ai',
+                'username' => 'guru',
+                'password' => Hash::make('smancir123'),
+                'role' => 'guru',
+                'student_class' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Siswa Uji Coba',
+                'email' => 'siswa@counselspace.ai',
+                'username' => 'siswa',
+                'password' => Hash::make('smancir123'),
+                'role' => 'siswa',
+                'student_class' => 'XII IPA 1',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         // 10 FOMO Questions

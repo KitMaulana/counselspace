@@ -41,11 +41,69 @@
       </button>
     </section>
 
+    <!-- ==================== LOGIN/REGISTER PAGE ==================== -->
+    <section class="page" id="page-login" style="padding-top: var(--space-xl);">
+      <div class="card login-card" id="login-card-view" style="max-width:400px; margin:0 auto;">
+        <div class="login-header" style="text-align:center; margin-bottom:var(--space-lg);">
+          <div class="login-logo" style="font-size:3rem; margin-bottom:var(--space-sm);">🧠💚</div>
+          <h2>Masuk ke CounselSpace</h2>
+          <p class="text-muted" style="font-size:var(--font-sm); margin-top:var(--space-xs);">Akses penuh fitur self-check dan konseling</p>
+        </div>
+        <form id="student-login-form" onsubmit="event.preventDefault(); App.auth.login();">
+          <div class="form-group">
+            <label class="form-label">Email atau Username</label>
+            <input type="text" class="form-input" id="student-login-username" placeholder="cth: siswa@counselspace.ai" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="student-login-password" placeholder="Masukkan password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg mt-md" style="margin-top:var(--space-md);">Masuk ✨</button>
+        </form>
+        <p class="auth-toggle-text" style="text-align:center; margin-top:var(--space-lg); font-size:var(--font-sm); color:var(--text-secondary);">
+          Belum punya akun? <a href="javascript:void(0)" onclick="App.auth.toggleForm('register')" style="color:var(--teal-400); font-weight:600;">Daftar di sini</a>
+        </p>
+      </div>
+
+      <div class="card login-card" id="register-card-view" style="max-width:400px; margin:0 auto; display:none;">
+        <div class="login-header" style="text-align:center; margin-bottom:var(--space-lg);">
+          <div class="login-logo" style="font-size:3rem; margin-bottom:var(--space-sm);">🧠💚</div>
+          <h2>Daftar Akun Baru</h2>
+          <p class="text-muted" style="font-size:var(--font-sm); margin-top:var(--space-xs);">Mulai perjalanan kesehatan mentalmu</p>
+        </div>
+        <form id="student-register-form" onsubmit="event.preventDefault(); App.auth.register();">
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-input" id="student-register-name" placeholder="cth: Budi Pratama" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kelas</label>
+            <input type="text" class="form-input" id="student-register-class" placeholder="cth: XII MIPA 2" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="student-register-email" placeholder="cth: budi@counselspace.ai" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password (Min. 6 Karakter)</label>
+            <input type="password" class="form-input" id="student-register-password" placeholder="Buat password baru" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg mt-md" style="margin-top:var(--space-md);">Daftar Sekarang ✨</button>
+        </form>
+        <p class="auth-toggle-text" style="text-align:center; margin-top:var(--space-lg); font-size:var(--font-sm); color:var(--text-secondary);">
+          Sudah punya akun? <a href="javascript:void(0)" onclick="App.auth.toggleForm('login')" style="color:var(--teal-400); font-weight:600;">Masuk di sini</a>
+        </p>
+      </div>
+    </section>
+
     <!-- ==================== DASHBOARD PAGE ==================== -->
     <section class="page" id="page-dashboard">
-      <div class="dashboard-header">
-        <h1 class="greeting-text" id="greeting-text">Halo, Sobat! 👋</h1>
-        <p class="greeting-date" id="greeting-date"></p>
+      <div class="dashboard-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-lg);">
+        <div>
+          <h1 class="greeting-text" id="greeting-text">Halo, Sobat! 👋</h1>
+          <p class="greeting-date" id="greeting-date"></p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="App.auth.logout()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); display: inline-flex; align-items: center; gap: 4px;">🚪 Keluar</button>
       </div>
 
       <!-- Quick Stats -->

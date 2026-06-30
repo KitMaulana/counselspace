@@ -108,6 +108,13 @@ App.api = async function(endpoint, method = 'GET', data = null) {
     method,
     headers: { 'Content-Type': 'application/json' }
   };
+
+  // Attach Authorization Token if available
+  const token = localStorage.getItem('student_token');
+  if (token) {
+    options.headers['Authorization'] = 'Bearer ' + token;
+  }
+
   if (data && method !== 'GET') {
     options.body = JSON.stringify(data);
   }
@@ -120,12 +127,118 @@ App.api = async function(endpoint, method = 'GET', data = null) {
 
   try {
     const response = await fetch(url, options);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const json = await response.json();
+    if (!response.ok) {
+      throw new Error(json.message || `HTTP ${response.status}`);
+    }
     return json;
   } catch (err) {
     console.warn(`API call failed: ${endpoint}`, err);
     throw err;
+  }
+};
+
+/* ===========================================
+   AUTHENTICATION MODULE
+   =========================================== */
+App.auth = {
+  isAuthenticated() {
+    return localStorage.getItem('student_token') !== null;
+  },
+
+  toggleForm(formType) {
+    const loginCard = document.getElementById('login-card-view');
+    const registerCard = document.getElementById('register-card-view');
+    if (formType === 'login') {
+      loginCard.style.display = 'block';
+      registerCard.style.display = 'none';
+    } else {
+      loginCard.style.display = 'none';
+      registerCard.style.display = 'block';
+    }
+  },
+
+  async login() {
+    const username = document.getElementById('student-login-username').value.trim();
+    const password = document.getElementById('student-login-password').value;
+
+    if (!username || !password) {
+      App.utils.showToast('Email/Username dan password wajib diisi', 'error');
+      return;
+    }
+
+    App.utils.showLoading();
+    try {
+      const res = await App.api('/api/auth/login', 'POST', { username, password });
+      if (res.success && res.data) {
+        localStorage.setItem('student_token', res.data.token);
+        localStorage.setItem('student_user', JSON.stringify(res.data));
+        
+        // Auto-save identity to localStorage for screening
+        App.utils.setStorage('student_name', res.data.name);
+        App.utils.setStorage('student_class', res.data.student_class);
+
+        App.utils.showToast('Login berhasil! Selamat datang.', 'success');
+        
+        // Redirect to dashboard
+        App.router.navigate('dashboard');
+      }
+    } catch (err) {
+      App.utils.showToast(err.message || 'Login gagal. Silakan periksa kembali.', 'error');
+    } finally {
+      App.utils.hideLoading();
+    }
+  },
+
+  async register() {
+    const name = document.getElementById('student-register-name').value.trim();
+    const student_class = document.getElementById('student-register-class').value.trim();
+    const email = document.getElementById('student-register-email').value.trim();
+    const password = document.getElementById('student-register-password').value;
+
+    if (!name || !student_class || !email || !password) {
+      App.utils.showToast('Semua field pendaftaran wajib diisi', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      App.utils.showToast('Password minimal 6 karakter', 'error');
+      return;
+    }
+
+    App.utils.showLoading();
+    try {
+      const res = await App.api('/api/auth/register', 'POST', {
+        name,
+        student_class,
+        email,
+        password
+      });
+      if (res.success && res.data) {
+        localStorage.setItem('student_token', res.data.token);
+        localStorage.setItem('student_user', JSON.stringify(res.data));
+        
+        // Auto-save identity to localStorage for screening
+        App.utils.setStorage('student_name', res.data.name);
+        App.utils.setStorage('student_class', res.data.student_class);
+
+        App.utils.showToast('Registrasi berhasil! Akun Anda aktif.', 'success');
+        
+        // Redirect to dashboard
+        App.router.navigate('dashboard');
+      }
+    } catch (err) {
+      App.utils.showToast(err.message || 'Registrasi gagal. Email mungkin sudah terdaftar.', 'error');
+    } finally {
+      App.utils.hideLoading();
+    }
+  },
+
+  logout() {
+    localStorage.removeItem('student_token');
+    localStorage.removeItem('student_user');
+    App.utils.showToast('Berhasil keluar.', 'info');
+    App.router.navigate('login');
   }
 };
 
@@ -188,7 +301,22 @@ App.router = {
 
   /** Handle hash route changes */
   handleRoute() {
-    const hash = window.location.hash.replace('#', '') || 'splash';
+    let hash = window.location.hash.replace('#', '') || 'splash';
+    
+    // Auth guard: Jika belum login dan mencoba ke halaman lain, arahkan ke login
+    if (hash !== 'splash' && hash !== 'login' && !App.auth.isAuthenticated()) {
+      hash = 'login';
+      window.location.hash = '#login';
+      return;
+    }
+    
+    // Jika sudah login dan mencoba ke splash atau login, arahkan ke dashboard
+    if ((hash === 'login' || hash === 'splash') && App.auth.isAuthenticated()) {
+      hash = 'dashboard';
+      window.location.hash = '#dashboard';
+      return;
+    }
+
     this.showPage(hash);
   },
 
@@ -1331,20 +1459,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize router
   App.router.init();
 
-  // Check if returning user
-  const hasVisited = App.utils.getStorage('has_visited', false);
   const hash = window.location.hash.replace('#', '');
 
-  if (hash && hash !== 'splash') {
-    // Direct navigation via URL
-    App.router.showPage(hash);
-  } else if (hasVisited) {
-    // Returning user — go to dashboard
-    App.router.showPage('dashboard');
+  if (hash) {
+    App.router.handleRoute();
+  } else if (App.auth.isAuthenticated()) {
+    App.router.navigate('dashboard');
   } else {
-    // First time — show splash
-    App.router.showPage('splash');
-    App.utils.setStorage('has_visited', true);
+    App.router.navigate('splash');
   }
 
   // Rotate detox quotes every 15 seconds

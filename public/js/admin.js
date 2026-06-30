@@ -278,7 +278,13 @@
     // ============================================
 
     function isAuthenticated() {
-        return sessionStorage.getItem('admin_authenticated') === 'true';
+        if (sessionStorage.getItem('admin_authenticated') !== 'true') return false;
+        try {
+            const user = JSON.parse(sessionStorage.getItem('admin_user'));
+            return user && (user.role === 'admin' || user.role === 'guru');
+        } catch {
+            return false;
+        }
     }
 
     function showLogin() {
@@ -305,7 +311,7 @@
         const password = dom.loginPassword.value;
 
         if (!username || !password) {
-            dom.loginError.textContent = 'Username dan password wajib diisi.';
+            dom.loginError.textContent = 'Email/Username dan password wajib diisi.';
             dom.loginError.style.display = 'block';
             return;
         }
@@ -315,6 +321,12 @@
 
         try {
             const result = await api('auth/login', 'POST', { username, password });
+            
+            // Validasi role: siswa dilarang masuk panel admin
+            if (result.data.role === 'siswa') {
+                throw new Error('Akses ditolak. Panel ini hanya untuk Admin dan Guru BK.');
+            }
+
             // Simpan sesi
             sessionStorage.setItem('admin_authenticated', 'true');
             if (result.data.token) sessionStorage.setItem('admin_token', result.data.token);
@@ -322,7 +334,7 @@
             showToast('Login berhasil! Selamat datang.', 'success');
             showApp();
         } catch (err) {
-            dom.loginError.textContent = err.message || 'Login gagal. Periksa username/password.';
+            dom.loginError.textContent = err.message || 'Login gagal. Periksa kembali data Anda.';
             dom.loginError.style.display = 'block';
         } finally {
             dom.loginBtn.classList.remove('loading');
