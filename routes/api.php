@@ -22,34 +22,8 @@ Route::put('/chats/{sessionId}/read', [ChatController::class, 'markRead']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
-// Middleware Otentikasi Token & Role (Inline)
-$checkRole = function ($roles = []) {
-    return function ($request, $next) use ($roles) {
-        $token = $request->bearerToken();
-        if (!$token) {
-            return response()->json(['success' => false, 'message' => 'Token otentikasi tidak ditemukan'], 401);
-        }
-
-        $user = \App\Models\User::where('session_token', $token)->first();
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Sesi tidak valid atau kadaluarsa'], 401);
-        }
-
-        if (!empty($roles) && !in_array($user->role, $roles)) {
-            return response()->json(['success' => false, 'message' => 'Akses ditolak. Peran Anda tidak memiliki wewenang.'], 403);
-        }
-
-        // Simpan data user yang login ke dalam request resolver agar bisa diakses di controller jika perlu
-        $request->setUserResolver(function () use ($user) {
-            return $user;
-        });
-
-        return $next($request);
-    };
-};
-
 // Admin & Guru BK routes (Memerlukan login)
-Route::prefix('admin')->middleware($checkRole(['admin', 'guru']))->group(function () use ($checkRole) {
+Route::prefix('admin')->middleware('role:admin,guru')->group(function () {
     // 1. Data yang dapat dibaca oleh Admin maupun Guru BK
     Route::get('/questions', [QuestionController::class, 'all']);
     Route::get('/edu', [EduContentController::class, 'all']);
@@ -58,7 +32,7 @@ Route::prefix('admin')->middleware($checkRole(['admin', 'guru']))->group(functio
     Route::get('/stats', [ScreeningController::class, 'stats']);
 
     // 2. Data yang HANYA boleh dimodifikasi oleh Admin
-    Route::middleware($checkRole(['admin']))->group(function () {
+    Route::middleware('role:admin')->group(function () {
         // Kelola Soal
         Route::post('/questions', [QuestionController::class, 'store']);
         Route::put('/questions/{id}', [QuestionController::class, 'update']);
