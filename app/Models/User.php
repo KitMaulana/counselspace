@@ -17,11 +17,13 @@ class User extends Authenticatable
         'password',
         'role',
         'student_class',
+        'session_token', // Ditambahkan
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'session_token', // Ditambahkan agar tidak bocor di JSON response
     ];
 
     protected function casts(): array

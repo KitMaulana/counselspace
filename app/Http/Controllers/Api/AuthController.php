@@ -11,7 +11,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required|string', // Bisa diisi email atau username
+            'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -25,6 +25,10 @@ class AuthController extends Controller
         }
 
         $token = hash('sha256', $user->id . '|' . time() . '|' . bin2hex(random_bytes(16)));
+
+        // Simpan token ke database untuk validasi otentikasi di backend
+        $user->session_token = $token;
+        $user->save();
 
         return response()->json([
             'success' => true,
@@ -53,13 +57,17 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'username' => explode('@', $request->email)[0], // auto-generate username dari email prefix
+            'username' => explode('@', $request->email)[0],
             'password' => Hash::make($request->password),
             'role' => 'siswa',
             'student_class' => $request->student_class,
         ]);
 
         $token = hash('sha256', $user->id . '|' . time() . '|' . bin2hex(random_bytes(16)));
+
+        // Simpan token ke database
+        $user->session_token = $token;
+        $user->save();
 
         return response()->json([
             'success' => true,

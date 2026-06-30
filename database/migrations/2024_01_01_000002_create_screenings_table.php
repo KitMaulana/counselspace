@@ -7,6 +7,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('screenings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); // Link ke user/siswa
             $table->string('student_name', 100)->nullable();
             $table->string('student_class', 50)->nullable();
             $table->integer('total_score');

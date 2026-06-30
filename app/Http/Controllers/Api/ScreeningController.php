@@ -50,9 +50,16 @@ class ScreeningController extends Controller
             $category = 'bahaya';
         }
 
+        $user = null;
+        $token = $request->bearerToken();
+        if ($token) {
+            $user = \App\Models\User::where('session_token', $token)->first();
+        }
+
         $screening = Screening::create([
-            'student_name' => $request->student_name ?: 'Anonim',
-            'student_class' => $request->student_class ?: '-',
+            'user_id' => $user ? $user->id : null,
+            'student_name' => $user ? $user->name : ($request->student_name ?: 'Anonim'),
+            'student_class' => $user ? $user->student_class : ($request->student_class ?: '-'),
             'total_score' => $totalScore,
             'max_score' => $maxScore,
             'percentage' => $percentage,

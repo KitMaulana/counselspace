@@ -84,6 +84,9 @@
                     <div class="nav-item" data-page="screenings">
                         <span class="nav-icon">📋</span> Riwayat Skrining
                     </div>
+                    <div class="nav-item" data-page="recap" id="nav-recap" style="display:none">
+                        <span class="nav-icon">👥</span> Rekap Pengguna
+                    </div>
                     <div class="nav-item nav-logout" id="nav-logout">
                         <span class="nav-icon">🚪</span> Logout
                     </div>
@@ -321,6 +324,50 @@
                                 </table>
                             </div>
                             <div class="pagination" id="screenings-pagination"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== USERS RECAP PAGE ===== -->
+                <div class="page" id="page-recap">
+                    <div class="page-header">
+                        <div>
+                            <h1>👥 Rekapitulasi Pengguna</h1>
+                            <p>Daftar anggota siswa, guru BK, dan ringkasan aktivitas mereka</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" style="padding-bottom:1rem; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                            <h3>Daftar Anggota & Kegiatan</h3>
+                            <div class="toolbar" style="margin:0;">
+                                <select class="form-control" id="recap-role-filter" style="width:auto; min-width:150px;">
+                                    <option value="all">Semua Peran</option>
+                                    <option value="siswa">Siswa</option>
+                                    <option value="guru">Guru BK</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama Lengkap</th>
+                                            <th>Email</th>
+                                            <th>Peran</th>
+                                            <th>Kelas</th>
+                                            <th>Jumlah Tes</th>
+                                            <th>Skor Terakhir</th>
+                                            <th>Tanggal Daftar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recap-table-body">
+                                        <tr><td colspan="8" class="table-empty"><div class="spinner-overlay"><div class="spinner"></div></div></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

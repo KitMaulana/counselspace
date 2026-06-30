@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->string('password', 255);
             $table->enum('role', ['admin', 'guru', 'siswa'])->default('siswa');
             $table->string('student_class', 50)->nullable();
+            $table->string('session_token', 255)->nullable()->unique(); // Ditambahkan untuk autentikasi API
             $table->timestamps();
         });
     }

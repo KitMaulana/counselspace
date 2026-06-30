@@ -30,6 +30,8 @@
         screeningsTotal: 0,
         screeningsFilter: '',
         screeningsSearch: '',
+        recapUsers: [],
+        recapFilter: 'all',
     };
 
     // ============================================
@@ -50,6 +52,9 @@
         sidebarOverlay: $('#sidebar-overlay'),
         hamburgerBtn: $('#hamburger-btn'),
         navItems: $$('.nav-item[data-page]'),
+        navRecap: $('#nav-recap'),
+        recapBody: $('#recap-table-body'),
+        recapRoleFilter: $('#recap-role-filter'),
         navLogout: $('#nav-logout'),
         pages: $$('.page'),
         modalOverlay: $('#modal-overlay'),
@@ -293,9 +298,33 @@
         stopChatPolling();
     }
 
+    function getUserRole() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('admin_user'));
+            return user ? user.role : 'guru';
+        } catch {
+            return 'guru';
+        }
+    }
+
     function showApp() {
         dom.loginSection.style.display = 'none';
         dom.appSection.style.display = 'block';
+
+        const role = getUserRole();
+        if (role === 'admin') {
+            dom.navRecap.style.display = 'flex';
+            if (dom.btnAddQuestion) dom.btnAddQuestion.style.display = 'inline-block';
+            if (dom.btnAddEdu) dom.btnAddEdu.style.display = 'inline-block';
+        } else {
+            dom.navRecap.style.display = 'none';
+            if (dom.btnAddQuestion) dom.btnAddQuestion.style.display = 'none';
+            if (dom.btnAddEdu) dom.btnAddEdu.style.display = 'none';
+            if (state.currentPage === 'recap') {
+                state.currentPage = 'dashboard';
+            }
+        }
+
         navigateTo(state.currentPage);
     }
 
@@ -369,6 +398,7 @@
             case 'edu': loadEduContent(); break;
             case 'chat': loadChatSessions(); break;
             case 'screenings': loadScreenings(); break;
+            case 'recap': fetchRecapData(); break;
         }
 
         // Stop polling chat jika bukan halaman chat
@@ -378,7 +408,7 @@
     function handleHashChange() {
         if (!isAuthenticated()) return;
         const hash = window.location.hash.replace('#admin-', '');
-        const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings'];
+        const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap'];
         if (validPages.includes(hash)) {
             navigateTo(hash);
         }
@@ -512,6 +542,9 @@
                 </td></tr>`;
             return;
         }
+
+        const isAdmin = getUserRole() === 'admin';
+
         dom.questionsBody.innerHTML = state.questions.map((q, i) => `
             <tr>
                 <td>${i + 1}</td>
@@ -520,15 +553,16 @@
                 <td><strong>${q.weight || 1}</strong></td>
                 <td>
                     <label class="toggle">
-                        <input type="checkbox" ${q.is_active ? 'checked' : ''} onchange="window.adminApp.toggleQuestion(${q.id}, this.checked)">
+                        <input type="checkbox" ${q.is_active ? 'checked' : ''} ${isAdmin ? '' : 'disabled'} onchange="window.adminApp.toggleQuestion(${q.id}, this.checked)">
                         <span class="slider"></span>
                     </label>
                 </td>
                 <td>
+                    ${isAdmin ? `
                     <div style="display:flex; gap:0.35rem;">
                         <button class="btn btn-icon btn-sm" title="Edit" onclick="window.adminApp.showEditQuestionModal(${q.id})">✏️</button>
                         <button class="btn btn-icon btn-sm" title="Hapus" onclick="window.adminApp.deleteQuestion(${q.id})">🗑️</button>
-                    </div>
+                    </div>` : '<span class="text-muted" style="font-size:0.8rem;">Hanya Admin</span>'}
                 </td>
             </tr>
         `).join('');
@@ -693,6 +727,8 @@
             return;
         }
 
+        const isAdmin = getUserRole() === 'admin';
+
         dom.eduGrid.innerHTML = filtered.map((c) => {
             const type = c.content_type || 'artikel';
             const typeIcons = { video: '🎬', poster: '🖼️', artikel: '📰' };
@@ -715,10 +751,11 @@
                         <div class="edu-card-desc">${escapeHtml(c.description || '-')}</div>
                         <div class="edu-card-footer">
                             <span class="badge badge-teal">${escapeHtml(c.category || '-')}</span>
+                            ${isAdmin ? `
                             <div style="display:flex; gap:0.35rem;">
                                 <button class="btn btn-icon btn-sm" title="Edit" onclick="window.adminApp.showEditEduModal(${c.id})">✏️</button>
                                 <button class="btn btn-icon btn-sm" title="Hapus" onclick="window.adminApp.deleteEduContent(${c.id})">🗑️</button>
-                            </div>
+                            </div>` : ''}
                         </div>
                     </div>
                 </div>
@@ -1272,8 +1309,69 @@
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-
         showToast('File CSV berhasil diunduh!', 'success');
+    }
+
+    // ============================================
+    // USERS RECAP MODULE (ADMIN ONLY)
+    // ============================================
+    async function fetchRecapData() {
+        if (!dom.recapBody) return;
+        dom.recapBody.innerHTML = `<tr><td colspan="8" class="table-empty"><div class="spinner-overlay"><div class="spinner"></div></div></td></tr>`;
+        try {
+            const res = await api('admin/users/recap');
+            if (res.success && res.data) {
+                state.recapUsers = res.data;
+                renderRecapTable();
+            }
+        } catch (err) {
+            showToast(err.message || 'Gagal memuat rekapitulasi', 'error');
+            dom.recapBody.innerHTML = `<tr><td colspan="8" class="table-empty"><p class="text-danger">Gagal memuat data.</p></td></tr>`;
+        }
+    }
+
+    function renderRecapTable() {
+        if (!dom.recapBody) return;
+        let filtered = state.recapUsers;
+        if (state.recapFilter !== 'all') {
+            filtered = filtered.filter(u => u.role === state.recapFilter);
+        }
+
+        if (!filtered.length) {
+            dom.recapBody.innerHTML = `
+                <tr><td colspan="8" class="table-empty">
+                    <div class="empty-icon">👥</div>
+                    <p>Tidak ada pengguna ditemukan</p>
+                </td></tr>`;
+            return;
+        }
+
+        dom.recapBody.innerHTML = filtered.map((u, i) => {
+            const roleBadge = u.role === 'guru' 
+                ? '<span class="badge badge-purple">Guru BK</span>' 
+                : '<span class="badge badge-teal">Siswa</span>';
+            
+            const latestScore = u.latest_score !== null 
+                ? `<strong>${u.latest_score}</strong> (${categoryBadge(u.latest_category)})`
+                : '<span class="text-muted">-</span>';
+                
+            const regDate = u.created_at 
+                ? new Date(u.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                : '-';
+
+            return `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${escapeHtml(u.name || '')}</strong></td>
+                    <td>${escapeHtml(u.email || '')}</td>
+                    <td>${roleBadge}</td>
+                    <td>${escapeHtml(u.student_class || '-')}</td>
+                    <td>${u.role === 'siswa' ? `<strong>${u.screenings_count}</strong>` : '-'}</td>
+                    <td>${u.role === 'siswa' ? latestScore : '-'}</td>
+                    <td>${regDate}</td>
+                </tr>
+            `;
+        }).join('');
     }
 
     // Debounce untuk pencarian
@@ -1338,6 +1436,14 @@
         });
         dom.btnExportCsv.addEventListener('click', exportCSV);
 
+        // Recap
+        if (dom.recapRoleFilter) {
+            dom.recapRoleFilter.addEventListener('change', (e) => {
+                state.recapFilter = e.target.value;
+                renderRecapTable();
+            });
+        }
+
         // Close modal on Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && dom.modalOverlay.classList.contains('show')) {
@@ -1358,7 +1464,7 @@
             showApp();
             // Periksa hash saat ini
             const hash = window.location.hash.replace('#admin-', '');
-            const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings'];
+            const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap'];
             if (validPages.includes(hash)) {
                 navigateTo(hash);
             } else {
