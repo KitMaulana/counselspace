@@ -520,6 +520,6 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/admin.js') }}?v=1.2"></script>
+    <script src="{{ asset('js/admin.js') }}?v=1.4"></script>
 </body>
 </html>
