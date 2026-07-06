@@ -101,33 +101,53 @@ class UserController extends Controller
 
     public function uploadPhoto(Request $request)
     {
-        $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->file('photo')) {
-            $file = $request->file('photo');
-            $filename = 'counselor_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
-            
-            // Ensure path exists
-            $path = public_path('uploads/guru');
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
-            }
-            
-            $file->move($path, $filename);
-            $url = '/uploads/guru/' . $filename;
-            
-            return response()->json([
-                'success' => true,
-                'url' => $url
+        try {
+            $request->validate([
+                'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
-        }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal mengunggah foto'
-        ], 400);
+            if ($request->file('photo')) {
+                $file = $request->file('photo');
+                $filename = 'counselor_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+                
+                // Ensure path exists
+                $path = public_path('uploads/guru');
+                if (!file_exists($path)) {
+                    if (!@mkdir($path, 0777, true)) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Gagal membuat direktori uploads/guru di server. Silakan buat folder public/uploads/guru secara manual melalui file manager Hostinger dan atur izin folder (permission) ke 777.'
+                        ], 500);
+                    }
+                }
+                
+                if (!is_writable($path)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Folder public/uploads/guru di server tidak dapat ditulis (not writable). Silakan atur izin folder (permission) ke 777.'
+                    ], 500);
+                }
+                
+                $file->move($path, $filename);
+                $url = '/uploads/guru/' . $filename;
+                
+                return response()->json([
+                    'success' => true,
+                    'url' => $url
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'File tidak ditemukan dalam request'
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function listCounselors()
