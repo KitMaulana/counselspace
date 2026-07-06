@@ -2155,42 +2155,65 @@ textarea.form-input {
 .counselor-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  padding: 0 0.5rem;
+  gap: 1.25rem;
+  padding: 0.5rem 1rem;
   overflow-y: auto;
-  max-height: 400px;
 }
 
 .counselor-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  text-align: center;
+  gap: var(--space-sm);
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.counselor-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.25), transparent);
 }
 
 .counselor-card:hover {
-  background: var(--bg-hover);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(20, 184, 166, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(20, 184, 166, 0.15);
 }
 
 .counselor-avatar {
-  width: 50px;
-  height: 50px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--bg-tertiary);
+  background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   overflow: hidden;
-  border: 2px solid var(--border-color);
+  border: 3px solid rgba(20, 184, 166, 0.3);
   flex-shrink: 0;
+  margin-bottom: 0.25rem;
+  transition: all var(--transition);
+}
+
+.counselor-card:hover .counselor-avatar {
+  border-color: var(--accent);
+  transform: scale(1.05);
 }
 
 .counselor-avatar img {
@@ -2200,45 +2223,60 @@ textarea.form-input {
 }
 
 .counselor-info {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
 }
 
 .counselor-info h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
 }
 
 .counselor-info .service-hours {
-  font-size: 0.72rem;
-  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
   display: block;
+  margin-bottom: 8px;
 }
 
 .counselor-status {
-  font-size: 0.72rem;
-  display: flex;
+  font-size: 0.78rem;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.counselor-status.online {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.2);
+}
+
+.counselor-status.offline {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .counselor-status .status-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
 .counselor-status.online .status-dot {
-  background: var(--green-500);
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
 }
 
 .counselor-status.offline .status-dot {
-  background: var(--text-tertiary);
+  background: var(--text-muted);
 }
 
 .chat-counselor-header {
