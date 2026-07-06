@@ -313,17 +313,56 @@
 
       <!-- BK Chat Panel -->
       <div class="chat-panel" id="chat-panel-bk">
-        <div class="chat-status" id="bk-status">
-          <span class="status-dot"></span>
-          <span>Guru BK sedang online</span>
+        <!-- Counselor List View (Shown first) -->
+        <div id="bk-counselor-list-view" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+          <p class="text-muted mb-md" style="font-size:0.8rem; padding: 0 0.5rem; margin-top: 0.5rem;">Pilih Guru BK untuk memulai percakapan:</p>
+          <div class="counselor-list" id="counselor-list-container" style="flex:1; overflow-y:auto;">
+            <!-- Filled dynamically -->
+          </div>
         </div>
-        <div class="chat-messages" id="chat-messages-bk">
-          <!-- Filled dynamically -->
-        </div>
-        <div class="chat-input-bar">
-          <input type="text" class="form-input" id="chat-input-bk" placeholder="Ketik pesanmu..." 
-            onkeydown="if(event.key==='Enter')App.chat.sendBk()">
-          <button class="btn-send" onclick="App.chat.sendBk()">➤</button>
+
+        <!-- Active Chat View (Hidden initially) -->
+        <div id="bk-chat-active-view" class="hidden" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+          <!-- Counselor Profile Header -->
+          <div class="chat-counselor-header">
+            <button class="btn-back-counselors" onclick="App.chat.backToCounselors()">← Kembali</button>
+            <div class="counselor-header-profile">
+              <div class="counselor-header-avatar" id="counselor-header-avatar">👤</div>
+              <div class="counselor-header-info">
+                <h4 id="counselor-header-name" style="margin:0; font-size:0.85rem;">—</h4>
+                <span id="counselor-header-hours" style="font-size:0.7rem; color:var(--text-muted);">—</span>
+              </div>
+            </div>
+            <div class="chat-status-badge" id="counselor-header-status">
+              <span class="status-dot"></span>
+              <span class="status-text" style="font-size:0.7rem;">Offline</span>
+            </div>
+          </div>
+
+          <!-- Identity Selector Toggle -->
+          <div class="identity-selector-bar">
+            <span style="font-size:0.75rem; font-weight:500; color:var(--text-secondary);">Identitas:</span>
+            <div class="identity-toggle-group">
+              <button class="identity-btn active" id="identity-btn-anon" onclick="App.chat.setAnonymous(true)">
+                🔒 Anonim
+              </button>
+              <button class="identity-btn" id="identity-btn-ident" onclick="App.chat.setAnonymous(false)">
+                👤 Tampilkan Nama
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div class="chat-messages" id="chat-messages-bk" style="flex:1; min-height:0; overflow-y:auto; padding: 0.75rem;">
+            <!-- Filled dynamically -->
+          </div>
+
+          <!-- Input Bar -->
+          <div class="chat-input-bar">
+            <input type="text" class="form-input" id="chat-input-bk" placeholder="Ketik pesanmu..." 
+              onkeydown="if(event.key==='Enter')App.chat.sendBk()">
+            <button class="btn-send" onclick="App.chat.sendBk()">➤</button>
+          </div>
         </div>
       </div>
     </section>

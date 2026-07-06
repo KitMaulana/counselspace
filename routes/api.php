@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\UserController;
 Route::get('/questions', [QuestionController::class, 'index']);
 Route::get('/edu', [EduContentController::class, 'index']);
 Route::post('/screenings', [ScreeningController::class, 'store']);
+Route::get('/counselors', [UserController::class, 'counselorsPublic']);
+Route::post('/ping', [UserController::class, 'ping'])->middleware('role:siswa,guru,admin');
 
 // Chat (public - students use anonymously)
 Route::get('/chats/sessions', [ChatController::class, 'sessions']);
@@ -30,9 +32,20 @@ Route::prefix('admin')->middleware('role:admin,guru')->group(function () {
     Route::get('/screenings', [ScreeningController::class, 'index']);
     Route::get('/screenings/{id}', [ScreeningController::class, 'show']);
     Route::get('/stats', [ScreeningController::class, 'stats']);
+    
+    // Kelola Profil & Media
+    Route::get('/profile', [UserController::class, 'profile']);
+    Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::post('/upload', [UserController::class, 'uploadPhoto']);
 
     // 2. Data yang HANYA boleh dimodifikasi oleh Admin
     Route::middleware('role:admin')->group(function () {
+        // Kelola Guru BK
+        Route::get('/counselors', [UserController::class, 'listCounselors']);
+        Route::post('/counselors', [UserController::class, 'storeCounselor']);
+        Route::put('/counselors/{id}', [UserController::class, 'updateCounselor']);
+        Route::delete('/counselors/{id}', [UserController::class, 'destroyCounselor']);
+
         // Kelola Soal
         Route::post('/questions', [QuestionController::class, 'store']);
         Route::put('/questions/{id}', [QuestionController::class, 'update']);

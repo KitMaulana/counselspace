@@ -87,6 +87,12 @@
                     <div class="nav-item" data-page="recap" id="nav-recap" style="display:none">
                         <span class="nav-icon">👥</span> Rekap Pengguna
                     </div>
+                    <div class="nav-item" data-page="counselors" id="nav-counselors" style="display:none">
+                        <span class="nav-icon">👨‍🏫</span> Kelola Guru BK
+                    </div>
+                    <div class="nav-item" data-page="profile" id="nav-profile" style="display:none">
+                        <span class="nav-icon">⚙️</span> Pengaturan Profil
+                    </div>
                     <div class="nav-item nav-logout" id="nav-logout">
                         <span class="nav-icon">🚪</span> Logout
                     </div>
@@ -372,6 +378,87 @@
                     </div>
                 </div>
 
+                <!-- ===== COUNSELORS MANAGEMENT PAGE (ADMIN ONLY) ===== -->
+                <div class="page" id="page-counselors">
+                    <div class="page-header">
+                        <div>
+                            <h1>👨‍🏫 Kelola Guru BK</h1>
+                            <p>Tambah, edit, dan hapus data Guru BK</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-add-counselor">+ Tambah Guru BK</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body" style="padding:0; overflow-x:auto;">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Foto</th>
+                                            <th>Nama</th>
+                                            <th>Email</th>
+                                            <th>Username</th>
+                                            <th>Jam Layanan</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="counselors-table-body">
+                                        <!-- Filled dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== COUNSELOR PROFILE SETTINGS PAGE (GURU ONLY) ===== -->
+                <div class="page" id="page-profile">
+                    <div class="page-header">
+                        <div>
+                            <h1>⚙️ Pengaturan Profil</h1>
+                            <p>Edit keterangan profil Anda yang akan tampil di aplikasi siswa</p>
+                        </div>
+                    </div>
+
+                    <div class="card" style="max-width: 600px; margin: 0 auto;">
+                        <div class="card-body">
+                            <form id="profile-form">
+                                <div style="text-align: center; margin-bottom: 2rem;">
+                                    <div class="profile-avatar-wrapper" id="profile-avatar-preview-wrap" style="position: relative; width: 120px; height: 120px; margin: 0 auto 1rem; border-radius: 50%; overflow: hidden; border: 3px solid var(--accent); background: var(--bg-hover); display:flex; align-items:center; justify-content:center; font-size:3rem;">
+                                        <span id="profile-avatar-preview">👤</span>
+                                    </div>
+                                    <input type="file" id="profile-avatar-input" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('profile-avatar-input').click()">Unggah Foto Baru</button>
+                                    <input type="hidden" id="profile-photo-url">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Nama Lengkap</label>
+                                    <input type="text" class="form-control" id="profile-name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="profile-email" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Jam Layanan (Tampil di Siswa)</label>
+                                    <input type="text" class="form-control" id="profile-hours" placeholder="Contoh: Senin - Jumat, 08:00 - 15:00">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Password Baru (Kosongkan jika tidak ingin mengubah)</label>
+                                    <input type="password" class="form-control" id="profile-password" placeholder="Minimal 6 karakter">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.5rem;">Simpan Perubahan</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
@@ -382,6 +469,54 @@
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal" id="modal-container">
             <!-- Populated dynamically by JS -->
+        </div>
+    </div>
+
+    <!-- Counselor Modal (Add/Edit) -->
+    <div class="modal-form-counselor-wrap" id="modal-counselor-wrapper" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; display:flex; align-items:center; justify-content:center; display:none;">
+        <div class="modal" style="display:block; position:relative; max-width:500px; width:90%; animation:slideUp 0.3s ease-out;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border-bottom:1px solid var(--glass-border);">
+                <h3 id="counselor-modal-title">Tambah Guru BK</h3>
+                <button class="modal-close" style="background:transparent; border:none; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('modal-counselor-wrapper').style.display='none'">&times;</button>
+            </div>
+            <form id="counselor-form" style="padding:1rem;">
+                <input type="hidden" id="c-id">
+                
+                <!-- Foto Upload -->
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <div class="profile-avatar-wrapper" id="c-avatar-preview-wrap" style="position: relative; width: 80px; height: 80px; margin: 0 auto 0.5rem; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); background: var(--bg-hover); display:flex; align-items:center; justify-content:center; font-size:2.5rem;">
+                        <span id="c-avatar-preview">👤</span>
+                    </div>
+                    <input type="file" id="c-avatar-input" accept="image/*" style="display: none;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('c-avatar-input').click()">Pilih Foto</button>
+                    <input type="hidden" id="c-photo-url">
+                </div>
+
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" class="form-control" id="c-name" required placeholder="Contoh: Ibu Rina, S.Pd.">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="c-email" required placeholder="Contoh: rina@school.sch.id">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="c-username" required placeholder="Contoh: rina_bk">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="c-password" placeholder="Kosongkan jika tidak diubah / Minimal 6 karakter">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label class="form-label">Jam Layanan</label>
+                    <input type="text" class="form-control" id="c-hours" placeholder="Contoh: Senin - Jumat, 08:00 - 15:00">
+                </div>
+                <div class="modal-footer" style="padding-top:1rem; text-align:right; border-top:1px solid var(--glass-border);">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-counselor-wrapper').style.display='none'">Batal</button>
+                    <button type="submit" class="btn btn-primary" id="c-save-btn">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 

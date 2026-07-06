@@ -18,6 +18,9 @@ class User extends Authenticatable
         'role',
         'student_class',
         'session_token', // Ditambahkan
+        'photo_url',
+        'service_hours',
+        'last_seen',
     ];
 
     protected $hidden = [

@@ -317,6 +317,12 @@ App.router = {
       return;
     }
 
+    if (App.auth.isAuthenticated()) {
+      App.chat.startPing();
+    } else {
+      App.chat.stopPing();
+    }
+
     this.showPage(hash);
   },
 
@@ -720,7 +726,8 @@ App.result = {
       return;
     }
 
-    const { score, category } = result;
+    const score = result.score;
+    const category = result.category ? (result.category.charAt(0).toUpperCase() + result.category.slice(1).toLowerCase()) : 'Aman';
 
     // Animate score circle
     const circleFill = document.getElementById('result-circle-fill');
@@ -1125,6 +1132,10 @@ App.chat = {
   bkPollInterval: null,
   activeTab: 'ai',
   renderedMessageIds: new Set(),
+  selectedCounselorId: null,
+  isAnonymous: true,
+  counselors: [],
+  pingInterval: null,
 
   /** AI response database */
   aiResponses: {
@@ -1211,13 +1222,6 @@ App.chat = {
     const saved = App.utils.getStorage('ai_chat_history', []);
     this.aiHistory = saved;
 
-    // BK session
-    this.bkSessionId = App.utils.getStorage('bk_session_id');
-    if (!this.bkSessionId) {
-      this.bkSessionId = App.utils.generateSessionId();
-      App.utils.setStorage('bk_session_id', this.bkSessionId);
-    }
-
     this.renderAiChat();
     this.renderQuickReplies();
 
@@ -1225,6 +1229,10 @@ App.chat = {
     if (this.aiHistory.length === 0) {
       this.addAiMessage('received',
         'Halo! 👋 Aku CounselBot, asisten kesehatan mentalmu. Kamu bisa curhat tentang perasaanmu, tanya tentang FOMO, atau minta tips digital wellness. Aku di sini untuk mendengarkan! 💚');
+    }
+
+    if (this.activeTab === 'bk') {
+      this.initBkChat();
     }
   },
 
@@ -1334,45 +1342,156 @@ App.chat = {
 
   /** Initialize BK chat */
   async initBkChat() {
-    const container = document.getElementById('chat-messages-bk');
-    container.innerHTML = ''; // Clear container to load fresh history
-    this.renderedMessageIds.clear();
+    this.stopBkPolling();
+    
+    const counselorListEl = document.getElementById('bk-counselor-list-view');
+    const activeChatEl = document.getElementById('bk-chat-active-view');
+    
+    if (!this.selectedCounselorId) {
+      counselorListEl.classList.remove('hidden');
+      activeChatEl.classList.add('hidden');
+      await this.loadCounselors();
+    } else {
+      counselorListEl.classList.add('hidden');
+      activeChatEl.classList.remove('hidden');
+      
+      const container = document.getElementById('chat-messages-bk');
+      container.innerHTML = '';
+      this.renderedMessageIds.clear();
 
-    // Add welcome message
-    const bubble = document.createElement('div');
-    bubble.className = 'chat-bubble received';
-    bubble.innerHTML = `Selamat datang di Chat Anonim Guru BK! 👨‍🏫 Kamu bisa curhat dengan aman di sini. Identitasmu dilindungi. <span class="bubble-time">${App.utils.formatTime(new Date())}</span>`;
-    container.appendChild(bubble);
+      let studentId = 0;
+      try {
+        const studUser = JSON.parse(localStorage.getItem('student_user'));
+        studentId = studUser ? studUser.id : 0;
+      } catch (e) {}
+      
+      this.bkSessionId = `chat_${studentId}_${this.selectedCounselorId}`;
 
-    // Load message history from DB
+      const counselor = this.counselors.find(c => c.id == this.selectedCounselorId);
+      if (counselor) {
+        document.getElementById('counselor-header-name').textContent = counselor.name;
+        document.getElementById('counselor-header-hours').textContent = `Jam Layanan: ${counselor.service_hours || 'Tidak diatur'}`;
+        
+        const avatarEl = document.getElementById('counselor-header-avatar');
+        if (counselor.photo_url) {
+          avatarEl.innerHTML = `<img src="${counselor.photo_url}" alt="${counselor.name}">`;
+        } else {
+          avatarEl.innerHTML = '👤';
+        }
+
+        const statusEl = document.getElementById('counselor-header-status');
+        if (counselor.is_online) {
+          statusEl.className = 'chat-status-badge online';
+          statusEl.querySelector('.status-text').textContent = 'Sedang Aktif';
+        } else {
+          statusEl.className = 'chat-status-badge offline';
+          statusEl.querySelector('.status-text').textContent = 'Tidak Aktif';
+        }
+      }
+
+      this.updateIdentityToggleUI();
+
+      try {
+        const res = await App.api('/api/chats/' + this.bkSessionId, 'GET');
+        if (res && res.data && res.data.length > 0) {
+          res.data.forEach(msg => {
+            const msgId = parseInt(msg.id);
+            this.renderedMessageIds.add(msgId);
+
+            const type = msg.sender_type === 'student' ? 'sent' : 'received';
+            const bubbleEl = document.createElement('div');
+            bubbleEl.className = `chat-bubble ${type}`;
+            bubbleEl.innerHTML = `${msg.message}<span class="bubble-time">${App.utils.formatTime(msg.created_at || new Date())}</span>`;
+            container.appendChild(bubbleEl);
+          });
+          this.scrollToBottom(container);
+        }
+      } catch (err) {
+        console.warn('Failed to load chat history:', err);
+      }
+
+      this.startBkPolling();
+    }
+  },
+
+  async loadCounselors() {
+    const listContainer = document.getElementById('counselor-list-container');
+    listContainer.innerHTML = `<div class="spinner-overlay" style="position:relative; height:100px; background:transparent;"><div class="spinner"></div></div>`;
     try {
-      const res = await App.api('/api/chats/' + this.bkSessionId, 'GET');
-      if (res && res.data && res.data.length > 0) {
-        res.data.forEach(msg => {
-          const msgId = parseInt(msg.id);
-          this.renderedMessageIds.add(msgId);
+      const res = await App.api('/api/counselors', 'GET');
+      if (res && res.success && res.data) {
+        this.counselors = res.data;
+        if (this.counselors.length === 0) {
+          listContainer.innerHTML = `
+            <div style="text-align:center; padding: 2rem var(--space-sm); color:var(--text-tertiary);">
+              <p>Belum ada Guru BK yang terdaftar saat ini.</p>
+            </div>`;
+          return;
+        }
 
-          const type = msg.sender_type === 'student' ? 'sent' : 'received';
-          const bubbleEl = document.createElement('div');
-          bubbleEl.className = `chat-bubble ${type}`;
-          bubbleEl.innerHTML = `${msg.message}<span class="bubble-time">${App.utils.formatTime(msg.created_at || new Date())}</span>`;
-          container.appendChild(bubbleEl);
-        });
-        this.scrollToBottom(container);
+        listContainer.innerHTML = this.counselors.map(c => {
+          const statusText = c.is_online ? 'Sedang Aktif' : 'Tidak Aktif';
+          const statusClass = c.is_online ? 'online' : 'offline';
+          const avatarHTML = c.photo_url 
+            ? `<img src="${c.photo_url}" alt="${c.name}">` 
+            : `👤`;
+
+          return `
+            <div class="counselor-card" onclick="App.chat.selectCounselor(${c.id})">
+              <div class="counselor-avatar">${avatarHTML}</div>
+              <div class="counselor-info">
+                <h4>${c.name}</h4>
+                <span class="service-hours">⏰ Jam Layanan: ${c.service_hours || 'Tidak Diatur'}</span>
+              </div>
+              <div class="counselor-status ${statusClass}">
+                <span class="status-dot"></span>
+                <span>${statusText}</span>
+              </div>
+            </div>`;
+        }).join('');
       }
     } catch (err) {
-      console.warn('Failed to load chat history:', err);
+      listContainer.innerHTML = `
+        <div style="text-align:center; padding: 2rem var(--space-sm); color:var(--text-tertiary);">
+          <p class="text-danger">Gagal memuat daftar Guru BK.</p>
+        </div>`;
     }
+  },
 
-    // Start polling for responses
-    this.startBkPolling();
+  selectCounselor(counselorId) {
+    this.selectedCounselorId = counselorId;
+    this.initBkChat();
+  },
+
+  backToCounselors() {
+    this.selectedCounselorId = null;
+    this.stopBkPolling();
+    this.initBkChat();
+  },
+
+  setAnonymous(isAnon) {
+    this.isAnonymous = isAnon;
+    this.updateIdentityToggleUI();
+  },
+
+  updateIdentityToggleUI() {
+    const btnAnon = document.getElementById('identity-btn-anon');
+    const btnIdent = document.getElementById('identity-btn-ident');
+    if (!btnAnon || !btnIdent) return;
+    if (this.isAnonymous) {
+      btnAnon.classList.add('active');
+      btnIdent.classList.remove('active');
+    } else {
+      btnAnon.classList.remove('active');
+      btnIdent.classList.add('active');
+    }
   },
 
   /** Send message in BK chat */
   async sendBk() {
     const input = document.getElementById('chat-input-bk');
     const text = input.value.trim();
-    if (!text) return;
+    if (!text || !this.selectedCounselorId) return;
 
     // Show message immediately
     const container = document.getElementById('chat-messages-bk');
@@ -1388,7 +1507,9 @@ App.chat = {
       const res = await App.api('/api/chats', 'POST', {
         session_id: this.bkSessionId,
         message: text,
-        sender_type: 'student'
+        sender_type: 'student',
+        counselor_id: this.selectedCounselorId,
+        is_anonymous: this.isAnonymous
       });
       if (res && res.success && res.data && res.data.id) {
         this.renderedMessageIds.add(parseInt(res.data.id));
@@ -1443,10 +1564,27 @@ App.chat = {
     }
   },
 
+  startPing() {
+    this.stopPing();
+    this.pingInterval = setInterval(async () => {
+      try {
+        await App.api('/api/ping', 'POST');
+      } catch (err) {}
+    }, 15000);
+    App.api('/api/ping', 'POST').catch(()=>{});
+  },
+
+  stopPing() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
+  },
+
   /** Scroll chat to bottom */
   scrollToBottom(container) {
     setTimeout(() => {
-      container.scrollTop = container.scrollHeight;
+      if (container) container.scrollTop = container.scrollHeight;
     }, 50);
   }
 };

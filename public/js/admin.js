@@ -53,6 +53,12 @@
         hamburgerBtn: $('#hamburger-btn'),
         navItems: $$('.nav-item[data-page]'),
         navRecap: $('#nav-recap'),
+        navCounselors: $('#nav-counselors'),
+        navProfile: $('#nav-profile'),
+        counselorsBody: $('#counselors-table-body'),
+        counselorForm: $('#counselor-form'),
+        profileForm: $('#profile-form'),
+        btnCounselorAdd: $('#btn-add-counselor'),
         recapBody: $('#recap-table-body'),
         recapRoleFilter: $('#recap-role-filter'),
         navLogout: $('#nav-logout'),
@@ -314,22 +320,30 @@
         const role = getUserRole();
         if (role === 'admin') {
             dom.navRecap.style.display = 'flex';
+            dom.navCounselors.style.display = 'flex';
+            dom.navProfile.style.display = 'none';
             if (dom.btnAddQuestion) dom.btnAddQuestion.style.display = 'inline-block';
             if (dom.btnAddEdu) dom.btnAddEdu.style.display = 'inline-block';
         } else {
             dom.navRecap.style.display = 'none';
+            dom.navCounselors.style.display = 'none';
+            dom.navProfile.style.display = 'flex';
             if (dom.btnAddQuestion) dom.btnAddQuestion.style.display = 'none';
             if (dom.btnAddEdu) dom.btnAddEdu.style.display = 'none';
-            if (state.currentPage === 'recap') {
+            if (state.currentPage === 'recap' || state.currentPage === 'counselors') {
                 state.currentPage = 'dashboard';
             }
         }
 
+        startPing();
         navigateTo(state.currentPage);
     }
 
     function logout() {
+        stopPing();
+        stopChatPolling();
         sessionStorage.clear();
+        window.location.hash = '';
         showLogin();
         showToast('Berhasil logout', 'info');
     }
@@ -399,6 +413,8 @@
             case 'chat': loadChatSessions(); break;
             case 'screenings': loadScreenings(); break;
             case 'recap': fetchRecapData(); break;
+            case 'counselors': loadCounselors(); break;
+            case 'profile': loadProfile(); break;
         }
 
         // Stop polling chat jika bukan halaman chat
@@ -408,7 +424,7 @@
     function handleHashChange() {
         if (!isAuthenticated()) return;
         const hash = window.location.hash.replace('#admin-', '');
-        const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap'];
+        const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap', 'counselors', 'profile'];
         if (validPages.includes(hash)) {
             navigateTo(hash);
         }
@@ -937,7 +953,14 @@
         dom.chatSessions.innerHTML = state.chatSessions.map((s) => {
             const sessionId = s.session_id;
             const isActive = state.activeChatSessionId == sessionId;
-            const name = `Siswa #${sessionId.substring(5, 12)}`; // format sess_xxxxx -> Siswa #xxxxx
+            
+            let name = '';
+            if (s.is_anonymous) {
+                name = `Siswa Anonim (Siswa #${sessionId.substring(5, 12)})`;
+            } else {
+                name = `${s.student_name || 'Siswa'} (${s.student_class || '-'})`;
+            }
+
             const preview = s.last_message || 'Belum ada pesan';
             const time = formatTime(s.last_time);
             const unread = s.unread_count || 0;
@@ -968,7 +991,18 @@
         dom.chatMessages.style.display = 'flex';
         dom.chatInputArea.style.display = 'flex';
 
-        dom.chatConvTitle.textContent = `Siswa #${sessionId.substring(5, 12)}`;
+        const session = state.chatSessions.find(s => s.session_id === sessionId);
+        let title = 'Siswa';
+        if (session) {
+            if (session.is_anonymous) {
+                title = `Siswa Anonim (Siswa #${sessionId.substring(5, 12)})`;
+            } else {
+                title = `${session.student_name} (${session.student_class})`;
+            }
+        } else {
+            title = `Siswa #${sessionId.substring(5, 12)}`;
+        }
+        dom.chatConvTitle.textContent = title;
 
         await loadChatMessages(sessionId);
         markAsRead(sessionId);
@@ -1409,6 +1443,55 @@
         // Questions
         dom.btnAddQuestion.addEventListener('click', showAddQuestionModal);
 
+        // Counselors (Admin Only)
+        if (dom.btnCounselorAdd) {
+            dom.btnCounselorAdd.addEventListener('click', showAddCounselorModal);
+        }
+        if (dom.counselorForm) {
+            dom.counselorForm.addEventListener('submit', saveCounselor);
+        }
+        const cAvatarInput = document.getElementById('c-avatar-input');
+        if (cAvatarInput) {
+            cAvatarInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    showToast('Mengunggah foto...', 'info');
+                    const res = await uploadFile(file);
+                    if (res && res.success && res.url) {
+                        document.getElementById('c-photo-url').value = res.url;
+                        document.getElementById('c-avatar-preview').innerHTML = `<img src="${res.url}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        showToast('Foto berhasil diunggah!', 'success');
+                    }
+                } catch (err) {
+                    showToast(err.message || 'Gagal mengunggah foto', 'error');
+                }
+            });
+        }
+
+        // Profile (Guru Only)
+        if (dom.profileForm) {
+            dom.profileForm.addEventListener('submit', saveProfile);
+        }
+        const profileAvatarInput = document.getElementById('profile-avatar-input');
+        if (profileAvatarInput) {
+            profileAvatarInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    showToast('Mengunggah foto...', 'info');
+                    const res = await uploadFile(file);
+                    if (res && res.success && res.url) {
+                        document.getElementById('profile-photo-url').value = res.url;
+                        document.getElementById('profile-avatar-preview').innerHTML = `<img src="${res.url}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        showToast('Foto berhasil diunggah!', 'success');
+                    }
+                } catch (err) {
+                    showToast(err.message || 'Gagal mengunggah foto', 'error');
+                }
+            });
+        }
+
         // Edu content
         dom.btnAddEdu.addEventListener('click', showAddEduModal);
         dom.eduTabs.addEventListener('click', (e) => {
@@ -1452,6 +1535,244 @@
         });
     }
 
+    function logout() {
+        stopPing();
+        stopChatPolling();
+        sessionStorage.removeItem('admin_token');
+        sessionStorage.removeItem('admin_user');
+        window.location.hash = '';
+        showLogin();
+    }
+
+    let pingTimer = null;
+    function startPing() {
+        stopPing();
+        pingTimer = setInterval(async () => {
+            try {
+                await api('ping', 'POST');
+            } catch (err) {}
+        }, 15000);
+        api('ping', 'POST').catch(()=>{});
+    }
+
+    function stopPing() {
+        if (pingTimer) {
+            clearInterval(pingTimer);
+            pingTimer = null;
+        }
+    }
+
+    async function uploadFile(file) {
+        const url = API_BASE + 'upload';
+        const formData = new FormData();
+        formData.append('photo', file);
+
+        const options = {
+            method: 'POST',
+            headers: {},
+        };
+
+        const token = sessionStorage.getItem('admin_token');
+        if (token) {
+            options.headers['Authorization'] = 'Bearer ' + token;
+        }
+        options.body = formData;
+
+        const response = await fetch(url, options);
+        const json = await response.json();
+
+        if (!response.ok) {
+            throw new Error(json.message || `HTTP ${response.status}`);
+        }
+        return json;
+    }
+
+    // ============================================
+    // COUNSELOR CRUD MODULE (ADMIN ONLY)
+    // ============================================
+    async function loadCounselors() {
+        dom.counselorsBody.innerHTML = `<tr><td colspan="7" class="table-empty"><div class="spinner-overlay"><div class="spinner"></div></div></td></tr>`;
+        try {
+            const data = await api('admin/counselors');
+            state.counselors = data.data || [];
+            renderCounselorsTable();
+        } catch (err) {
+            showToast(err.message || 'Gagal memuat Guru BK', 'error');
+            dom.counselorsBody.innerHTML = `<tr><td colspan="7" class="table-empty"><p class="text-danger">Gagal memuat data.</p></td></tr>`;
+        }
+    }
+
+    function renderCounselorsTable() {
+        if (!state.counselors.length) {
+            dom.counselorsBody.innerHTML = `
+                <tr><td colspan="7" class="table-empty">
+                    <div class="empty-icon">👨‍🏫</div>
+                    <p>Belum ada data Guru BK</p>
+                </td></tr>`;
+            return;
+        }
+
+        dom.counselorsBody.innerHTML = state.counselors.map((c, i) => {
+            const avatar = c.photo_url 
+                ? `<img src="${c.photo_url}" alt="${escapeHtml(c.name)}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
+                : `<span style="font-size: 1.5rem;">👤</span>`;
+            
+            return `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${avatar}</td>
+                    <td><strong>${escapeHtml(c.name || '')}</strong></td>
+                    <td>${escapeHtml(c.email || '')}</td>
+                    <td>${escapeHtml(c.username || '')}</td>
+                    <td>${escapeHtml(c.service_hours || '-')}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="window.adminApp.showEditCounselorModal(${c.id})">✏️ Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="window.adminApp.deleteCounselor(${c.id})">🗑️ Hapus</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function showAddCounselorModal() {
+        document.getElementById('counselor-modal-title').textContent = 'Tambah Guru BK';
+        document.getElementById('c-id').value = '';
+        document.getElementById('c-name').value = '';
+        document.getElementById('c-email').value = '';
+        document.getElementById('c-username').value = '';
+        document.getElementById('c-password').value = '';
+        document.getElementById('c-hours').value = '';
+        document.getElementById('c-photo-url').value = '';
+        document.getElementById('c-avatar-preview').innerHTML = '👤';
+        document.getElementById('modal-counselor-wrapper').style.display = 'flex';
+    }
+
+    function showEditCounselorModal(id) {
+        const c = state.counselors.find(item => item.id == id);
+        if (!c) return;
+
+        document.getElementById('counselor-modal-title').textContent = 'Edit Guru BK';
+        document.getElementById('c-id').value = c.id;
+        document.getElementById('c-name').value = c.name;
+        document.getElementById('c-email').value = c.email;
+        document.getElementById('c-username').value = c.username;
+        document.getElementById('c-password').value = '';
+        document.getElementById('c-hours').value = c.service_hours || '';
+        document.getElementById('c-photo-url').value = c.photo_url || '';
+        
+        if (c.photo_url) {
+            document.getElementById('c-avatar-preview').innerHTML = `<img src="${c.photo_url}" alt="${escapeHtml(c.name)}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+            document.getElementById('c-avatar-preview').innerHTML = '👤';
+        }
+
+        document.getElementById('modal-counselor-wrapper').style.display = 'flex';
+    }
+
+    async function saveCounselor(e) {
+        if (e) e.preventDefault();
+        
+        const id = document.getElementById('c-id').value;
+        const name = document.getElementById('c-name').value.trim();
+        const email = document.getElementById('c-email').value.trim();
+        const username = document.getElementById('c-username').value.trim();
+        const password = document.getElementById('c-password').value;
+        const service_hours = document.getElementById('c-hours').value.trim();
+        const photo_url = document.getElementById('c-photo-url').value;
+
+        if (!name || !email || !username || (!id && !password)) {
+            showToast('Field wajib tidak boleh kosong!', 'error');
+            return;
+        }
+
+        const data = { name, email, username, service_hours, photo_url };
+        if (password) data.password = password;
+
+        const saveBtn = document.getElementById('c-save-btn');
+        saveBtn.disabled = true;
+
+        try {
+            if (id) {
+                await api(`admin/counselors/${id}`, 'PUT', data);
+                showToast('Guru BK berhasil diperbarui!', 'success');
+            } else {
+                await api('admin/counselors', 'POST', data);
+                showToast('Guru BK berhasil ditambahkan!', 'success');
+            }
+            document.getElementById('modal-counselor-wrapper').style.display = 'none';
+            loadCounselors();
+        } catch (err) {
+            showToast(err.message || 'Gagal menyimpan data', 'error');
+        } finally {
+            saveBtn.disabled = false;
+        }
+    }
+
+    async function deleteCounselor(id) {
+        if (!confirm('Apakah Anda yakin ingin menghapus Guru BK ini? Semua chat terkait juga akan terhapus.')) return;
+        try {
+            await api(`admin/counselors/${id}`, 'DELETE');
+            showToast('Guru BK berhasil dihapus!', 'success');
+            loadCounselors();
+        } catch (err) {
+            showToast(err.message || 'Gagal menghapus data', 'error');
+        }
+    }
+
+    // ============================================
+    // COUNSELOR PROFILE SETTINGS MODULE (GURU ONLY)
+    // ============================================
+    async function loadProfile() {
+        try {
+            const res = await api('admin/profile');
+            if (res.success && res.data) {
+                const user = res.data;
+                document.getElementById('profile-name').value = user.name || '';
+                document.getElementById('profile-email').value = user.email || '';
+                document.getElementById('profile-hours').value = user.service_hours || '';
+                document.getElementById('profile-photo-url').value = user.photo_url || '';
+                document.getElementById('profile-password').value = '';
+
+                if (user.photo_url) {
+                    document.getElementById('profile-avatar-preview').innerHTML = `<img src="${user.photo_url}" alt="${escapeHtml(user.name)}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                } else {
+                    document.getElementById('profile-avatar-preview').innerHTML = '👤';
+                }
+            }
+        } catch (err) {
+            showToast(err.message || 'Gagal memuat profil', 'error');
+        }
+    }
+
+    async function saveProfile(e) {
+        if (e) e.preventDefault();
+        
+        const name = document.getElementById('profile-name').value.trim();
+        const email = document.getElementById('profile-email').value.trim();
+        const service_hours = document.getElementById('profile-hours').value.trim();
+        const photo_url = document.getElementById('profile-photo-url').value;
+        const password = document.getElementById('profile-password').value;
+
+        if (!name || !email) {
+            showToast('Nama dan Email wajib diisi!', 'error');
+            return;
+        }
+
+        const data = { name, email, service_hours, photo_url };
+        if (password) data.password = password;
+
+        try {
+            const res = await api('admin/profile', 'PUT', data);
+            if (res.success && res.data) {
+                sessionStorage.setItem('admin_user', JSON.stringify(res.data));
+                showToast('Profil berhasil disimpan!', 'success');
+                loadProfile();
+            }
+        } catch (err) {
+            showToast(err.message || 'Gagal menyimpan profil', 'error');
+        }
+    }
+
     // ============================================
     // INIT
     // ============================================
@@ -1464,7 +1785,7 @@
             showApp();
             // Periksa hash saat ini
             const hash = window.location.hash.replace('#admin-', '');
-            const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap'];
+            const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap', 'counselors', 'profile'];
             if (validPages.includes(hash)) {
                 navigateTo(hash);
             } else {
@@ -1495,6 +1816,9 @@
         // Screenings
         showDetailModal,
         goToPage,
+        // Counselor CRUD
+        showEditCounselorModal,
+        deleteCounselor,
     };
 
     // Start!

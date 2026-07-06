@@ -2150,3 +2150,214 @@ textarea.form-input {
   font-size: 3rem;
   margin-bottom: var(--space-md);
 }
+
+/* ---------- Counselor List and Chat Revisions ---------- */
+.counselor-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: 0 0.5rem;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.counselor-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.counselor-card:hover {
+  background: var(--bg-hover);
+  transform: translateY(-2px);
+}
+
+.counselor-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.counselor-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.counselor-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.counselor-info h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.counselor-info .service-hours {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  display: block;
+}
+
+.counselor-status {
+  font-size: 0.72rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.counselor-status .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.counselor-status.online .status-dot {
+  background: var(--green-500);
+}
+
+.counselor-status.offline .status-dot {
+  background: var(--text-tertiary);
+}
+
+.chat-counselor-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--glass-bg);
+}
+
+.btn-back-counselors {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  transition: background var(--transition);
+}
+
+.btn-back-counselors:hover {
+  background: var(--bg-hover);
+}
+
+.counselor-header-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.counselor-header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.counselor-header-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.counselor-header-info h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+.chat-status-badge .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.chat-status-badge.online .status-dot {
+  background: var(--green-500);
+}
+
+.chat-status-badge.offline .status-dot {
+  background: var(--text-tertiary);
+}
+
+.identity-selector-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.identity-toggle-group {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.identity-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 4px var(--space-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.identity-btn.active {
+  background: var(--accent);
+  color: var(--bg-primary);
+  box-shadow: 0 2px 6px rgba(20, 184, 166, 0.3);
+}
+
