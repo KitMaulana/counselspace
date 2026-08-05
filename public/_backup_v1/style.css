@@ -5,100 +5,48 @@
 
 /* ---------- CSS Custom Properties ---------- */
 :root {
-  /* ============================================
-     PALET BARU (mengikuti 12 desain Canva)
-     ============================================ */
-
-  /* Navy bertekstur - latar utama */
-  --navy-950: #101A33;
-  --navy-900: #16223F;
-  --navy-800: #1E2C50;
-  --navy-700: #26365E;
-  --navy-600: #2E4070;
-
-  /* Biru aksi (tombol glossy) */
-  --blue-300: #6FD3FF;
-  --blue-400: #29ABE2;
-  --blue-500: #1E9BF0;
-  --blue-600: #1565D8;
-  --blue-800: #0B3E8F;
-  --blue-950: #0A1F45;
-
-  /* Aksen hi-tech (kartu menu, PNG 2) */
-  --cyan-400: #17E9C6;
-  --cyan-300: #5CF5DC;
-  --slate-card: #2A3038;
-
-  /* Kuis (PNG 8) */
-  --cream-100: #F2EBE0;
-  --cream-300: #F6DFB2;
-  --sage-400: #A9C0A1;
-
-  /* Chat guru BK (PNG 12) */
-  --purple-300: #D9A8F0;
-  --pink-500: #F94FA5;
-
-  --panel-white: #FFFFFF;
-
-  /* ============================================
-     ALIAS - nama lama tetap hidup, warna baru.
-     JANGAN dihapus: dipakai ~2400 baris CSS lama.
-     ============================================ */
-
   /* Colors - Base */
-  --bg-primary: var(--navy-800);
-  --bg-secondary: var(--navy-700);
-  --bg-tertiary: var(--navy-600);
-  --bg-card: rgba(38, 54, 94, 0.82);
-  --bg-card-solid: var(--navy-700);
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
+  --bg-card: rgba(30, 41, 59, 0.8);
+  --bg-card-solid: #1E293B;
 
-  /* Colors - Accent (teal-* kini memetakan ke biru aksi) */
-  --teal-600: #1565D8;
-  --teal-500: #1E9BF0;
-  --teal-400: #45C8FF;
-  --teal-300: #8ADCFF;
-  --indigo-500: #7C5CE0;
-  --indigo-400: #A78BFA;
+  /* Colors - Accent */
+  --teal-600: #0D9488;
+  --teal-500: #14B8A6;
+  --teal-400: #2DD4BF;
+  --teal-300: #5EEAD4;
+  --indigo-500: #6366F1;
+  --indigo-400: #818CF8;
   --amber-500: #F59E0B;
   --amber-400: #FBBF24;
   --red-500: #EF4444;
   --red-400: #F87171;
   --green-500: #22C55E;
   --green-400: #4ADE80;
-  --sage: var(--sage-400);
+  --sage: #84CC16;
 
   /* Colors - Text */
-  --text-primary: #F4F8FF;
-  --text-secondary: #A9BCE0;
-  --text-tertiary: #7488B4;
-  --text-muted: #56698F;
-
-  /* Alias yatim: dipakai di CSS lama tapi tak pernah didefinisikan,
-     sehingga aturannya diam-diam gagal. Didefinisikan di sini. */
-  --accent: var(--blue-500);
-  --border-color: rgba(140, 190, 255, 0.18);
-  --transition: 0.3s ease;
-  --bg-hover: rgba(140, 190, 255, 0.08);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --text-muted: #475569;
 
   /* Glassmorphism */
-  --glass-bg: rgba(38, 54, 94, 0.82);
-  --glass-border: rgba(140, 190, 255, 0.18);
+  --glass-bg: rgba(30, 41, 59, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
   --glass-blur: blur(16px);
-  --glass-bg-light: rgba(38, 54, 94, 0.6);
+  --glass-bg-light: rgba(30, 41, 59, 0.6);
 
   /* Gradients */
-  --gradient-teal: linear-gradient(180deg, #3FC0FF 0%, #1E9BF0 45%, #0B5FBF 100%);
-  --gradient-teal-soft: linear-gradient(135deg, rgba(30, 155, 240, 0.22), rgba(21, 101, 216, 0.1));
-  --gradient-indigo: linear-gradient(135deg, #7C5CE0, #A78BFA);
+  --gradient-teal: linear-gradient(135deg, #0D9488, #14B8A6);
+  --gradient-teal-soft: linear-gradient(135deg, rgba(13, 148, 136, 0.2), rgba(20, 184, 166, 0.1));
+  --gradient-indigo: linear-gradient(135deg, #6366F1, #818CF8);
   --gradient-amber: linear-gradient(135deg, #F59E0B, #FBBF24);
   --gradient-red: linear-gradient(135deg, #EF4444, #F87171);
   --gradient-green: linear-gradient(135deg, #22C55E, #4ADE80);
-  --gradient-hero: linear-gradient(135deg, #16223F 0%, #1E2C50 50%, #0B3E8F 100%);
-
-  /* Gradient khas desain baru */
-  --gradient-glossy: linear-gradient(180deg, #6FD3FF 0%, #29ABE2 18%, #1565D8 55%, #0B3E8F 100%);
-  --gradient-pill-title: linear-gradient(180deg, #123A7A 0%, #0A1F45 100%);
-  --gradient-cyan: linear-gradient(135deg, #17E9C6, #5CF5DC);
+  --gradient-hero: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0D9488 100%);
 
   /* Spacing */
   --space-xs: 4px;
@@ -121,10 +69,7 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
   --shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.3);
   --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-teal: 0 6px 18px rgba(21, 101, 216, 0.45);
-  --shadow-glossy: 0 6px 0 rgba(8, 40, 96, 0.55), 0 10px 22px rgba(4, 16, 40, 0.5);
-  --glow-blue: 0 0 26px rgba(120, 190, 255, 0.6);
-  --glow-cyan: 0 0 18px rgba(23, 233, 198, 0.5);
+  --shadow-teal: 0 4px 20px rgba(13, 148, 136, 0.3);
   --shadow-red: 0 4px 20px rgba(239, 68, 68, 0.3);
   --shadow-amber: 0 4px 20px rgba(245, 158, 11, 0.3);
   --shadow-green: 0 4px 20px rgba(34, 197, 94, 0.3);
@@ -136,8 +81,6 @@
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Poppins', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-display-lg: 1.5rem;
   --font-xs: 0.75rem;
   --font-sm: 0.8125rem;
   --font-base: 0.9375rem;
@@ -175,25 +118,11 @@ body {
   line-height: 1.6;
   color: var(--text-primary);
   background-color: var(--bg-primary);
-  background-image: radial-gradient(ellipse at 50% 0%, #26365E 0%, #1E2C50 45%, #16223F 100%);
-  background-attachment: fixed;
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Tekstur noise halus seperti latar bertekstur di desain Canva */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.4;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 a {
@@ -721,22 +650,18 @@ textarea.form-input {
   word-wrap: break-word;
 }
 
-/* Terkirim (siswa) - biru, rata kanan (PNG 10) */
 .chat-bubble.sent {
-  background: var(--blue-500);
+  background: var(--gradient-teal);
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 6px;
-  box-shadow: 0 4px 12px rgba(11, 62, 143, 0.4);
 }
 
-/* Diterima (bot/guru) - putih, rata kiri (PNG 10) */
 .chat-bubble.received {
-  background: var(--panel-white);
-  color: #23303F;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
   align-self: flex-start;
   border-bottom-left-radius: 6px;
-  box-shadow: 0 4px 12px rgba(4, 16, 40, 0.28);
 }
 
 .chat-bubble .bubble-time {
@@ -1381,6 +1306,95 @@ textarea.form-input {
   font-weight: 500;
 }
 
+.question-card {
+  animation: fadeInUp 0.35s ease;
+  margin-bottom: var(--space-lg);
+}
+
+.question-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--gradient-teal);
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: white;
+  margin-bottom: var(--space-md);
+}
+
+.question-text {
+  font-size: var(--font-lg);
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.answer-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 16px 20px;
+  background: var(--glass-bg);
+  border: 1.5px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: var(--font-base);
+}
+
+.answer-option:hover {
+  border-color: rgba(13, 148, 136, 0.4);
+  background: rgba(13, 148, 136, 0.08);
+}
+
+.answer-option:active {
+  transform: scale(0.98);
+}
+
+.answer-option.selected {
+  border-color: var(--teal-500);
+  background: rgba(13, 148, 136, 0.15);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+}
+
+.answer-radio {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-base);
+}
+
+.answer-option.selected .answer-radio {
+  border-color: var(--teal-500);
+  background: var(--teal-500);
+}
+
+.answer-option.selected .answer-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.answer-label {
+  flex: 1;
+  font-weight: 500;
+}
 
 /* Pre-screening identity form */
 .identity-form {
@@ -1605,6 +1619,204 @@ textarea.form-input {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ---------- Detox Timer ---------- */
+#page-detox {
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#page-detox::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 30%, rgba(13, 148, 136, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.detox-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-lg);
+}
+
+.detox-header h2 {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.detox-header p {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+}
+
+.timer-circle-wrap {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-lg);
+}
+
+.timer-circle {
+  width: 220px;
+  height: 220px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.timer-circle svg {
+  transform: rotate(-90deg);
+  width: 220px;
+  height: 220px;
+}
+
+.timer-circle .timer-bg {
+  fill: none;
+  stroke: var(--bg-tertiary);
+  stroke-width: 6;
+}
+
+.timer-circle .timer-fill {
+  fill: none;
+  stroke: var(--teal-500);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timer-time {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-label {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.preset-times {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.preset-btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  transition: all var(--transition-base);
+}
+
+.preset-btn.active {
+  background: rgba(13, 148, 136, 0.2);
+  color: var(--teal-400);
+  border-color: rgba(13, 148, 136, 0.3);
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  position: relative;
+  z-index: 1;
+}
+
+.timer-controls .btn {
+  min-width: 110px;
+}
+
+/* Breathing Exercise */
+.breathing-section {
+  position: relative;
+  z-index: 1;
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--glass-border);
+}
+
+.breathing-section h3 {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-lg);
+}
+
+.breathing-circle {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--space-md);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.3), rgba(13, 148, 136, 0.05));
+  border: 2px solid rgba(13, 148, 136, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  transition: transform 4s ease-in-out, background 4s ease-in-out;
+}
+
+.breathing-circle.inhale {
+  transform: scale(1.3);
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.5), rgba(13, 148, 136, 0.15));
+}
+
+.breathing-circle.exhale {
+  transform: scale(0.8);
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.15), rgba(13, 148, 136, 0.03));
+}
+
+.breathing-text {
+  font-size: var(--font-lg);
+  font-weight: 500;
+  color: var(--teal-400);
+  min-height: 30px;
+  transition: opacity 0.3s ease;
+}
+
+.motivational-quote {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.motivational-quote p {
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  line-height: 1.6;
+}
+
+.motivational-quote .quote-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-sm);
+  opacity: 0.5;
 }
 
 /* Celebration */
@@ -2220,1062 +2432,5 @@ textarea.form-input {
   background: var(--accent);
   color: var(--bg-primary);
   box-shadow: 0 2px 6px rgba(20, 184, 166, 0.3);
-}
-
-/* ============================================================
-   ===============  LAPISAN DESAIN BARU (v2)  =================
-   Komponen turunan dari 12 desain Canva.
-   Prefix .cs-* agar tidak bentrok dengan kelas lama.
-   ============================================================ */
-
-.app-container {
-  position: relative;
-  z-index: 1;
-}
-
-/* ---------- 1. GLOW PILL TITLE (judul tiap halaman) ---------- */
-.cs-title-pill {
-  position: relative;
-  display: block;
-  width: fit-content;
-  max-width: 100%;
-  margin: var(--space-lg) auto var(--space-xl);
-  padding: 12px 34px;
-  background: var(--gradient-pill-title);
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  border-radius: 14px;
-  box-shadow: var(--glow-blue), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  font-family: var(--font-display);
-  font-size: var(--font-display-lg);
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
-}
-
-/* Bloom putih di sisi atas, seperti pantulan cahaya di desain */
-.cs-title-pill::before {
-  content: '';
-  position: absolute;
-  top: -14px;
-  left: 12%;
-  right: 12%;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(190, 225, 255, 0.75);
-  filter: blur(11px);
-  pointer-events: none;
-}
-
-.cs-title-pill--sm {
-  padding: 9px 24px;
-  font-size: 1.15rem;
-  margin: var(--space-md) auto var(--space-lg);
-}
-
-/* ---------- 2. TOMBOL GLOSSY BIRU ---------- */
-.cs-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: 14px 30px;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  background: var(--gradient-glossy);
-  box-shadow: var(--shadow-glossy), inset 0 2px 0 rgba(255, 255, 255, 0.45);
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 2px 5px rgba(4, 22, 56, 0.65);
-  cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-base), filter var(--transition-base);
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Kilau kaca di separuh atas */
-.cs-btn::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 6px;
-  right: 6px;
-  height: 42%;
-  border-radius: 9px 9px 22px 22px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
-  pointer-events: none;
-}
-
-.cs-btn:hover {
-  filter: brightness(1.08);
-  box-shadow: var(--shadow-glossy), var(--glow-blue), inset 0 2px 0 rgba(255, 255, 255, 0.45);
-}
-
-.cs-btn:active {
-  transform: translateY(4px);
-  box-shadow: 0 2px 0 rgba(8, 40, 96, 0.55), 0 4px 10px rgba(4, 16, 40, 0.5),
-    inset 0 2px 0 rgba(255, 255, 255, 0.35);
-}
-
-/* Varian bentuk */
-.cs-btn--pill { border-radius: 999px; }
-.cs-btn--pill::after { border-radius: 999px; }
-.cs-btn--block { width: 100%; }
-.cs-btn--lg { padding: 17px 38px; font-size: 1.25rem; }
-.cs-btn--sm { padding: 9px 18px; font-size: 0.85rem; border-width: 1.5px; }
-
-/* Varian chevron (label "Nama Siswa" di PNG 9) */
-.cs-btn--chevron {
-  border-radius: 4px;
-  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
-  border: none;
-  box-shadow: none;
-  padding: 12px 34px;
-}
-.cs-btn--chevron::after { border-radius: 0; }
-
-/* Varian outline tipis untuk aksi sekunder */
-.cs-btn--ghost {
-  background: rgba(38, 54, 94, 0.7);
-  border-color: rgba(140, 190, 255, 0.55);
-  box-shadow: 0 4px 12px rgba(4, 16, 40, 0.4);
-  text-shadow: none;
-}
-.cs-btn--ghost::after { display: none; }
-
-/* ---------- 3. KARTU HI-TECH CHAMFER (menu, PNG 2) ---------- */
-.cs-card-tech {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: 26px 22px;
-  margin-bottom: var(--space-lg);
-  background: var(--slate-card);
-  clip-path: polygon(0 14px, 14px 0, calc(100% - 26px) 0, 100% 26px, 100% calc(100% - 14px),
-    calc(100% - 14px) 100%, 26px 100%, 0 calc(100% - 26px));
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-  cursor: pointer;
-  transition: transform var(--transition-base), filter var(--transition-base);
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Siku garis cyan di sudut - dibuat dari dua pseudo-element */
-.cs-card-tech::before,
-.cs-card-tech::after {
-  content: '';
-  position: absolute;
-  width: 46px;
-  height: 46px;
-  pointer-events: none;
-}
-
-.cs-card-tech::before {
-  top: -5px;
-  left: -5px;
-  border-top: 3px solid var(--cyan-400);
-  border-left: 3px solid var(--cyan-400);
-  filter: drop-shadow(var(--glow-cyan));
-}
-
-.cs-card-tech::after {
-  right: -5px;
-  bottom: -5px;
-  border-right: 3px solid var(--cyan-400);
-  border-bottom: 3px solid var(--cyan-400);
-  filter: drop-shadow(var(--glow-cyan));
-}
-
-.cs-card-tech:hover {
-  filter: brightness(1.12);
-}
-
-.cs-card-tech:active {
-  transform: scale(0.975);
-}
-
-/* Pembungkus agar siku cyan tidak terpotong tepi layar */
-.cs-card-tech-wrap {
-  position: relative;
-  padding: 6px;
-}
-
-/* ---------- 4. KARTU KUIS KRIM (PNG 8) ---------- */
-.cs-quiz-card {
-  position: relative;
-  padding: 22px 20px;
-  background: var(--cream-100);
-  border: 2px solid rgba(90, 110, 80, 0.35);
-  border-radius: 14px;
-  box-shadow: 8px 8px 0 rgba(11, 62, 143, 0.55), -6px -6px 0 var(--sage-400);
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.55;
-  color: #23303F;
-}
-
-.cs-option {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.cs-option-letter {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--cream-300);
-  font-family: var(--font-display);
-  font-size: 1.7rem;
-  font-weight: 700;
-  color: #2A2118;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
-}
-
-.cs-option-body {
-  flex: 1;
-  min-width: 0;
-  padding: 13px 16px;
-  background: var(--cream-100);
-  border: 2px solid rgba(150, 120, 80, 0.45);
-  border-radius: 12px;
-  box-shadow: inset 0 0 0 3px var(--cream-100), inset 0 0 0 4px rgba(180, 150, 110, 0.5);
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #23303F;
-  transition: background var(--transition-base), box-shadow var(--transition-base);
-}
-
-.cs-option.selected .cs-option-letter {
-  background: var(--blue-500);
-  color: #fff;
-  transform: scale(1.06);
-  box-shadow: var(--glow-blue);
-}
-
-.cs-option.selected .cs-option-body {
-  background: #fff;
-  box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 4px var(--blue-500);
-}
-
-.cs-option:active .cs-option-letter {
-  transform: scale(0.94);
-}
-
-/* ---------- Header panel putih (PNG 10 & 12) ---------- */
-.cs-chat-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--panel-white);
-  border-radius: 0 0 18px 18px;
-  box-shadow: 0 4px 16px rgba(4, 16, 40, 0.35);
-}
-
-.cs-chat-header .cs-avatar {
-  flex: 0 0 auto;
-}
-
-.cs-chat-header-name {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #16223F;
-}
-
-.cs-chat-header-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: #3C4A63;
-}
-
-.cs-status-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--green-500);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
-}
-
-.cs-status-dot--off {
-  background: var(--text-tertiary);
-  box-shadow: none;
-}
-
-/* ---------- Avatar bulat ---------- */
-.cs-avatar {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #CFE4F5;
-  font-size: 1.4rem;
-  color: #16223F;
-}
-
-.cs-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cs-avatar--lg { width: 76px; height: 76px; font-size: 2.2rem; }
-.cs-avatar--xl { width: 168px; height: 168px; font-size: 4.5rem; }
-
-/* ---------- Utilitas ---------- */
-.cs-stack { display: flex; flex-direction: column; gap: var(--space-md); }
-.cs-center { text-align: center; }
-
-.cs-hero-title {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1.28;
-  color: #fff;
-  text-shadow: 0 2px 10px rgba(4, 16, 40, 0.5);
-}
-
-.cs-hero-sub {
-  font-size: 0.9rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--text-secondary);
-}
-
-/* ---------- HALAMAN SPLASH (PNG 1) ---------- */
-/* Spesifisitas dinaikkan agar menang atas `.page.page-active { display: block }` */
-.page.cs-splash.page-active {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.cs-splash {
-  position: relative;
-  padding: 0 !important;
-  overflow: hidden;
-}
-
-.cs-splash-title {
-  flex: 0 0 auto;
-  margin: clamp(28px, 7vh, 64px) var(--space-md) 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.65rem, 7.4vw, 2.05rem);
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  line-height: 1.2;
-  text-align: center;
-  text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 3px 14px rgba(4, 16, 40, 0.6);
-}
-
-/* Ilustrasi menempel ke dasar layar, dipotong dari atas bila layar pendek */
-.cs-splash-scene {
-  flex: 1 1 auto;
-  display: block;
-  width: 100%;
-  min-height: 0;
-  margin-top: clamp(12px, 3vh, 32px);
-}
-
-.cs-splash-scene img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: bottom center;
-}
-
-/* Tombol mengambang di atas ilustrasi, seperti di desain */
-.cs-splash-btn {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(28px, 6vh, 56px);
-  transform: translateX(-50%);
-  min-width: 62%;
-  z-index: 2;
-}
-
-.cs-splash-btn:active {
-  transform: translateX(-50%) translateY(4px);
-}
-
-/* ---------- LOGIN & REGISTER ---------- */
-.cs-auth {
-  padding-top: var(--space-lg) !important;
-}
-
-.cs-auth-card {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: var(--space-md) var(--space-lg) var(--space-lg);
-  background: rgba(22, 34, 63, 0.72);
-  border: 1px solid var(--glass-border);
-  border-radius: 22px;
-  box-shadow: 0 12px 34px rgba(4, 16, 40, 0.45);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-}
-
-.cs-auth-card .cs-title-pill {
-  margin-top: 22px;
-}
-
-.cs-auth-sub {
-  margin-bottom: var(--space-lg);
-  font-size: var(--font-sm);
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.cs-auth-submit {
-  margin-top: var(--space-lg);
-}
-
-.cs-auth-toggle {
-  margin-top: var(--space-lg);
-  font-size: var(--font-sm);
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.cs-auth-toggle a {
-  font-weight: 600;
-  color: var(--teal-400);
-}
-
-/* Input bergaya desain baru */
-.cs-auth-card .form-input,
-.cs-form .form-input {
-  background: rgba(10, 31, 69, 0.6);
-  border: 1.5px solid rgba(140, 190, 255, 0.28);
-  border-radius: 12px;
-}
-
-.cs-auth-card .form-input:focus,
-.cs-form .form-input:focus {
-  border-color: var(--blue-500);
-  box-shadow: 0 0 0 3px rgba(30, 155, 240, 0.2);
-  background: rgba(10, 31, 69, 0.85);
-}
-
-/* ---------- DASHBOARD / MENU (PNG 2) ---------- */
-.cs-menu-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: var(--space-xl);
-}
-
-.cs-menu-grid .cs-card-tech {
-  margin-bottom: 0;
-}
-
-.cs-section-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-.greeting-text {
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  font-weight: 600;
-}
-
-/* ---------- SELF-CHECK INTRO (PNG 6) ---------- */
-.cs-selfcheck-hero {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  min-height: 230px;
-}
-
-.cs-selfcheck-copy {
-  flex: 1 1 52%;
-  padding-bottom: var(--space-md);
-}
-
-.cs-selfcheck-copy .cs-hero-title {
-  margin-bottom: var(--space-sm);
-}
-
-.cs-selfcheck-img {
-  flex: 0 1 46%;
-  display: block;
-  align-self: flex-end;
-}
-
-.cs-selfcheck-img img {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 10px 22px rgba(4, 16, 40, 0.5));
-}
-
-.cs-form {
-  padding: var(--space-md) var(--space-md) var(--space-xs);
-  margin-bottom: var(--space-lg);
-  background: rgba(22, 34, 63, 0.65);
-  border: 1px solid var(--glass-border);
-  border-radius: 18px;
-}
-
-.cs-form-note {
-  margin-bottom: var(--space-md);
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-}
-
-.cs-mt-sm {
-  margin-top: var(--space-sm);
-}
-
-/* ---------- HALAMAN KUIS (PNG 8) ---------- */
-.cs-quiz-card {
-  margin-bottom: var(--space-xl);
-  animation: fadeInUp 0.35s ease;
-}
-
-.cs-quiz-number {
-  display: inline-grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  margin-bottom: 10px;
-  border-radius: 50%;
-  background: var(--blue-600);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.cs-quiz-text {
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.55;
-  color: #23303F;
-}
-
-.cs-options {
-  animation: fadeInUp 0.4s ease;
-}
-
-/* ---------- HALAMAN HASIL (PNG 9) ---------- */
-.cs-result {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-.cs-result .result-circle-wrap {
-  padding: var(--space-lg) 0 var(--space-xl);
-}
-
-/* Panel putih di paruh bawah, seperti desain */
-.cs-result-panel {
-  padding: var(--space-xl) var(--space-md) var(--space-lg);
-  background: var(--panel-white);
-  border-radius: 28px 28px 0 0;
-  box-shadow: 0 -8px 30px rgba(4, 16, 40, 0.45);
-  text-align: center;
-  color: #23303F;
-  min-height: 46vh;
-}
-
-.cs-result-label {
-  margin-bottom: var(--space-sm);
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: #16223F;
-}
-
-.cs-result-panel .result-category {
-  margin-bottom: var(--space-md);
-}
-
-.cs-result-panel .result-description {
-  margin-bottom: var(--space-lg);
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: #3C4A63;
-}
-
-/* Tombol aksi yang dirender JS ikut gaya glossy pill */
-.cs-result-panel .result-actions .btn {
-  width: 100%;
-  margin-bottom: var(--space-sm);
-  padding: 13px 26px;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 999px;
-  background: var(--gradient-glossy);
-  box-shadow: var(--shadow-glossy), inset 0 2px 0 rgba(255, 255, 255, 0.45);
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 2px 5px rgba(4, 22, 56, 0.65);
-}
-
-.cs-result-panel .result-actions .btn:active {
-  transform: translateY(3px);
-}
-
-/* ---------- EDU CORNER (PNG 3/4/5) ---------- */
-.cs-edu-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: var(--space-xl);
-  padding: 0;
-  border: none;
-  background: none;
-  overflow: visible;
-}
-
-.cs-edu-tabs .edu-tab {
-  flex: 0 0 auto;
-  padding: 9px 22px;
-  border: 2px solid rgba(255, 255, 255, 0.55);
-  border-radius: 999px;
-  background: rgba(38, 54, 94, 0.7);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  transition: all var(--transition-base);
-}
-
-.cs-edu-tabs .edu-tab.active {
-  border-color: rgba(255, 255, 255, 0.92);
-  background: var(--gradient-glossy);
-  box-shadow: var(--shadow-glossy), inset 0 2px 0 rgba(255, 255, 255, 0.4);
-  color: #fff;
-  text-shadow: 0 2px 5px rgba(4, 22, 56, 0.6);
-}
-
-/* Kartu konten bergaya PNG 4 & 5 */
-#page-edu .edu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: var(--space-md);
-}
-
-#page-edu .edu-card {
-  overflow: hidden;
-  border: 1px solid rgba(140, 190, 255, 0.22);
-  border-radius: 18px;
-  background: rgba(22, 34, 63, 0.78);
-  box-shadow: 0 10px 24px rgba(4, 16, 40, 0.42);
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
-  cursor: pointer;
-}
-
-#page-edu .edu-card:active {
-  transform: scale(0.975);
-}
-
-#page-edu .edu-card-thumb {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(180deg, #CFE8F7 0%, #A9D6EE 100%);
-  overflow: hidden;
-}
-
-#page-edu .edu-card-thumb img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-#page-edu .edu-card-body {
-  padding: 12px 14px 16px;
-}
-
-#page-edu .edu-card-type {
-  margin-bottom: 5px;
-  font-family: var(--font-display);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--teal-400);
-}
-
-#page-edu .edu-card-title {
-  margin-bottom: 5px;
-  font-family: var(--font-display);
-  font-size: 0.88rem;
-  font-weight: 600;
-  line-height: 1.35;
-  color: #fff;
-}
-
-#page-edu .edu-card-snippet {
-  font-size: 0.75rem;
-  line-height: 1.45;
-  color: var(--text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ---------- CHAT: SPACEBOT & GURU BK (PNG 10 & 12) ---------- */
-#page-chat .chat-messages {
-  padding: var(--space-md) var(--space-sm);
-}
-
-.chat-bubble .bubble-time {
-  opacity: 0.55;
-}
-
-/* Panel Guru BK memakai palet ungu/pink dari PNG 12 */
-#chat-panel-bk .chat-bubble.received {
-  background: var(--purple-300);
-  color: #2C1B3A;
-  box-shadow: 0 4px 12px rgba(60, 20, 90, 0.3);
-}
-
-#chat-panel-bk .chat-bubble.sent {
-  background: var(--pink-500);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(160, 20, 90, 0.35);
-}
-
-/* Bilah input & tombol kirim */
-#page-chat .chat-input-bar {
-  background: rgba(16, 26, 51, 0.9);
-  border-top: 1px solid var(--glass-border);
-}
-
-#page-chat .chat-input-bar .form-input {
-  background: rgba(10, 31, 69, 0.7);
-  border: 1.5px solid rgba(140, 190, 255, 0.28);
-  border-radius: 999px;
-}
-
-#page-chat .btn-send {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: var(--gradient-glossy);
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 4px 12px rgba(11, 62, 143, 0.45);
-  color: #fff;
-}
-
-#page-chat .btn-send:active {
-  transform: scale(0.93);
-}
-
-/* Balasan cepat */
-#page-chat .quick-reply-btn {
-  padding: 7px 15px;
-  border: 1.5px solid rgba(140, 190, 255, 0.4);
-  border-radius: 999px;
-  background: rgba(38, 54, 94, 0.75);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-/* Tab AI / Guru BK */
-#page-chat .chat-tabs {
-  display: flex;
-  gap: 8px;
-  padding: var(--space-sm) var(--space-sm) 0;
-}
-
-#page-chat .chat-tab {
-  flex: 1;
-  padding: 10px 8px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 999px;
-  background: rgba(38, 54, 94, 0.7);
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  transition: all var(--transition-base);
-}
-
-#page-chat .chat-tab.active {
-  border-color: rgba(255, 255, 255, 0.92);
-  background: var(--gradient-glossy);
-  box-shadow: var(--shadow-glossy), inset 0 2px 0 rgba(255, 255, 255, 0.4);
-  color: #fff;
-  text-shadow: 0 2px 5px rgba(4, 22, 56, 0.6);
-}
-
-/* ---------- DAFTAR GURU BK (PNG 11) ---------- */
-#counselor-list-container .counselor-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  background: rgba(22, 34, 63, 0.7);
-  box-shadow: 0 8px 20px rgba(4, 16, 40, 0.4);
-  text-align: left;
-  cursor: pointer;
-  transition: transform var(--transition-base), filter var(--transition-base);
-}
-
-#counselor-list-container .counselor-card:active {
-  transform: scale(0.98);
-}
-
-#counselor-list-container .counselor-avatar {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  margin: 0;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #CFE4F5;
-  font-size: 1.9rem;
-}
-
-#counselor-list-container .counselor-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-#counselor-list-container .counselor-info {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Nama guru tampil sebagai pill biru glossy, seperti desain */
-#counselor-list-container .counselor-info h4 {
-  display: inline-block;
-  max-width: 100%;
-  margin: 0 0 5px;
-  padding: 7px 18px;
-  border: 1.5px solid rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  background: var(--gradient-glossy);
-  box-shadow: 0 4px 10px rgba(11, 62, 143, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.4);
-  font-family: var(--font-display);
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(4, 22, 56, 0.6);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#counselor-list-container .service-hours {
-  display: block;
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-}
-
-#counselor-list-container .counselor-status {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.65rem;
-  color: var(--text-secondary);
-}
-
-/* ---------- HEADER CHAT GURU BK (PNG 12) ---------- */
-.chat-counselor-header.cs-chat-header {
-  justify-content: flex-start;
-  gap: 10px;
-}
-
-.chat-counselor-header .btn-back-counselors {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(22, 34, 63, 0.08);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #16223F;
-}
-
-.chat-counselor-header .counselor-header-profile {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.chat-counselor-header .counselor-header-avatar {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #CFE4F5;
-  font-size: 1.35rem;
-}
-
-.chat-counselor-header .counselor-header-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cs-chat-header-hours {
-  display: block;
-  font-size: 0.7rem;
-  color: #5A6B87;
-}
-
-.chat-counselor-header .chat-status-badge {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.7rem;
-  color: #3C4A63;
-}
-
-.chat-counselor-header .status-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--text-tertiary);
-}
-
-.chat-counselor-header .chat-status-badge.online .status-dot,
-.chat-counselor-header .status-dot.online {
-  background: var(--green-500);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
-}
-
-/* Bilah pemilih identitas */
-.identity-selector-bar {
-  background: rgba(16, 26, 51, 0.75);
-  border-bottom: 1px solid var(--glass-border);
-}
-
-/* ---------- EMERGENCY / SOS ---------- */
-#page-emergency .emergency-card {
-  border: 1px solid var(--glass-border);
-  border-radius: 18px;
-  background: rgba(22, 34, 63, 0.72);
-  box-shadow: 0 8px 20px rgba(4, 16, 40, 0.4);
-}
-
-#page-emergency .e-name {
-  font-family: var(--font-display);
-  font-weight: 600;
-}
-
-#page-emergency .calming-message {
-  border: 1px solid rgba(23, 233, 198, 0.28);
-  border-radius: 18px;
-  background: rgba(23, 233, 198, 0.08);
-}
-
-/* ---------- MODAL, TOAST, LOADING ---------- */
-.modal-content {
-  border: 1px solid var(--glass-border);
-  border-radius: 24px 24px 0 0;
-  background: var(--navy-900);
-}
-
-.modal-header h3 {
-  font-family: var(--font-display);
-  font-weight: 700;
-}
-
-.toast {
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  background: rgba(22, 34, 63, 0.95);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-}
-
-.loading-overlay {
-  background: rgba(16, 26, 51, 0.86);
-}
-
-.spinner {
-  border-top-color: var(--blue-500);
-}
-
-/* ---------- BOTTOM NAV ---------- */
-.bottom-nav {
-  background: rgba(16, 26, 51, 0.92);
-}
-
-.nav-item .nav-label {
-  font-family: var(--font-display);
-  font-weight: 500;
-}
-
-/* ---------- Responsif ---------- */
-@media (max-width: 380px) {
-  .cs-title-pill { padding: 10px 22px; font-size: 1.25rem; }
-  .cs-btn { padding: 12px 22px; font-size: 0.95rem; }
-  .cs-btn--lg { padding: 14px 26px; font-size: 1.1rem; }
-  .cs-card-tech { padding: 22px 16px; font-size: 1.15rem; }
-  .cs-option-letter { width: 44px; height: 44px; font-size: 1.4rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cs-btn, .cs-card-tech, .cs-option-letter, .cs-option-body {
-    transition: none;
-  }
 }
 

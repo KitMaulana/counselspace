@@ -2,73 +2,96 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <script>
+    window.addEventListener('error', function(e) {
+      alert('JS Error: ' + e.message + ' in ' + e.filename + ' at line ' + e.lineno);
+    });
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>CounselSpace.Ai - Teman Kesehatan Mentalmu</title>
   <meta name="description" content="Aplikasi konseling digital untuk membantu siswa mengatasi FOMO dan menjaga kesehatan mental">
-  <meta name="theme-color" content="#1E2C50">
+  <meta name="theme-color" content="#0F172A">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=2.1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=1.4">
 </head>
 <body>
 
   <div class="app-container" id="app">
 
     <!-- ==================== SPLASH PAGE ==================== -->
-    <section class="page page-active cs-splash" id="page-splash">
-      <h1 class="cs-splash-title">Counsel Space.Ai</h1>
-
-      <picture class="cs-splash-scene">
-        <source srcset="{{ asset('images/splash-scene.webp') }}" type="image/webp">
-        <img src="{{ asset('images/splash-scene.png') }}" alt="Ilustrasi ruang konseling">
-      </picture>
-
-      <x-btn size="lg" class="cs-splash-btn" onclick="App.router.navigate('dashboard')">
-        Mulai
-      </x-btn>
+    <section class="page page-active" id="page-splash">
+      <div class="splash-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+      <div class="splash-logo">🧠💚</div>
+      <h1 class="splash-title">CounselSpace.Ai</h1>
+      <p class="splash-tagline">Teman Kesehatan Mentalmu 🧠💚</p>
+      <button class="btn btn-primary btn-lg btn-pill splash-btn" onclick="App.router.navigate('dashboard')">
+        Mulai Sekarang ✨
+      </button>
     </section>
 
     <!-- ==================== LOGIN/REGISTER PAGE ==================== -->
-    <section class="page cs-auth" id="page-login">
-      <div class="cs-auth-card" id="login-card-view">
-        <x-title-pill size="sm">Masuk</x-title-pill>
-        <p class="cs-auth-sub">Akses penuh fitur self-check dan konseling</p>
-
+    <section class="page" id="page-login" style="padding-top: var(--space-xl);">
+      <div class="card login-card" id="login-card-view" style="max-width:400px; margin:0 auto;">
+        <div class="login-header" style="text-align:center; margin-bottom:var(--space-lg);">
+          <div class="login-logo" style="font-size:3rem; margin-bottom:var(--space-sm);">🧠💚</div>
+          <h2>Masuk ke CounselSpace</h2>
+          <p class="text-muted" style="font-size:var(--font-sm); margin-top:var(--space-xs);">Akses penuh fitur self-check dan konseling</p>
+        </div>
         <form id="student-login-form" onsubmit="event.preventDefault(); App.auth.login();">
-          <x-input label="Email atau Username" id="student-login-username"
-                   placeholder="cth: siswa@counselspace.ai" :required="true" />
-          <x-input label="Password" id="student-login-password" type="password"
-                   placeholder="Masukkan password" :required="true" />
-          <x-btn type="submit" :block="true" class="cs-auth-submit">Masuk</x-btn>
+          <div class="form-group">
+            <label class="form-label">Email atau Username</label>
+            <input type="text" class="form-input" id="student-login-username" placeholder="cth: siswa@counselspace.ai" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="student-login-password" placeholder="Masukkan password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg mt-md" style="margin-top:var(--space-md);">Masuk ✨</button>
         </form>
-
-        <p class="cs-auth-toggle">
-          Belum punya akun?
-          <a href="javascript:void(0)" onclick="App.auth.toggleForm('register')">Daftar di sini</a>
+        <p class="auth-toggle-text" style="text-align:center; margin-top:var(--space-lg); font-size:var(--font-sm); color:var(--text-secondary);">
+          Belum punya akun? <a href="javascript:void(0)" onclick="App.auth.toggleForm('register')" style="color:var(--teal-400); font-weight:600;">Daftar di sini</a>
         </p>
       </div>
 
-      <div class="cs-auth-card" id="register-card-view" style="display:none;">
-        <x-title-pill size="sm">Daftar</x-title-pill>
-        <p class="cs-auth-sub">Mulai perjalanan kesehatan mentalmu</p>
-
+      <div class="card login-card" id="register-card-view" style="max-width:400px; margin:0 auto; display:none;">
+        <div class="login-header" style="text-align:center; margin-bottom:var(--space-lg);">
+          <div class="login-logo" style="font-size:3rem; margin-bottom:var(--space-sm);">🧠💚</div>
+          <h2>Daftar Akun Baru</h2>
+          <p class="text-muted" style="font-size:var(--font-sm); margin-top:var(--space-xs);">Mulai perjalanan kesehatan mentalmu</p>
+        </div>
         <form id="student-register-form" onsubmit="event.preventDefault(); App.auth.register();">
-          <x-input label="Nama Lengkap" id="student-register-name"
-                   placeholder="cth: Budi Pratama" :required="true" />
-          <x-input label="Kelas" id="student-register-class"
-                   placeholder="cth: XII MIPA 2" :required="true" />
-          <x-input label="Email" id="student-register-email" type="email"
-                   placeholder="cth: budi@counselspace.ai" :required="true" />
-          <x-input label="Password (Min. 6 Karakter)" id="student-register-password" type="password"
-                   placeholder="Buat password baru" :required="true" />
-          <x-btn type="submit" :block="true" class="cs-auth-submit">Daftar Sekarang</x-btn>
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-input" id="student-register-name" placeholder="cth: Budi Pratama" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kelas</label>
+            <input type="text" class="form-input" id="student-register-class" placeholder="cth: XII MIPA 2" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="student-register-email" placeholder="cth: budi@counselspace.ai" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password (Min. 6 Karakter)</label>
+            <input type="password" class="form-input" id="student-register-password" placeholder="Buat password baru" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg mt-md" style="margin-top:var(--space-md);">Daftar Sekarang ✨</button>
         </form>
-
-        <p class="cs-auth-toggle">
-          Sudah punya akun?
-          <a href="javascript:void(0)" onclick="App.auth.toggleForm('login')">Masuk di sini</a>
+        <p class="auth-toggle-text" style="text-align:center; margin-top:var(--space-lg); font-size:var(--font-sm); color:var(--text-secondary);">
+          Sudah punya akun? <a href="javascript:void(0)" onclick="App.auth.toggleForm('login')" style="color:var(--teal-400); font-weight:600;">Masuk di sini</a>
         </p>
       </div>
     </section>
@@ -88,18 +111,32 @@
         <!-- Filled dynamically -->
       </div>
 
-      <!-- Menu utama (PNG 2) -->
-      <x-title-pill size="sm">Menu</x-title-pill>
-
-      <div class="cs-menu-grid">
-        <x-card-tech onclick="App.router.navigate('edu')">Edukasi</x-card-tech>
-        <x-card-tech onclick="App.router.navigate('screening')">Self Check</x-card-tech>
-        <x-card-tech onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('bk'),100)">Chat Anonim</x-card-tech>
-        <x-card-tech onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('ai'),100)">Chatbot</x-card-tech>
+      <!-- Feature Grid -->
+      <div class="feature-grid">
+        <div class="feature-card" onclick="App.router.navigate('screening')">
+          <span class="feature-icon">🧠</span>
+          <div class="feature-title">Self-Check</div>
+          <div class="feature-desc">Cek tingkat FOMO kamu</div>
+        </div>
+        <div class="feature-card" onclick="App.router.navigate('edu')">
+          <span class="feature-icon">📚</span>
+          <div class="feature-title">Edu Corner</div>
+          <div class="feature-desc">Konten edukasi digital</div>
+        </div>
+        <div class="feature-card" onclick="App.router.navigate('detox')">
+          <span class="feature-icon">🧘</span>
+          <div class="feature-title">Digital Detox</div>
+          <div class="feature-desc">Istirahat dari layar</div>
+        </div>
+        <div class="feature-card" onclick="App.router.navigate('chat')">
+          <span class="feature-icon">💬</span>
+          <div class="feature-title">Chat BK</div>
+          <div class="feature-desc">Curhat aman & anonim</div>
+        </div>
       </div>
 
       <!-- History -->
-      <div class="section-title cs-section-title">📊 Riwayat Skrining</div>
+      <div class="section-title">📊 Riwayat Skrining</div>
       <div class="history-list" id="history-list">
         <!-- Filled dynamically -->
       </div>
@@ -109,32 +146,25 @@
     <section class="page" id="page-screening">
       <!-- Identity Form (shown first) -->
       <div id="screening-identity">
-        <x-title-pill>Self Check</x-title-pill>
-
-        <div class="cs-selfcheck-hero">
-          <div class="cs-selfcheck-copy">
-            <h2 class="cs-hero-title">Cek Level<br>FOMO<br>Minggu Ini! ⚡</h2>
-            <p class="cs-hero-sub">Cuma 2 menit, yuk liat kondisi mentalmu</p>
+        <div class="card identity-card">
+          <div class="identity-icon">📋</div>
+          <h2>Sebelum Mulai</h2>
+          <p class="text-muted mt-sm mb-lg" style="text-align:center;">Isi data singkat ini (opsional) agar hasilmu tersimpan.</p>
+          <div class="form-group">
+            <label class="form-label">Nama (opsional)</label>
+            <input type="text" class="form-input" id="input-name" placeholder="Contoh: Andi">
           </div>
-          <picture class="cs-selfcheck-img">
-            <source srcset="{{ asset('images/siswi-fomo.webp') }}" type="image/webp">
-            <img src="{{ asset('images/siswi-fomo.png') }}" alt="Ilustrasi siswi memegang ponsel">
-          </picture>
+          <div class="form-group">
+            <label class="form-label">Kelas (opsional)</label>
+            <input type="text" class="form-input" id="input-class" placeholder="Contoh: XII IPA 3">
+          </div>
+          <button class="btn btn-primary btn-block btn-lg mt-lg" onclick="App.screening.startQuiz()">
+            Mulai Self-Check 🧠
+          </button>
+          <button class="btn btn-secondary btn-block mt-sm" onclick="App.router.navigate('dashboard')">
+            Kembali
+          </button>
         </div>
-
-        <div class="cs-form cs-selfcheck-form">
-          <p class="cs-form-note">Isi data singkat ini (opsional) agar hasilmu tersimpan.</p>
-          <x-input label="Nama (opsional)" id="input-name" placeholder="Contoh: Andi" />
-          <x-input label="Kelas (opsional)" id="input-class" placeholder="Contoh: XII IPA 3" />
-        </div>
-
-        <x-btn shape="pill" size="lg" :block="true" onclick="App.screening.startQuiz()">
-          Mulai Self Check
-        </x-btn>
-        <x-btn variant="ghost" shape="pill" :block="true" class="cs-mt-sm"
-               onclick="App.router.navigate('dashboard')">
-          Kembali
-        </x-btn>
       </div>
 
       <!-- Quiz Section (hidden initially) -->
@@ -157,7 +187,7 @@
     </section>
 
     <!-- ==================== RESULT PAGE ==================== -->
-    <section class="page cs-result" id="page-result">
+    <section class="page" id="page-result">
       <div class="result-circle-wrap">
         <div class="result-circle">
           <svg viewBox="0 0 180 180">
@@ -172,41 +202,89 @@
         </div>
       </div>
 
-      <div class="cs-result-panel">
-        <div class="cs-result-label">Hasil:</div>
-
-        <div class="result-category" id="result-category">
-          <!-- Badge rendered dynamically -->
-        </div>
-
-        <p class="result-description" id="result-description">
-          <!-- Description rendered dynamically -->
-        </p>
-
-        <div class="result-actions" id="result-actions">
-          <!-- Buttons rendered dynamically -->
-        </div>
-
-        <x-btn variant="ghost" shape="pill" :block="true" class="cs-mt-sm"
-               onclick="App.router.navigate('dashboard')">
-          Menu
-        </x-btn>
+      <div class="result-category" id="result-category">
+        <!-- Badge rendered dynamically -->
       </div>
+
+      <p class="result-description" id="result-description">
+        <!-- Description rendered dynamically -->
+      </p>
+
+      <div class="result-actions" id="result-actions">
+        <!-- Buttons rendered dynamically -->
+      </div>
+
+      <button class="btn btn-secondary btn-block" onclick="App.router.navigate('dashboard')">
+        🏠 Kembali ke Dashboard
+      </button>
     </section>
 
     <!-- ==================== EDU CORNER PAGE ==================== -->
     <section class="page" id="page-edu">
-      <x-title-pill>Edukasi</x-title-pill>
+      <h2 class="section-title">📚 Edu Corner</h2>
 
-      <div class="edu-tabs cs-edu-tabs" id="edu-tabs">
+      <div class="edu-tabs" id="edu-tabs">
         <button class="edu-tab active" data-filter="semua">Semua</button>
-        <button class="edu-tab" data-filter="poster">Poster</button>
-        <button class="edu-tab" data-filter="video">Video</button>
-        <button class="edu-tab" data-filter="artikel">Artikel</button>
+        <button class="edu-tab" data-filter="video">🎬 Video</button>
+        <button class="edu-tab" data-filter="poster">🖼️ Poster</button>
+        <button class="edu-tab" data-filter="artikel">📖 Artikel</button>
       </div>
 
       <div class="edu-grid" id="edu-grid">
         <!-- Filled dynamically -->
+      </div>
+    </section>
+
+    <!-- ==================== DETOX TIMER PAGE ==================== -->
+    <section class="page" id="page-detox">
+      <div class="detox-header">
+        <h2>🧘 Digital Detox</h2>
+        <p>Istirahatkan pikiran dari dunia digital</p>
+      </div>
+
+      <!-- Timer Circle -->
+      <div class="timer-circle-wrap">
+        <div class="timer-circle">
+          <svg viewBox="0 0 220 220">
+            <circle class="timer-bg" cx="110" cy="110" r="100"></circle>
+            <circle class="timer-fill" id="timer-fill" cx="110" cy="110" r="100"
+              stroke-dasharray="628.3" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="timer-text">
+            <div class="timer-time" id="timer-time">05:00</div>
+            <div class="timer-label" id="timer-label">SIAP</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preset Times -->
+      <div class="preset-times">
+        <button class="preset-btn active" data-minutes="5" onclick="App.detox.setPreset(5, this)">5 min</button>
+        <button class="preset-btn" data-minutes="10" onclick="App.detox.setPreset(10, this)">10 min</button>
+        <button class="preset-btn" data-minutes="15" onclick="App.detox.setPreset(15, this)">15 min</button>
+        <button class="preset-btn" data-minutes="30" onclick="App.detox.setPreset(30, this)">30 min</button>
+      </div>
+
+      <!-- Timer Controls -->
+      <div class="timer-controls">
+        <button class="btn btn-primary btn-pill" id="btn-timer-start" onclick="App.detox.start()">▶ Mulai</button>
+        <button class="btn btn-secondary btn-pill" id="btn-timer-reset" onclick="App.detox.reset()">↺ Reset</button>
+      </div>
+
+      <!-- Breathing Exercise -->
+      <div class="breathing-section">
+        <h3>🫁 Latihan Pernapasan</h3>
+        <div class="breathing-circle" id="breathing-circle">🌿</div>
+        <div class="breathing-text" id="breathing-text">Tekan untuk mulai</div>
+        <button class="btn btn-outline btn-sm btn-pill mt-md" id="btn-breathe" onclick="App.detox.toggleBreathing()">
+          Mulai Bernapas
+        </button>
+      </div>
+
+      <!-- Motivational Quote -->
+      <div class="motivational-quote" id="motivational-quote">
+        <div class="quote-icon">💡</div>
+        <p id="quote-text">"Kamu tidak perlu melihat semua yang terjadi di dunia maya untuk bahagia."</p>
       </div>
     </section>
 
@@ -220,16 +298,6 @@
 
       <!-- AI Chat Panel -->
       <div class="chat-panel active" id="chat-panel-ai">
-        <div class="cs-chat-header">
-          <x-avatar :src="asset('images/spacebot.png')" alt="Spacebot" />
-          <div>
-            <div class="cs-chat-header-name">Obrolan Spacebot</div>
-            <div class="cs-chat-header-status">
-              <span class="cs-status-dot"></span> ONLINE
-            </div>
-          </div>
-        </div>
-
         <div class="chat-messages" id="chat-messages-ai">
           <!-- Filled dynamically -->
         </div>
@@ -256,18 +324,18 @@
         <!-- Active Chat View (Hidden initially) -->
         <div id="bk-chat-active-view" class="hidden" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
           <!-- Counselor Profile Header -->
-          <div class="chat-counselor-header cs-chat-header">
-            <button class="btn-back-counselors" onclick="App.chat.backToCounselors()">←</button>
+          <div class="chat-counselor-header">
+            <button class="btn-back-counselors" onclick="App.chat.backToCounselors()">← Kembali</button>
             <div class="counselor-header-profile">
               <div class="counselor-header-avatar" id="counselor-header-avatar">👤</div>
               <div class="counselor-header-info">
-                <h4 id="counselor-header-name" class="cs-chat-header-name">—</h4>
-                <span id="counselor-header-hours" class="cs-chat-header-hours">—</span>
+                <h4 id="counselor-header-name" style="margin:0; font-size:0.85rem;">—</h4>
+                <span id="counselor-header-hours" style="font-size:0.7rem; color:var(--text-muted);">—</span>
               </div>
             </div>
             <div class="chat-status-badge" id="counselor-header-status">
               <span class="status-dot"></span>
-              <span class="status-text">Offline</span>
+              <span class="status-text" style="font-size:0.7rem;">Offline</span>
             </div>
           </div>
 
@@ -301,10 +369,9 @@
 
     <!-- ==================== EMERGENCY PAGE ==================== -->
     <section class="page" id="page-emergency">
-      <x-title-pill>Butuh Bantuan?</x-title-pill>
-
       <div class="emergency-header">
         <div class="sos-icon">🆘</div>
+        <h2>Butuh Bantuan?</h2>
         <p>Kamu tidak sendirian. Hubungi bantuan profesional kapan saja.</p>
       </div>
 
@@ -350,9 +417,9 @@
         </a>
       </div>
 
-      <x-btn variant="ghost" shape="pill" :block="true" onclick="App.router.navigate('dashboard')">
-        Kembali ke Menu
-      </x-btn>
+      <button class="btn btn-secondary btn-block" onclick="App.router.navigate('dashboard')">
+        🏠 Kembali ke Dashboard
+      </button>
     </section>
 
     <!-- ==================== MODAL ==================== -->
@@ -382,6 +449,10 @@
         <span class="nav-icon">📚</span>
         <span class="nav-label">Edu</span>
       </button>
+      <button class="nav-item" data-page="detox" onclick="App.router.navigate('detox')">
+        <span class="nav-icon">🧘</span>
+        <span class="nav-label">Detox</span>
+      </button>
       <button class="nav-item" data-page="chat" onclick="App.router.navigate('chat')">
         <span class="nav-icon">💬</span>
         <span class="nav-label">Chat</span>
@@ -402,6 +473,6 @@
   <!-- Celebration Overlay -->
   <div class="celebration-overlay" id="celebration-overlay"></div>
 
-  <script src="{{ asset('js/app.js') }}?v=2.1"></script>
+  <script src="{{ asset('js/app.js') }}?v=1.4"></script>
 </body>
 </html>

@@ -399,6 +399,9 @@ App.router = {
       case 'edu':
         App.edu.init();
         break;
+      case 'detox':
+        App.detox.init();
+        break;
       case 'chat':
         App.chat.init();
         break;
@@ -613,19 +616,17 @@ App.screening = {
     const selectedVal = this.answers[idx];
 
     const container = document.getElementById('question-container');
-    const letters = ['A', 'B', 'C', 'D'];
-
     container.innerHTML = `
-      <div class="cs-quiz-card">
-        <span class="cs-quiz-number">${idx + 1}</span>
-        <p class="cs-quiz-text">${q.question}</p>
+      <div class="question-card card">
+        <div class="question-number">${idx + 1}</div>
+        <p class="question-text">${q.question}</p>
       </div>
-      <div class="cs-options">
-        ${options.map((opt, i) => `
-          <div class="answer-option cs-option ${selectedVal === opt.value ? 'selected' : ''}"
+      <div class="answer-options">
+        ${options.map(opt => `
+          <div class="answer-option ${selectedVal === opt.value ? 'selected' : ''}" 
                onclick="App.screening.selectAnswer(${opt.value})">
-            <div class="cs-option-letter">${letters[i]}</div>
-            <span class="cs-option-body">${opt.label}</span>
+            <div class="answer-radio"></div>
+            <span class="answer-label">${opt.label}</span>
           </div>
         `).join('')}
       </div>
@@ -751,7 +752,7 @@ App.result = {
     // Description
     const descriptions = {
       'Aman': 'Selamat! 🎉 Tingkat FOMO kamu tergolong rendah. Kamu sudah cukup bijak dalam menggunakan media sosial. Tetap jaga keseimbanganmu ya! Kunjungi Edu Corner untuk tips menjaga kesehatan digitalmu.',
-      'Waspada': 'Tingkat FOMO kamu berada di level sedang. ⚠️ Ada beberapa tanda bahwa media sosial mulai memengaruhi kesejahteraanmu. Coba baca materi di Edu Corner dan praktikkan tips dari AI Chatbot kami.',
+      'Waspada': 'Tingkat FOMO kamu berada di level sedang. ⚠️ Ada beberapa tanda bahwa media sosial mulai memengaruhi kesejahteraanmu. Coba lakukan Digital Detox dan praktikkan tips dari AI Chatbot kami.',
       'Bahaya': 'Tingkat FOMO kamu tergolong tinggi. 🚨 Media sosial tampaknya sangat memengaruhi emosi dan keseharianmu. Sangat disarankan untuk berbicara dengan guru BK atau konselor profesional.'
     };
     document.getElementById('result-description').textContent = descriptions[category] || '';
@@ -763,7 +764,7 @@ App.result = {
         <button class="btn btn-success btn-block" onclick="App.router.navigate('edu')">📚 Kunjungi Edu Corner</button>`;
     } else if (category === 'Waspada') {
       actionsEl.innerHTML = `
-        <button class="btn btn-warning btn-block" onclick="App.router.navigate('edu')">📚 Buka Edu Corner</button>
+        <button class="btn btn-warning btn-block" onclick="App.router.navigate('detox')">🧘 Digital Detox</button>
         <button class="btn btn-primary btn-block" onclick="App.router.navigate('chat')">🤖 Chat dengan AI</button>`;
     } else {
       actionsEl.innerHTML = `
@@ -779,7 +780,6 @@ App.result = {
 App.edu = {
   content: [],
   activeFilter: 'semua',
-  tabsBound: false,
 
   /** Fallback content if API unavailable */
   fallbackContent: [
@@ -823,20 +823,15 @@ App.edu = {
 
   /** Initialize */
   async init() {
-    // Set up tab listeners.
-    // init() dipanggil setiap kali halaman Edu dibuka, jadi listener hanya
-    // dipasang sekali agar tidak menumpuk dan memanggil renderContent berkali-kali.
-    if (!this.tabsBound) {
-      document.querySelectorAll('.edu-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          this.activeFilter = tab.dataset.filter;
-          document.querySelectorAll('.edu-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          this.renderContent();
-        });
+    // Set up tab listeners
+    document.querySelectorAll('.edu-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        this.activeFilter = tab.dataset.filter;
+        document.querySelectorAll('.edu-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.renderContent();
       });
-      this.tabsBound = true;
-    }
+    });
 
     // Load content
     if (this.content.length === 0) {
@@ -965,6 +960,170 @@ App.edu = {
 };
 
 /* ===========================================
+   DETOX TIMER MODULE
+   =========================================== */
+App.detox = {
+  totalSeconds: 5 * 60,
+  remainingSeconds: 5 * 60,
+  timerInterval: null,
+  isRunning: false,
+  breathingInterval: null,
+  breathingPhase: 0,
+  isBreathing: false,
+  quoteIndex: 0,
+
+  quotes: [
+    '"Kamu tidak perlu melihat semua yang terjadi di dunia maya untuk bahagia."',
+    '"Kebahagiaan sejati datang dari dalam, bukan dari jumlah like."',
+    '"Istirahat dari layar adalah investasi untuk kesehatan mentalmu."',
+    '"Bandingkan dirimu hanya dengan dirimu yang kemarin."',
+    '"Tidak semua yang berkilau di media sosial itu nyata."',
+    '"Kamu sudah cukup, tanpa perlu validasi dari siapapun."',
+    '"Waktu terbaik untuk berhenti scroll adalah sekarang."',
+    '"Koneksi nyata jauh lebih berharga dari ribuan follower."',
+    '"Otakmu butuh istirahat dari informasi yang berlebihan."',
+    '"Hidup ini terlalu indah untuk hanya dilihat dari layar."',
+    '"Setiap menit tanpa media sosial adalah hadiah untuk dirimu."',
+    '"Kamu berhak merasakan ketenangan tanpa gangguan notifikasi."',
+    '"Alam telah menyediakan keindahan yang tak bisa ditangkap kamera."',
+    '"Rileks. Tarik napas. Kamu aman di sini."'
+  ],
+
+  init() {
+    this.updateTimerDisplay();
+    this.showRandomQuote();
+  },
+
+  /** Set preset time */
+  setPreset(minutes, btnEl) {
+    if (this.isRunning) return;
+    this.totalSeconds = minutes * 60;
+    this.remainingSeconds = this.totalSeconds;
+    this.updateTimerDisplay();
+
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+  },
+
+  /** Start or pause the timer */
+  start() {
+    const btn = document.getElementById('btn-timer-start');
+
+    if (this.isRunning) {
+      // Pause
+      clearInterval(this.timerInterval);
+      this.isRunning = false;
+      btn.textContent = '▶ Lanjut';
+      btn.className = 'btn btn-primary btn-pill';
+      document.getElementById('timer-label').textContent = 'JEDA';
+    } else {
+      // Start / Resume
+      if (this.remainingSeconds <= 0) {
+        this.remainingSeconds = this.totalSeconds;
+      }
+      this.isRunning = true;
+      btn.textContent = '⏸ Jeda';
+      btn.className = 'btn btn-warning btn-pill';
+      document.getElementById('timer-label').textContent = 'BERJALAN';
+
+      this.timerInterval = setInterval(() => {
+        this.remainingSeconds--;
+        this.updateTimerDisplay();
+
+        if (this.remainingSeconds <= 0) {
+          this.complete();
+        }
+      }, 1000);
+    }
+  },
+
+  /** Reset the timer */
+  reset() {
+    clearInterval(this.timerInterval);
+    this.isRunning = false;
+    this.remainingSeconds = this.totalSeconds;
+    this.updateTimerDisplay();
+
+    const btn = document.getElementById('btn-timer-start');
+    btn.textContent = '▶ Mulai';
+    btn.className = 'btn btn-primary btn-pill';
+    document.getElementById('timer-label').textContent = 'SIAP';
+  },
+
+  /** Update timer display */
+  updateTimerDisplay() {
+    const mins = Math.floor(this.remainingSeconds / 60);
+    const secs = this.remainingSeconds % 60;
+    document.getElementById('timer-time').textContent =
+      `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+    // Update circle
+    const circumference = 2 * Math.PI * 100; // r=100
+    const progress = this.remainingSeconds / this.totalSeconds;
+    const offset = circumference * (1 - progress);
+    document.getElementById('timer-fill').style.strokeDashoffset = offset;
+  },
+
+  /** Timer completed */
+  complete() {
+    clearInterval(this.timerInterval);
+    this.isRunning = false;
+
+    const btn = document.getElementById('btn-timer-start');
+    btn.textContent = '▶ Mulai';
+    btn.className = 'btn btn-primary btn-pill';
+    document.getElementById('timer-label').textContent = 'SELESAI! 🎉';
+
+    App.utils.showToast('Detox selesai! Kamu hebat! 🎉', 'success');
+    App.ui.celebrate();
+  },
+
+  /** Toggle breathing exercise */
+  toggleBreathing() {
+    const btn = document.getElementById('btn-breathe');
+    if (this.isBreathing) {
+      clearInterval(this.breathingInterval);
+      this.isBreathing = false;
+      btn.textContent = 'Mulai Bernapas';
+      document.getElementById('breathing-circle').className = 'breathing-circle';
+      document.getElementById('breathing-text').textContent = 'Tekan untuk mulai';
+    } else {
+      this.isBreathing = true;
+      btn.textContent = 'Berhenti';
+      this.breathingPhase = 0;
+      this.runBreathingCycle();
+    }
+  },
+
+  /** Run one cycle of the breathing exercise */
+  runBreathingCycle() {
+    if (!this.isBreathing) return;
+
+    const circle = document.getElementById('breathing-circle');
+    const text = document.getElementById('breathing-text');
+    const phases = [
+      { label: 'Tarik Napas...', className: 'breathing-circle inhale', duration: 4000 },
+      { label: 'Tahan...', className: 'breathing-circle inhale', duration: 4000 },
+      { label: 'Hembuskan...', className: 'breathing-circle exhale', duration: 4000 }
+    ];
+
+    const phase = phases[this.breathingPhase % 3];
+    circle.className = phase.className;
+    text.textContent = phase.label;
+
+    this.breathingPhase++;
+    this.breathingInterval = setTimeout(() => this.runBreathingCycle(), phase.duration);
+  },
+
+  /** Show random motivational quote */
+  showRandomQuote() {
+    this.quoteIndex = (this.quoteIndex + 1) % this.quotes.length;
+    const quoteEl = document.getElementById('quote-text');
+    if (quoteEl) quoteEl.textContent = this.quotes[this.quoteIndex];
+  }
+};
+
+/* ===========================================
    CHAT MODULE
    =========================================== */
 App.chat = {
@@ -986,7 +1145,7 @@ App.chat = {
     ],
     cemas: [
       'Rasa cemas itu sinyal tubuh kamu bahwa ada sesuatu yang perlu diperhatikan. Coba teknik grounding 5-4-3-2-1: Sebutkan 5 hal yang bisa kamu lihat, 4 yang bisa disentuh, 3 yang didengar, 2 yang dicium, dan 1 yang dikecap. 🌿',
-      'Kecemasan bisa dikurangi dengan latihan pernapasan. Coba tarik napas 4 detik, tahan 4 detik, hembuskan 4 detik. Ulangi 5 kali sambil duduk tenang ya! 🫁'
+      'Kecemasan bisa dikurangi dengan latihan pernapasan. Coba tarik napas 4 detik, tahan 4 detik, hembuskan 4 detik. Ulangi 5 kali. Kamu bisa coba di menu Detox kami! 🫁'
     ],
     sedih: [
       'Merasa sedih itu wajar dan tidak apa-apa. Kamu tidak harus selalu bahagia. 💙 Yang penting, jangan simpan perasaan itu sendirian. Ceritakan pada seseorang yang kamu percaya.',
@@ -997,7 +1156,7 @@ App.chat = {
       'Ketika merasa stres, tubuhmu butuh gerakan. Coba peregangan 5 menit, jalan kaki sebentar, atau dengarkan musik favoritmu. Kadang hal kecil membuat perbedaan besar! 🎵'
     ],
     medsos: [
-      'Media sosial dirancang untuk membuat kita terus scroll. Ini bukan salahmu kalau sulit berhenti! 📱 Coba atur batasan waktu di pengaturan handphonemu, atau baca panduannya di Edu Corner.',
+      'Media sosial dirancang untuk membuat kita terus scroll. Ini bukan salahmu kalau sulit berhenti! 📱 Coba atur batasan waktu di pengaturan handphonemu, atau gunakan fitur Digital Detox kami.',
       'Tips: Coba unfollow akun yang membuat kamu merasa buruk tentang dirimu sendiri. Follow akun yang menginspirasi dan membuatmu belajar hal baru. Kamu punya kuasa atas feed-mu! ✨'
     ],
     'media sosial': [
@@ -1448,8 +1607,17 @@ document.addEventListener('DOMContentLoaded', () => {
     App.router.navigate('splash');
   }
 
+  // Rotate detox quotes every 15 seconds
+  setInterval(() => {
+    if (App.router.currentPage === 'detox') {
+      App.detox.showRandomQuote();
+    }
+  }, 15000);
+
   // Clean up BK polling on page unload
   window.addEventListener('beforeunload', () => {
     App.chat.stopBkPolling();
+    if (App.detox.timerInterval) clearInterval(App.detox.timerInterval);
+    if (App.detox.breathingInterval) clearTimeout(App.detox.breathingInterval);
   });
 });
