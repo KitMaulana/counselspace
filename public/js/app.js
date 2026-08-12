@@ -1035,7 +1035,8 @@ App.edu = {
               title: item.title,
               snippet: item.description || '',
               thumbnail: item.thumbnail_url || '',
-              category: item.category || 'umum'
+              category: item.category || 'umum',
+              source: item.source || ''
             };
 
             if (normalized.type === 'video') {
@@ -1061,14 +1062,16 @@ App.edu = {
         } else {
           this.content = this.fallbackContent.map(item => ({
             ...item,
-            category: item.category || 'umum'
+            category: item.category || 'umum',
+            source: item.source || ''
           }));
         }
       } catch (err) {
         console.warn('Failed to load online edu content, using fallback:', err);
         this.content = this.fallbackContent.map(item => ({
           ...item,
-          category: item.category || 'umum'
+          category: item.category || 'umum',
+          source: item.source || ''
         }));
       }
     }
@@ -1139,6 +1142,12 @@ App.edu = {
             ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" onerror="this.style.display='none'">` : ''}
             <div class="poster-icon">🖼️</div>
           </div>`;
+      } else if (item.type === 'artikel') {
+        thumbHTML = `
+          <div class="edu-card-thumb">
+            ${item.thumbnail ? `<img src="${item.thumbnail}" alt="${item.title}" onerror="this.style.display='none'">` : ''}
+            <div class="poster-icon">📖</div>
+          </div>`;
       }
 
       return `
@@ -1170,10 +1179,16 @@ App.edu = {
         <p class="mt-md text-muted" style="font-size:var(--font-sm);line-height:1.6;">${item.content || item.snippet || ''}</p>`;
     } else if (item.type === 'poster') {
       bodyHTML = `
-        ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" style="border-radius:var(--radius-md);margin-bottom:var(--space-md);">` : ''}
+        ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" style="border-radius:var(--radius-md);margin-bottom:var(--space-md);width:100%;height:auto;object-fit:contain;">` : ''}
         <p style="font-size:var(--font-sm);line-height:1.7;color:var(--text-secondary);white-space:pre-line;">${item.content || item.snippet || ''}</p>`;
     } else {
-      bodyHTML = `<div style="font-size:var(--font-sm);line-height:1.8;color:var(--text-secondary);white-space:pre-line;">${item.content || item.snippet || ''}</div>`;
+      bodyHTML = `
+        ${item.thumbnail ? `<div style="text-align:center;margin-bottom:var(--space-md);"><img src="${item.thumbnail}" alt="${item.title}" style="max-height:220px;width:100%;object-fit:cover;border-radius:var(--radius-md);"></div>` : ''}
+        <div style="font-size:var(--font-sm);line-height:1.8;color:var(--text-secondary);white-space:pre-line;">${item.content || item.snippet || ''}</div>`;
+    }
+
+    if (item.source) {
+      bodyHTML += `<div class="mt-md" style="font-size:0.75rem; color:var(--text-muted); font-style:italic; border-top:1px solid rgba(255,255,255,0.08); padding-top:var(--space-sm);">Sumber: ${item.source}</div>`;
     }
 
     App.ui.openModal(item.title, bodyHTML);

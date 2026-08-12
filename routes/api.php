@@ -59,6 +59,7 @@ Route::prefix('admin')->middleware('role:admin,guru')->group(function () {
         Route::put('/edu/{id}', [EduContentController::class, 'update']);
         Route::delete('/edu/{id}', [EduContentController::class, 'destroy']);
         Route::patch('/edu/{id}/toggle', [EduContentController::class, 'toggle']);
+        Route::post('/edu/upload', [EduContentController::class, 'uploadImage']);
 
         // Kelola Kategori Edukasi
         Route::post('/edu-categories', [EduCategoryController::class, 'store']);

@@ -838,10 +838,11 @@
                         <label>Deskripsi</label>
                         <textarea class="form-control" id="ef-desc" rows="2">${escapeHtml(data?.description || '')}</textarea>
                     </div>
+                    
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                         <div class="form-group">
                             <label>Tipe Konten *</label>
-                            <select class="form-control" id="ef-type" required onchange="window.adminApp.updateEduPreview()">
+                            <select class="form-control" id="ef-type" required onchange="window.adminApp.onEduTypeChange()">
                                 <option value="">Pilih tipe</option>
                                 <option value="video" ${type === 'video' ? 'selected' : ''}>Video</option>
                                 <option value="poster" ${type === 'poster' ? 'selected' : ''}>Poster</option>
@@ -860,14 +861,41 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label>URL Konten * <small style="color:var(--text-muted)">(YouTube URL / Image URL / HTML)</small></label>
-                        <input type="text" class="form-control" id="ef-url" value="${escapeHtml(url)}" placeholder="https://..." required oninput="window.adminApp.updateEduPreview()">
+                        <label>Sumber Konten <small style="color:var(--text-muted)">(opsional - cth: Halodoc, YouTube, dll)</small></label>
+                        <input type="text" class="form-control" id="ef-source" value="${escapeHtml(data?.source || '')}" placeholder="cth: Halodoc, Rahmat BK">
                     </div>
-                    <div class="form-group">
-                        <label>URL Thumbnail <small style="color:var(--text-muted)">(opsional)</small></label>
-                        <input type="text" class="form-control" id="ef-thumb" value="${escapeHtml(data?.thumbnail_url || '')}" placeholder="https://...">
+
+                    <div class="form-group" id="eg-url-container" style="display:none;">
+                        <label id="el-url-label">URL Konten *</label>
+                        <input type="text" class="form-control" id="ef-url" value="${escapeHtml(url)}" placeholder="https://..." oninput="window.adminApp.updateEduPreview()">
                     </div>
+
+                    <div class="form-group" id="eg-poster-upload-container" style="display:none;">
+                        <label>Upload Poster *</label>
+                        <div style="display:flex; gap:1rem; align-items:center;">
+                            <input type="file" id="ef-poster-file" accept="image/*" style="display:none;" onchange="window.adminApp.handleEduUpload('poster')">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('ef-poster-file').click()">Pilih Gambar Poster</button>
+                            <span id="ef-poster-filename" style="font-size:0.85rem; color:var(--text-muted);">
+                                ${(data?.content_url && type === 'poster') ? 'Poster sudah diupload' : 'Belum ada file dipilih'}
+                            </span>
+                        </div>
+                        <input type="hidden" id="ef-poster-url" value="${type === 'poster' ? escapeHtml(data?.content_url || '') : ''}">
+                    </div>
+
+                    <div class="form-group" id="eg-thumbnail-upload-container" style="display:none;">
+                        <label>Upload Gambar Thumbnail *</label>
+                        <div style="display:flex; gap:1rem; align-items:center;">
+                            <input type="file" id="ef-thumb-file" accept="image/*" style="display:none;" onchange="window.adminApp.handleEduUpload('thumbnail')">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('ef-thumb-file').click()">Pilih Gambar Thumbnail</button>
+                            <span id="ef-thumb-filename" style="font-size:0.85rem; color:var(--text-muted);">
+                                ${(data?.thumbnail_url && type === 'artikel') ? 'Thumbnail sudah diupload' : 'Belum ada file dipilih'}
+                            </span>
+                        </div>
+                        <input type="hidden" id="ef-thumb-url" value="${type === 'artikel' ? escapeHtml(data?.thumbnail_url || '') : ''}">
+                    </div>
+
                     <div id="ef-preview"></div>
                 </form>
             </div>
@@ -877,22 +905,94 @@
             </div>
         `);
 
-        // Tampilkan preview jika sedang edit
+        onEduTypeChange();
         if (isEdit) updateEduPreview();
+    }
+
+    function onEduTypeChange() {
+        const type = document.getElementById('ef-type')?.value;
+        const urlContainer = document.getElementById('eg-url-container');
+        const urlLabel = document.getElementById('el-url-label');
+        const urlInput = document.getElementById('ef-url');
+        const posterContainer = document.getElementById('eg-poster-upload-container');
+        const thumbContainer = document.getElementById('eg-thumbnail-upload-container');
+
+        if (!type) {
+            if (urlContainer) urlContainer.style.display = 'none';
+            if (posterContainer) posterContainer.style.display = 'none';
+            if (thumbContainer) thumbContainer.style.display = 'none';
+            return;
+        }
+
+        if (type === 'video') {
+            if (urlContainer) {
+                urlContainer.style.display = 'block';
+                urlLabel.innerHTML = 'URL Video YouTube * <small style="color:var(--text-muted)">(YouTube URL / Embed URL)</small>';
+                urlInput.placeholder = 'https://www.youtube.com/watch?v=...';
+            }
+            if (posterContainer) posterContainer.style.display = 'none';
+            if (thumbContainer) thumbContainer.style.display = 'none';
+        } else if (type === 'poster') {
+            if (urlContainer) {
+                urlContainer.style.display = 'none';
+                urlInput.value = '';
+            }
+            if (posterContainer) posterContainer.style.display = 'block';
+            if (thumbContainer) thumbContainer.style.display = 'none';
+        } else if (type === 'artikel') {
+            if (urlContainer) {
+                urlContainer.style.display = 'block';
+                urlLabel.innerHTML = 'Konten Artikel * <small style="color:var(--text-muted)">(HTML / Teks Panjang)</small>';
+                urlInput.placeholder = 'Ketik isi artikel atau HTML di sini...';
+            }
+            if (posterContainer) posterContainer.style.display = 'none';
+            if (thumbContainer) thumbContainer.style.display = 'block';
+        }
+    }
+
+    async function handleEduUpload(uploadType) {
+        const fileInputId = uploadType === 'poster' ? 'ef-poster-file' : 'ef-thumb-file';
+        const filenameSpanId = uploadType === 'poster' ? 'ef-poster-filename' : 'ef-thumb-filename';
+        const urlInputId = uploadType === 'poster' ? 'ef-poster-url' : 'ef-thumb-url';
+
+        const fileInput = document.getElementById(fileInputId);
+        const filenameSpan = document.getElementById(filenameSpanId);
+        const urlInput = document.getElementById(urlInputId);
+
+        if (!fileInput || !fileInput.files.length) return;
+        const file = fileInput.files[0];
+
+        try {
+            showToast('Mengunggah gambar...', 'info');
+            filenameSpan.innerHTML = 'Mengunggah...';
+            const res = await uploadEduImage(file);
+            if (res && res.success && res.url) {
+                urlInput.value = res.url;
+                filenameSpan.innerHTML = `✅ Terunggah (${file.name})`;
+                showToast('Gambar berhasil diunggah!', 'success');
+                updateEduPreview();
+            }
+        } catch (err) {
+            filenameSpan.innerHTML = '⚠️ Gagal unggah';
+            showToast(err.message || 'Gagal mengunggah gambar', 'error');
+        }
     }
 
     function updateEduPreview() {
         const type = document.getElementById('ef-type')?.value;
         const url = document.getElementById('ef-url')?.value?.trim();
+        const posterUrl = document.getElementById('ef-poster-url')?.value?.trim();
+        const thumbUrl = document.getElementById('ef-thumb-url')?.value?.trim();
         const preview = document.getElementById('ef-preview');
         if (!preview) return;
 
-        if (!type || !url) {
+        if (!type) {
             preview.innerHTML = '';
             return;
         }
 
         if (type === 'video') {
+            if (!url) { preview.innerHTML = ''; return; }
             const ytId = extractYoutubeId(url);
             if (ytId) {
                 preview.innerHTML = `<div class="preview-container"><iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`;
@@ -900,9 +1000,11 @@
                 preview.innerHTML = `<p style="color:var(--text-muted); font-size:0.8rem; margin-top:0.5rem;">URL YouTube tidak valid</p>`;
             }
         } else if (type === 'poster') {
-            preview.innerHTML = `<div class="preview-container"><img src="${escapeHtml(url)}" alt="Preview" onerror="this.parentElement.innerHTML='<p style=\\'padding:1rem; color:var(--text-muted)\\'>Gagal memuat gambar</p>';"></div>`;
-        } else {
-            preview.innerHTML = `<p style="color:var(--text-muted); font-size:0.8rem; margin-top:0.5rem;">Preview tidak tersedia untuk tipe artikel</p>`;
+            if (!posterUrl) { preview.innerHTML = ''; return; }
+            preview.innerHTML = `<div class="preview-container"><img src="${escapeHtml(posterUrl)}" alt="Preview Poster" onerror="this.parentElement.innerHTML='<p style=\\'padding:1rem; color:var(--text-muted)\\'>Gagal memuat poster</p>';" style="max-height: 200px; width: auto; object-fit: contain;"></div>`;
+        } else if (type === 'artikel') {
+            if (!thumbUrl) { preview.innerHTML = ''; return; }
+            preview.innerHTML = `<div class="preview-container" style="display:flex; flex-direction:column; gap:0.5rem;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Preview Thumbnail:</p><img src="${escapeHtml(thumbUrl)}" alt="Preview Thumbnail" onerror="this.parentElement.innerHTML='<p style=\\'padding:1rem; color:var(--text-muted)\\'>Gagal memuat thumbnail</p>';" style="max-height: 120px; width: auto; object-fit: contain;"></div>`;
         }
     }
 
@@ -911,13 +1013,41 @@
         const title = document.getElementById('ef-title').value.trim();
         const description = document.getElementById('ef-desc').value.trim();
         const content_type = document.getElementById('ef-type').value;
-        const content_url = document.getElementById('ef-url').value.trim();
-        const thumbnail_url = document.getElementById('ef-thumb').value.trim();
-        const category = document.getElementById('ef-category').value.trim();
+        const category = document.getElementById('ef-category').value;
+        const source = document.getElementById('ef-source').value.trim();
 
-        if (!title || !content_type || !content_url) {
-            showToast('Judul, tipe, dan URL konten wajib diisi.', 'error');
+        let content_url = '';
+        let thumbnail_url = '';
+
+        if (!title || !content_type) {
+            showToast('Judul dan tipe konten wajib diisi.', 'error');
             return;
+        }
+
+        if (content_type === 'video') {
+            content_url = document.getElementById('ef-url').value.trim();
+            if (!content_url) {
+                showToast('URL Video YouTube wajib diisi.', 'error');
+                return;
+            }
+        } else if (content_type === 'poster') {
+            content_url = document.getElementById('ef-poster-url').value.trim();
+            thumbnail_url = content_url;
+            if (!content_url) {
+                showToast('Gambar poster wajib diupload.', 'error');
+                return;
+            }
+        } else if (content_type === 'artikel') {
+            content_url = document.getElementById('ef-url').value.trim();
+            thumbnail_url = document.getElementById('ef-thumb-url').value.trim();
+            if (!content_url) {
+                showToast('Konten artikel wajib diisi.', 'error');
+                return;
+            }
+            if (!thumbnail_url) {
+                showToast('Gambar thumbnail wajib diupload.', 'error');
+                return;
+            }
         }
 
         const isEdit = idEl && idEl.value;
@@ -928,6 +1058,7 @@
             content_url,
             thumbnail_url,
             category,
+            source,
         };
 
         try {
@@ -1637,6 +1768,31 @@
         return json;
     }
 
+    async function uploadEduImage(file) {
+        const url = API_BASE + 'admin/edu/upload';
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const options = {
+            method: 'POST',
+            headers: {},
+        };
+
+        const token = sessionStorage.getItem('admin_token');
+        if (token) {
+            options.headers['Authorization'] = 'Bearer ' + token;
+        }
+        options.body = formData;
+
+        const response = await fetch(url, options);
+        const json = await response.json();
+
+        if (!response.ok) {
+            throw new Error(json.message || `HTTP ${response.status}`);
+        }
+        return json;
+    }
+
     // ============================================
     // COUNSELOR CRUD MODULE (ADMIN ONLY)
     // ============================================
@@ -2175,6 +2331,8 @@
         saveEduContent,
         deleteEduContent,
         updateEduPreview,
+        onEduTypeChange,
+        handleEduUpload,
         // Edu Categories
         deleteCategory,
         saveCategory,
