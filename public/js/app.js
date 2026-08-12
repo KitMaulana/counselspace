@@ -508,7 +508,7 @@ App.dashboard = {
     const tilt = deltaX > 10 ? 12 : deltaX < -10 ? -12 : 0;
 
     // Animate!
-    robotWrap.style.transition = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    robotWrap.style.transition = 'transform 1.25s cubic-bezier(0.25, 1, 0.5, 1)';
     robotWrap.classList.add('is-moving');
     robotWrap.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.15) rotate(${tilt}deg)`;
 
@@ -516,7 +516,7 @@ App.dashboard = {
     setTimeout(() => {
       this.isAnimatingRobot = false;
       App.router.navigate(targetPage);
-    }, 600);
+    }, 1250);
   },
 
   renderGreeting() {
@@ -550,20 +550,13 @@ App.dashboard = {
           <span class="badge badge-${(last.category || 'Aman').toLowerCase()}">${last.category || 'Aman'}</span>
         </div>`;
     } else {
-      container.innerHTML = `
-        <div class="stats-card" style="cursor:pointer" onclick="App.router.navigate('screening')">
-          <div class="stats-icon">🧠</div>
-          <div class="stats-info">
-            <div class="stats-label">Belum ada hasil</div>
-            <div class="stats-value" style="font-size:var(--font-base);">Yuk, cek tingkat FOMO-mu!</div>
-          </div>
-          <span style="color:var(--teal-400);font-size:1.2rem;">→</span>
-        </div>`;
+      container.innerHTML = ''; // Hapus bagian belum ada hasil screening
     }
   },
 
   renderHistory() {
     const container = document.getElementById('history-list');
+    if (!container) return; // Failsafe
     const history = App.utils.getStorage('screening_history', []);
 
     if (history.length === 0) {
@@ -588,6 +581,50 @@ App.dashboard = {
           </div>
         </div>`;
     }).join('');
+  },
+
+  /** Open screening history inside a beautiful overlay modal */
+  showHistoryModal() {
+    const history = App.utils.getStorage('screening_history', []);
+
+    if (history.length === 0) {
+      const emptyHTML = `
+        <div class="empty-state" style="padding: 40px 20px; text-align: center;">
+          <div class="empty-icon" style="font-size: 3rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(111,211,255,0.4));">📊</div>
+          <h3 style="color:#fff; font-weight:700; margin:0 0 4px; font-size:1.15rem;">Belum Ada Riwayat</h3>
+          <p style="color:#a0aec0; margin:0; font-size:0.9rem;">Mulai self-check pertamamu untuk melihat hasil di sini!</p>
+        </div>`;
+      App.ui.openModal('Riwayat Skrining', emptyHTML);
+      return;
+    }
+
+    const listHTML = `
+      <div class="history-modal-list" style="display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow-y:auto; padding:2px;">
+        ${history.slice().reverse().map(item => {
+          const cat = this.getCategoryInfo(item.category);
+          const badgeClass = (item.category || 'Aman').toLowerCase();
+          return `
+            <div class="history-modal-card" style="display:flex; align-items:center; gap:14px; padding:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; transition:transform 0.2s ease;">
+              <div class="history-modal-icon" style="width:42px; height:42px; border-radius:50%; background:${cat.color}15; color:${cat.color}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                ${cat.icon}
+              </div>
+              <div style="flex:1;">
+                <div style="font-weight:700; color:#fff; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
+                  ${item.category}
+                  <span class="badge badge-${badgeClass}" style="font-size:0.65rem; padding:2px 6px; border-radius:6px; font-weight:600;">${item.category}</span>
+                </div>
+                <div style="font-size:0.78rem; color:#a0aec0; margin-top:2px;">
+                  📅 ${App.utils.formatDate(item.date)}
+                </div>
+              </div>
+              <div style="font-size:1.15rem; font-weight:800; color:${cat.color};">
+                ${item.score}%
+              </div>
+            </div>`;
+        }).join('')}
+      </div>`;
+
+    App.ui.openModal('Riwayat Skrining', listHTML);
   },
 
   getCategoryInfo(category) {

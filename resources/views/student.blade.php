@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3.0">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3.1">
 </head>
 <body>
 
@@ -100,12 +100,15 @@
         </div>
       </div>
 
-      <!-- Quick Stats -->
+      <!-- Quick Stats (Shows last result if exists) -->
       <div class="quick-stats" id="quick-stats"></div>
 
-      <!-- History -->
-      <div class="section-title cs-section-title">📊 Riwayat Skrining</div>
-      <div class="history-list" id="history-list"></div>
+      <!-- History Button -->
+      <div class="cs-history-btn-wrapper" style="padding: 24px 20px 32px; text-align: center;">
+        <x-btn size="lg" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #1E9BF0, #0B3E8F); border: 2.5px solid rgba(111, 211, 255, 0.8); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(111, 211, 255, 0.35);" onclick="App.dashboard.showHistoryModal()">
+          📊 Lihat Riwayat Skrining
+        </x-btn>
+      </div>
     </section>
 
     <!-- ==================== SCREENING PAGE ==================== -->
@@ -405,6 +408,6 @@
   <!-- Celebration Overlay -->
   <div class="celebration-overlay" id="celebration-overlay"></div>
 
-  <script src="{{ asset('js/app.js') }}?v=3.0"></script>
+  <script src="{{ asset('js/app.js') }}?v=3.1"></script>
 </body>
 </html>

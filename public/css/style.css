@@ -3294,7 +3294,7 @@ textarea.form-input {
   height: 75vh;
   max-height: 680px;
   border-radius: 0 0 28px 28px;
-  overflow: hidden;
+  overflow: visible;
   background: #0f182e url('../images/page2-scene.png') center top / cover no-repeat;
   display: flex;
   flex-direction: column;
@@ -3306,6 +3306,7 @@ textarea.form-input {
   content: '';
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: linear-gradient(
     180deg,
     rgba(15, 24, 46, 0.55) 0%,
