@@ -335,6 +335,7 @@
             }
         }
 
+        initTheme(); // Load saved theme settings for active chat panel
         startPing();
         navigateTo(state.currentPage);
     }
@@ -1533,6 +1534,17 @@
                 hideModal();
             }
         });
+
+        // Close theme popover when clicking outside
+        document.addEventListener('click', (e) => {
+            const popover = $('#admin-chat-theme-menu');
+            const themeBtn = $('#admin-chat-theme-btn');
+            if (popover && !popover.classList.contains('hidden')) {
+                if (themeBtn && !themeBtn.contains(e.target) && !popover.contains(e.target)) {
+                    popover.classList.add('hidden');
+                }
+            }
+        });
     }
 
     function logout() {
@@ -1777,6 +1789,214 @@
     // INIT
     // ============================================
 
+    // ============================================
+    // PERSONALISASI TEMA CHAT (GURU BK / ADMIN)
+    // ============================================
+    const themePresets = {
+        wallpapers: [
+            { name: 'Default', value: 'transparent' },
+            { name: 'Deep Navy', value: 'linear-gradient(135deg, #101A33 0%, #1A2649 100%)', bg: '#101A33' },
+            { name: 'Dark Aurora', value: 'linear-gradient(135deg, #2b103c 0%, #0f1035 100%)', bg: '#2b103c' },
+            { name: 'Mint Green', value: 'linear-gradient(135deg, #0a1f10 0%, #0c2d1b 100%)', bg: '#0a1f10' },
+            { name: 'Soft Crimson', value: 'linear-gradient(135deg, #301020 0%, #141026 100%)', bg: '#301020' },
+            { name: 'Royal Violet', value: 'linear-gradient(135deg, #1c1033 0%, #0e1124 100%)', bg: '#1c1033' },
+            { name: 'Charcoal Dark', value: 'linear-gradient(135deg, #090a0f 0%, #151620 100%)', bg: '#090a0f' }
+        ],
+        bubbles: [
+            { name: 'Default Blue', value: '#1E9BF0' },
+            { name: 'Cyberpunk Pink', value: '#F94FA5' },
+            { name: 'Royal Purple', value: '#8B5CF6' },
+            { name: 'Mint Green', value: '#10B981' },
+            { name: 'Cyan Spark', value: '#06B6D4' },
+            { name: 'Sunset Orange', value: '#F59E0B' }
+        ]
+    };
+
+    function initTheme() {
+        const savedWallpaper = localStorage.getItem('admin_chat_theme_wallpaper');
+        const savedBubble = localStorage.getItem('admin_chat_theme_bubble');
+        
+        const pageChat = $('#page-chat');
+        if (!pageChat) return;
+
+        if (savedWallpaper) {
+            pageChat.style.setProperty('--chat-wallpaper', savedWallpaper);
+        }
+        if (savedBubble) {
+            pageChat.style.setProperty('--bubble-sent-bg', savedBubble);
+            pageChat.style.setProperty('--bubble-sent-color', getContrastColor(savedBubble));
+            pageChat.style.setProperty('--bubble-sent-shadow', hexToRgba(savedBubble, 0.45));
+        }
+
+        renderThemeMenuElements();
+    }
+
+    function getContrastColor(hexColor) {
+        if (!hexColor || hexColor.trim() === '') return '#ffffff';
+        if (hexColor.includes('gradient')) return '#ffffff';
+        if (hexColor === 'transparent') return '#ffffff';
+        hexColor = hexColor.replace('#', '');
+        if (hexColor.length === 3) {
+            hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
+        }
+        const r = parseInt(hexColor.substr(0, 2), 16);
+        const g = parseInt(hexColor.substr(2, 2), 16);
+        const b = parseInt(hexColor.substr(4, 2), 16);
+        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        return (yiq >= 140) ? '#101A33' : '#ffffff';
+    }
+
+    function hexToRgba(hexColor, alpha) {
+        if (!hexColor || hexColor.includes('gradient') || hexColor === 'transparent') return `rgba(0, 0, 0, ${alpha})`;
+        hexColor = hexColor.replace('#', '');
+        if (hexColor.length === 3) {
+            hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
+        }
+        const r = parseInt(hexColor.substr(0, 2), 16);
+        const g = parseInt(hexColor.substr(2, 2), 16);
+        const b = parseInt(hexColor.substr(4, 2), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function toggleThemeMenu() {
+        const menu = $('#admin-chat-theme-menu');
+        if (menu) {
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
+                const pageChat = $('#page-chat');
+                if (pageChat) {
+                    const currentWallpaper = pageChat.style.getPropertyValue('--chat-wallpaper');
+                    const currentBubble = pageChat.style.getPropertyValue('--bubble-sent-bg');
+                    
+                    const customWallInput = $('#admin-custom-wallpaper');
+                    const customBubbleInput = $('#admin-custom-bubble');
+                    
+                    if (customWallInput && currentWallpaper && !currentWallpaper.includes('gradient') && currentWallpaper !== 'transparent') {
+                        customWallInput.value = currentWallpaper.trim();
+                    }
+                    if (customBubbleInput && currentBubble) {
+                        customBubbleInput.value = currentBubble.trim();
+                    }
+                }
+                updateActivePresetClasses();
+            }
+        }
+    }
+
+    function renderThemeMenuElements() {
+        const wallPresetsContainer = $('#admin-wallpaper-presets');
+        const bubblePresetsContainer = $('#admin-bubble-presets');
+        if (!wallPresetsContainer || !bubblePresetsContainer) return;
+
+        // Render wallpaper presets
+        wallPresetsContainer.innerHTML = themePresets.wallpapers.map((preset, index) => {
+            const backgroundStyle = preset.value === 'transparent' ? 'rgba(255, 255, 255, 0.05)' : preset.value;
+            return `<button class="admin-theme-preset-btn" 
+                style="background: ${backgroundStyle};" 
+                title="${preset.name}" 
+                data-type="wallpaper"
+                data-value="${preset.value}"
+                onclick="window.adminApp.selectWallpaperPreset(${index}, '${preset.value}')"></button>`;
+        }).join('');
+
+        // Render bubble presets
+        bubblePresetsContainer.innerHTML = themePresets.bubbles.map((preset, index) => {
+            return `<button class="admin-theme-preset-btn" 
+                style="background: ${preset.value};" 
+                title="${preset.name}" 
+                data-type="bubble"
+                data-value="${preset.value}"
+                onclick="window.adminApp.selectBubblePreset(${index}, '${preset.value}')"></button>`;
+        }).join('');
+
+        updateActivePresetClasses();
+    }
+
+    function updateActivePresetClasses() {
+        const pageChat = $('#page-chat');
+        if (!pageChat) return;
+
+        const currentWallpaper = pageChat.style.getPropertyValue('--chat-wallpaper').trim() || 'transparent';
+        const currentBubble = pageChat.style.getPropertyValue('--bubble-sent-bg').trim() || '#1E9BF0';
+
+        // Check wallpaper buttons
+        const wallBtns = document.querySelectorAll('#admin-wallpaper-presets .admin-theme-preset-btn');
+        wallBtns.forEach(btn => {
+            const val = btn.getAttribute('data-value').trim();
+            btn.classList.toggle('active', val === currentWallpaper);
+        });
+
+        // Check bubble buttons
+        const bubbleBtns = document.querySelectorAll('#admin-bubble-presets .admin-theme-preset-btn');
+        bubbleBtns.forEach(btn => {
+            const val = btn.getAttribute('data-value').trim();
+            btn.classList.toggle('active', val === currentBubble);
+        });
+    }
+
+    function selectWallpaperPreset(index, value) {
+        const pageChat = $('#page-chat');
+        if (pageChat) {
+            pageChat.style.setProperty('--chat-wallpaper', value);
+            localStorage.setItem('admin_chat_theme_wallpaper', value);
+            updateActivePresetClasses();
+        }
+    }
+
+    function selectBubblePreset(index, value) {
+        const pageChat = $('#page-chat');
+        if (pageChat) {
+            pageChat.style.setProperty('--bubble-sent-bg', value);
+            const contrastColor = getContrastColor(value);
+            pageChat.style.setProperty('--bubble-sent-color', contrastColor);
+            pageChat.style.setProperty('--bubble-sent-shadow', hexToRgba(value, 0.45));
+            localStorage.setItem('admin_chat_theme_bubble', value);
+            updateActivePresetClasses();
+        }
+    }
+
+    function setCustomWallpaper(color) {
+        const pageChat = $('#page-chat');
+        if (pageChat && color) {
+            pageChat.style.setProperty('--chat-wallpaper', color);
+            localStorage.setItem('admin_chat_theme_wallpaper', color);
+            updateActivePresetClasses();
+        }
+    }
+
+    function setCustomBubble(color) {
+        const pageChat = $('#page-chat');
+        if (pageChat && color) {
+            pageChat.style.setProperty('--bubble-sent-bg', color);
+            const contrastColor = getContrastColor(color);
+            pageChat.style.setProperty('--bubble-sent-color', contrastColor);
+            pageChat.style.setProperty('--bubble-sent-shadow', hexToRgba(color, 0.45));
+            localStorage.setItem('admin_chat_theme_bubble', color);
+            updateActivePresetClasses();
+        }
+    }
+
+    function resetTheme() {
+        const pageChat = $('#page-chat');
+        if (pageChat) {
+            pageChat.style.removeProperty('--chat-wallpaper');
+            pageChat.style.removeProperty('--bubble-sent-bg');
+            pageChat.style.removeProperty('--bubble-sent-color');
+            pageChat.style.removeProperty('--bubble-sent-shadow');
+            
+            localStorage.removeItem('admin_chat_theme_wallpaper');
+            localStorage.removeItem('admin_chat_theme_bubble');
+
+            // reset inputs
+            const customWallInput = $('#admin-custom-wallpaper');
+            const customBubbleInput = $('#admin-custom-bubble');
+            if (customWallInput) customWallInput.value = '#000000';
+            if (customBubbleInput) customBubbleInput.value = '#1e9bf0';
+
+            updateActivePresetClasses();
+        }
+    }
+
     function init() {
         bindEvents();
 
@@ -1813,6 +2033,13 @@
         updateEduPreview,
         // Chat
         openChat,
+        // Chat Theme Customization
+        toggleThemeMenu,
+        selectWallpaperPreset,
+        selectBubblePreset,
+        setCustomWallpaper,
+        setCustomBubble,
+        resetTheme,
         // Screenings
         showDetailModal,
         goToPage,

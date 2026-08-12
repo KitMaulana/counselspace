@@ -1216,6 +1216,7 @@ App.chat = {
     const saved = App.utils.getStorage('ai_chat_history', []);
     this.aiHistory = saved;
 
+    this.initTheme(); // Load saved theme settings
     this.renderAiChat();
     this.renderQuickReplies();
 
@@ -1575,11 +1576,228 @@ App.chat = {
     }
   },
 
-  /** Scroll chat to bottom */
   scrollToBottom(container) {
     setTimeout(() => {
       if (container) container.scrollTop = container.scrollHeight;
     }, 50);
+  },
+
+  // Preset definitions
+  themePresets: {
+    wallpapers: [
+      { name: 'Deep Navy', value: 'linear-gradient(135deg, #101A33 0%, #1A2649 100%)', bg: '#101A33' },
+      { name: 'Dark Aurora', value: 'linear-gradient(135deg, #2b103c 0%, #0f1035 100%)', bg: '#2b103c' },
+      { name: 'Mint Green', value: 'linear-gradient(135deg, #0a1f10 0%, #0c2d1b 100%)', bg: '#0a1f10' },
+      { name: 'Soft Crimson', value: 'linear-gradient(135deg, #301020 0%, #141026 100%)', bg: '#301020' },
+      { name: 'Royal Violet', value: 'linear-gradient(135deg, #1c1033 0%, #0e1124 100%)', bg: '#1c1033' },
+      { name: 'Charcoal Dark', value: 'linear-gradient(135deg, #090a0f 0%, #151620 100%)', bg: '#090a0f' }
+    ],
+    bubbles: [
+      { name: 'Electric Blue', value: '#1E9BF0' },
+      { name: 'Cyberpunk Pink', value: '#F94FA5' },
+      { name: 'Royal Purple', value: '#8B5CF6' },
+      { name: 'Mint Green', value: '#10B981' },
+      { name: 'Cyan Spark', value: '#06B6D4' },
+      { name: 'Sunset Orange', value: '#F59E0B' }
+    ]
+  },
+
+  /** Initialize chat theme from localStorage */
+  initTheme() {
+    const savedWallpaper = localStorage.getItem('chat_theme_wallpaper');
+    const savedBubble = localStorage.getItem('chat_theme_bubble');
+    
+    const pageChat = document.getElementById('page-chat');
+    if (!pageChat) return;
+
+    if (savedWallpaper) {
+      pageChat.style.setProperty('--chat-wallpaper', savedWallpaper);
+    }
+    if (savedBubble) {
+      pageChat.style.setProperty('--bubble-sent-bg', savedBubble);
+      pageChat.style.setProperty('--bubble-sent-color', this.getContrastColor(savedBubble));
+      pageChat.style.setProperty('--bubble-sent-shadow', this.hexToRgba(savedBubble, 0.45));
+    }
+
+    this.renderThemeMenuElements();
+  },
+
+  /** Helper to determine text contrast based on color brightness */
+  getContrastColor(hexColor) {
+    if (!hexColor || hexColor.trim() === '') return '#ffffff';
+    // If it's a gradient, extract the first color or default to white text
+    if (hexColor.includes('gradient')) {
+      return '#ffffff';
+    }
+    hexColor = hexColor.replace('#', '');
+    if (hexColor.length === 3) {
+      hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
+    }
+    const r = parseInt(hexColor.substr(0, 2), 16);
+    const g = parseInt(hexColor.substr(2, 2), 16);
+    const b = parseInt(hexColor.substr(4, 2), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 140) ? '#101A33' : '#ffffff';
+  },
+
+  /** Helper to convert hex to rgba for box shadow */
+  hexToRgba(hexColor, alpha) {
+    if (!hexColor || hexColor.includes('gradient')) return `rgba(11, 62, 143, ${alpha})`;
+    hexColor = hexColor.replace('#', '');
+    if (hexColor.length === 3) {
+      hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
+    }
+    const r = parseInt(hexColor.substr(0, 2), 16);
+    const g = parseInt(hexColor.substr(2, 2), 16);
+    const b = parseInt(hexColor.substr(4, 2), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  },
+
+  /** Toggle the personalization menu visibility */
+  toggleThemeMenu() {
+    const menu = document.getElementById('chat-theme-menu');
+    if (menu) {
+      menu.classList.toggle('hidden');
+      if (!menu.classList.contains('hidden')) {
+        // sync input color elements with current properties
+        const pageChat = document.getElementById('page-chat');
+        if (pageChat) {
+          const currentWallpaper = pageChat.style.getPropertyValue('--chat-wallpaper');
+          const currentBubble = pageChat.style.getPropertyValue('--bubble-sent-bg');
+          
+          const customWallInput = document.getElementById('student-custom-wallpaper');
+          const customBubbleInput = document.getElementById('student-custom-bubble');
+          
+          if (customWallInput && currentWallpaper && !currentWallpaper.includes('gradient')) {
+            customWallInput.value = currentWallpaper.trim();
+          }
+          if (customBubbleInput && currentBubble) {
+            customBubbleInput.value = currentBubble.trim();
+          }
+        }
+        this.updateActivePresetClasses();
+      }
+    }
+  },
+
+  /** Render preset buttons in the overlay menu */
+  renderThemeMenuElements() {
+    const wallPresetsContainer = document.getElementById('student-wallpaper-presets');
+    const bubblePresetsContainer = document.getElementById('student-bubble-presets');
+    if (!wallPresetsContainer || !bubblePresetsContainer) return;
+
+    // Render wallpaper presets
+    wallPresetsContainer.innerHTML = this.themePresets.wallpapers.map((preset, index) => {
+      return `<button class="theme-preset-btn" 
+        style="background: ${preset.value};" 
+        title="${preset.name}" 
+        data-type="wallpaper"
+        data-value="${preset.value}"
+        onclick="App.chat.selectWallpaperPreset(${index}, '${preset.value}')"></button>`;
+    }).join('');
+
+    // Render bubble presets
+    bubblePresetsContainer.innerHTML = this.themePresets.bubbles.map((preset, index) => {
+      return `<button class="theme-preset-btn" 
+        style="background: ${preset.value};" 
+        title="${preset.name}" 
+        data-type="bubble"
+        data-value="${preset.value}"
+        onclick="App.chat.selectBubblePreset(${index}, '${preset.value}')"></button>`;
+    }).join('');
+
+    this.updateActivePresetClasses();
+  },
+
+  /** Highlight the active presets in the menu */
+  updateActivePresetClasses() {
+    const pageChat = document.getElementById('page-chat');
+    if (!pageChat) return;
+
+    const currentWallpaper = pageChat.style.getPropertyValue('--chat-wallpaper').trim();
+    const currentBubble = pageChat.style.getPropertyValue('--bubble-sent-bg').trim();
+
+    // Check wallpaper buttons
+    const wallBtns = document.querySelectorAll('#student-wallpaper-presets .theme-preset-btn');
+    wallBtns.forEach(btn => {
+      const val = btn.getAttribute('data-value').trim();
+      btn.classList.toggle('active', val === currentWallpaper);
+    });
+
+    // Check bubble buttons
+    const bubbleBtns = document.querySelectorAll('#student-bubble-presets .theme-preset-btn');
+    bubbleBtns.forEach(btn => {
+      const val = btn.getAttribute('data-value').trim();
+      btn.classList.toggle('active', val === currentBubble);
+    });
+  },
+
+  /** Apply wallpaper preset */
+  selectWallpaperPreset(index, value) {
+    const pageChat = document.getElementById('page-chat');
+    if (pageChat) {
+      pageChat.style.setProperty('--chat-wallpaper', value);
+      localStorage.setItem('chat_theme_wallpaper', value);
+      this.updateActivePresetClasses();
+    }
+  },
+
+  /** Apply bubble preset */
+  selectBubblePreset(index, value) {
+    const pageChat = document.getElementById('page-chat');
+    if (pageChat) {
+      pageChat.style.setProperty('--bubble-sent-bg', value);
+      const contrastColor = this.getContrastColor(value);
+      pageChat.style.setProperty('--bubble-sent-color', contrastColor);
+      pageChat.style.setProperty('--bubble-sent-shadow', this.hexToRgba(value, 0.45));
+      localStorage.setItem('chat_theme_bubble', value);
+      this.updateActivePresetClasses();
+    }
+  },
+
+  /** Apply custom wallpaper color from color input */
+  setCustomWallpaper(color) {
+    const pageChat = document.getElementById('page-chat');
+    if (pageChat && color) {
+      pageChat.style.setProperty('--chat-wallpaper', color);
+      localStorage.setItem('chat_theme_wallpaper', color);
+      this.updateActivePresetClasses();
+    }
+  },
+
+  /** Apply custom bubble color from color input */
+  setCustomBubble(color) {
+    const pageChat = document.getElementById('page-chat');
+    if (pageChat && color) {
+      pageChat.style.setProperty('--bubble-sent-bg', color);
+      const contrastColor = this.getContrastColor(color);
+      pageChat.style.setProperty('--bubble-sent-color', contrastColor);
+      pageChat.style.setProperty('--bubble-sent-shadow', this.hexToRgba(color, 0.45));
+      localStorage.setItem('chat_theme_bubble', color);
+      this.updateActivePresetClasses();
+    }
+  },
+
+  /** Reset theme to default settings */
+  resetTheme() {
+    const pageChat = document.getElementById('page-chat');
+    if (pageChat) {
+      pageChat.style.removeProperty('--chat-wallpaper');
+      pageChat.style.removeProperty('--bubble-sent-bg');
+      pageChat.style.removeProperty('--bubble-sent-color');
+      pageChat.style.removeProperty('--bubble-sent-shadow');
+      
+      localStorage.removeItem('chat_theme_wallpaper');
+      localStorage.removeItem('chat_theme_bubble');
+
+      // reset inputs
+      const customWallInput = document.getElementById('student-custom-wallpaper');
+      const customBubbleInput = document.getElementById('student-custom-bubble');
+      if (customWallInput) customWallInput.value = '#000000';
+      if (customBubbleInput) customBubbleInput.value = '#1e9bf0';
+
+      this.updateActivePresetClasses();
+    }
   }
 };
 

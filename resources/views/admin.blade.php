@@ -269,9 +269,41 @@
                                         <div class="placeholder-icon">💬</div>
                                         <p>Pilih sesi chat untuk memulai percakapan</p>
                                     </div>
-                                    <div class="chat-conv-header" id="chat-conv-header" style="display:none">
-                                        <span>🟢</span>
-                                        <span id="chat-conv-title">—</span>
+                                    <div class="chat-conv-header" id="chat-conv-header" style="display:none; justify-content:space-between; align-items:center;">
+                                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                                            <span>🟢</span>
+                                            <span id="chat-conv-title">—</span>
+                                        </div>
+                                        <button class="admin-chat-theme-btn" id="admin-chat-theme-btn" title="Personalisasi Obrolan" onclick="window.adminApp.toggleThemeMenu()">🎨</button>
+                                        
+                                        <!-- Theme Customization Popover -->
+                                        <div class="admin-theme-popover hidden" id="admin-chat-theme-menu">
+                                            <h5>🎨 Personalisasi Chat</h5>
+                                            
+                                            <div class="admin-theme-section">
+                                                <label>Warna Wallpaper</label>
+                                                <div class="admin-theme-presets" id="admin-wallpaper-presets">
+                                                    <!-- Filled dynamically via JS -->
+                                                </div>
+                                                <div class="admin-theme-custom">
+                                                    <span>Wallpaper Kustom:</span>
+                                                    <input type="color" id="admin-custom-wallpaper" oninput="window.adminApp.setCustomWallpaper(this.value)">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="admin-theme-section" style="margin-top: 10px;">
+                                                <label>Warna Chat Bubble (Guru)</label>
+                                                <div class="admin-theme-presets" id="admin-bubble-presets">
+                                                    <!-- Filled dynamically via JS -->
+                                                </div>
+                                                <div class="admin-theme-custom">
+                                                    <span>Bubble Kustom:</span>
+                                                    <input type="color" id="admin-custom-bubble" oninput="window.adminApp.setCustomBubble(this.value)">
+                                                </div>
+                                            </div>
+                                            
+                                            <button class="admin-theme-reset-btn" onclick="window.adminApp.resetTheme()">Atur Ulang ke Default</button>
+                                        </div>
                                     </div>
                                     <div class="chat-messages" id="chat-messages" style="display:none"></div>
                                     <div class="chat-input-area" id="chat-input-area" style="display:none">

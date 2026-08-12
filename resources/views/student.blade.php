@@ -228,12 +228,13 @@
       <div class="chat-panel active" id="chat-panel-ai">
         <div class="cs-chat-header">
           <x-avatar :src="asset('images/spacebot.png')" alt="Spacebot" />
-          <div>
+          <div style="flex: 1;">
             <div class="cs-chat-header-name">Obrolan Spacebot</div>
             <div class="cs-chat-header-status">
               <span class="cs-status-dot"></span> ONLINE
             </div>
           </div>
+          <button class="chat-theme-btn" onclick="App.chat.toggleThemeMenu()" title="Personalisasi Obrolan">🎨</button>
         </div>
 
         <div class="chat-messages" id="chat-messages-ai">
@@ -264,17 +265,18 @@
           <!-- Counselor Profile Header -->
           <div class="chat-counselor-header cs-chat-header">
             <button class="btn-back-counselors" onclick="App.chat.backToCounselors()">←</button>
-            <div class="counselor-header-profile">
+            <div class="counselor-header-profile" style="flex: 1;">
               <div class="counselor-header-avatar" id="counselor-header-avatar">👤</div>
               <div class="counselor-header-info">
                 <h4 id="counselor-header-name" class="cs-chat-header-name">—</h4>
                 <span id="counselor-header-hours" class="cs-chat-header-hours">—</span>
               </div>
             </div>
-            <div class="chat-status-badge" id="counselor-header-status">
+            <div class="chat-status-badge" id="counselor-header-status" style="margin-right: 8px;">
               <span class="status-dot"></span>
               <span class="status-text">Offline</span>
             </div>
+            <button class="chat-theme-btn" onclick="App.chat.toggleThemeMenu()" title="Personalisasi Obrolan">🎨</button>
           </div>
 
           <!-- Identity Selector Toggle -->
@@ -300,6 +302,46 @@
             <input type="text" class="form-input" id="chat-input-bk" placeholder="Ketik pesanmu..." 
               onkeydown="if(event.key==='Enter')App.chat.sendBk()">
             <button class="btn-send" onclick="App.chat.sendBk()">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Personalization Menu -->
+      <div class="chat-theme-overlay hidden" id="chat-theme-menu" onclick="if(event.target===this) App.chat.toggleThemeMenu()">
+        <div class="chat-theme-container">
+          <div class="chat-theme-header">
+            <h4>🎨 Personalisasi Chat</h4>
+            <button class="btn-close-theme" onclick="App.chat.toggleThemeMenu()">✕</button>
+          </div>
+          
+          <div class="chat-theme-body">
+            <!-- Wallpaper Section -->
+            <div class="theme-section">
+              <label>Warna Wallpaper</label>
+              <div class="theme-presets" id="student-wallpaper-presets">
+                <!-- Filled dynamically via JS -->
+              </div>
+              <div class="theme-custom-picker">
+                <span>Warna Kustom Wallpaper:</span>
+                <input type="color" id="student-custom-wallpaper" oninput="App.chat.setCustomWallpaper(this.value)">
+              </div>
+            </div>
+            
+            <!-- Chat Bubble Section -->
+            <div class="theme-section">
+              <label>Warna Chat Bubble (Terkirim)</label>
+              <div class="theme-presets" id="student-bubble-presets">
+                <!-- Filled dynamically via JS -->
+              </div>
+              <div class="theme-custom-picker">
+                <span>Warna Kustom Bubble:</span>
+                <input type="color" id="student-custom-bubble" oninput="App.chat.setCustomBubble(this.value)">
+              </div>
+            </div>
+          </div>
+          
+          <div class="chat-theme-footer">
+            <button class="btn-reset-theme" onclick="App.chat.resetTheme()">Atur Ulang ke Default</button>
           </div>
         </div>
       </div>
