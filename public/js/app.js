@@ -379,6 +379,9 @@ App.router = {
     document.querySelectorAll('.nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.page === pageId);
     });
+    document.querySelectorAll('.cs-page2-nav-btn').forEach(item => {
+      item.classList.toggle('active', item.dataset.nav === pageId);
+    });
 
     // Page-specific initialization
     this.onPageEnter(pageId);
@@ -420,19 +423,107 @@ App.router = {
    DASHBOARD MODULE
    =========================================== */
 App.dashboard = {
+  isAnimatingRobot: false,
+
   init() {
     console.log('CounselSpace.Ai: Initializing dashboard...');
     this.renderGreeting();
     this.renderQuickStats();
     this.renderHistory();
+    this.resetRobotPosition();
+  },
+
+  resetRobotPosition() {
+    const robotWrap = document.getElementById('dashboard-robot-wrap');
+    if (robotWrap) {
+      robotWrap.style.transform = 'none';
+      robotWrap.classList.remove('is-moving');
+    }
+    const bubble = document.getElementById('robot-speech-bubble');
+    const bubbleText = document.getElementById('robot-speech-text');
+    if (bubbleText) {
+      bubbleText.textContent = 'Pilih menu di bawah! 👋';
+    }
+    if (bubble) {
+      bubble.classList.remove('active-speech');
+    }
+  },
+
+  selectMenu(targetPage, btnElement) {
+    if (this.isAnimatingRobot) return;
+    this.isAnimatingRobot = true;
+
+    // Highlight active nav item
+    const allBtns = document.querySelectorAll('.cs-page2-nav-btn');
+    allBtns.forEach(b => b.classList.remove('active'));
+    if (btnElement) btnElement.classList.add('active');
+
+    const robotWrap = document.getElementById('dashboard-robot-wrap');
+    const speechBubble = document.getElementById('robot-speech-bubble');
+    const speechText = document.getElementById('robot-speech-text');
+
+    const messages = {
+      screening: 'Otw Self Check! 🧠⚡',
+      edu: 'Yuk Belajar Edukasi! 📚✨',
+      chat: 'Mari Curhat Anonim! 💬🤖',
+      dashboard: 'Menu Utama! 🏠💙'
+    };
+
+    if (speechText && messages[targetPage]) {
+      speechText.textContent = messages[targetPage];
+    }
+    if (speechBubble) {
+      speechBubble.classList.add('active-speech');
+    }
+
+    if (robotWrap && btnElement) {
+      // Calculate delta coordinates relative to stage
+      const robotRect = robotWrap.getBoundingClientRect();
+      const btnRect = btnElement.getBoundingClientRect();
+
+      const robotCenterX = robotRect.left + robotRect.width / 2;
+      const robotCenterY = robotRect.top + robotRect.height / 2;
+
+      const btnCenterX = btnRect.left + btnRect.width / 2;
+      const btnCenterY = btnRect.top + btnRect.height / 2;
+
+      const deltaX = btnCenterX - robotCenterX;
+      const deltaY = btnCenterY - robotCenterY - 45; // Hover slightly above icon
+
+      const tilt = deltaX > 0 ? 16 : deltaX < 0 ? -16 : 0;
+
+      robotWrap.classList.add('is-moving');
+      robotWrap.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1.15) rotate(${tilt}deg)`;
+
+      btnElement.classList.add('btn-pulse');
+      setTimeout(() => btnElement.classList.remove('btn-pulse'), 600);
+
+      setTimeout(() => {
+        this.isAnimatingRobot = false;
+        if (targetPage !== 'dashboard') {
+          App.router.navigate(targetPage);
+        } else {
+          this.resetRobotPosition();
+        }
+      }, 550);
+    } else {
+      this.isAnimatingRobot = false;
+      App.router.navigate(targetPage);
+    }
   },
 
   renderGreeting() {
     const name = App.utils.getStorage('student_name');
     const greeting = App.utils.getGreeting();
     const displayName = name ? name : 'Sobat';
-    document.getElementById('greeting-text').textContent = `${greeting}, ${displayName}! 👋`;
-    document.getElementById('greeting-date').textContent = App.utils.formatDate(new Date());
+    const greetElem = document.getElementById('greeting-text');
+    if (greetElem) {
+      greetElem.textContent = `${greeting}, ${displayName}! 👋`;
+    }
+    const dateElem = document.getElementById('greeting-date');
+    if (dateElem) {
+      dateElem.textContent = App.utils.formatDate(new Date());
+    }
   },
 
   renderQuickStats() {

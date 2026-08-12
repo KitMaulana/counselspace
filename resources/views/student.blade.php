@@ -75,34 +75,81 @@
 
     <!-- ==================== DASHBOARD PAGE ==================== -->
     <section class="page" id="page-dashboard">
-      <div class="dashboard-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-lg);">
-        <div>
-          <h1 class="greeting-text" id="greeting-text">Halo, Sobat! 👋</h1>
-          <p class="greeting-date" id="greeting-date"></p>
+      <div class="cs-dashboard-page2-wrapper">
+
+        <!-- Main Hero Scene (Matching Design Page 2) -->
+        <div class="cs-page2-hero">
+          <!-- Background Scene -->
+          <img src="{{ asset('images/page2-scene.png') }}" class="cs-page2-bg" alt="CounselSpace Scene">
+
+          <!-- Header Overlay (Avatar & Greeting) -->
+          <div class="cs-page2-header">
+            <button class="cs-page2-avatar-btn" onclick="App.auth.logout()" title="Logout / Keluar">
+              <span class="cs-avatar-icon">👤</span>
+            </button>
+            <div class="cs-page2-greeting-wrap">
+              <h2 class="cs-page2-title" id="greeting-text">Halo sobat Counselspace</h2>
+              <p class="cs-page2-subtitle" id="greeting-date">Bagaimana Harimu?</p>
+            </div>
+          </div>
+
+          <!-- Animated Robot Stage -->
+          <div class="cs-page2-robot-stage" id="robot-stage">
+            <div class="cs-robot-wrapper" id="dashboard-robot-wrap">
+              <!-- Speech / Action Bubble -->
+              <div class="cs-robot-bubble" id="robot-speech-bubble">
+                <span class="cs-bubble-text" id="robot-speech-text">Pilih menu di bawah! 👋</span>
+              </div>
+              <div class="cs-robot-glow"></div>
+              <img src="{{ asset('images/spacebot.png') }}" class="cs-robot-img" id="dashboard-robot" alt="Robot Spacebot">
+            </div>
+          </div>
+
+          <!-- Page 2 Bottom Navigation Bar -->
+          <nav class="cs-page2-navbar" id="page2-navbar">
+            <button class="cs-page2-nav-btn active" data-nav="dashboard" onclick="App.dashboard.selectMenu('dashboard', this)">
+              <div class="cs-nav-icon-box">
+                <img src="{{ asset('images/icon-home-btn.png') }}" alt="Home">
+              </div>
+              <span class="cs-nav-label">Home</span>
+            </button>
+
+            <button class="cs-page2-nav-btn" data-nav="edu" onclick="App.dashboard.selectMenu('edu', this)">
+              <div class="cs-nav-icon-box">
+                <img src="{{ asset('images/icon-edu-btn.png') }}" alt="Edu">
+              </div>
+              <span class="cs-nav-label">Edu</span>
+            </button>
+
+            <button class="cs-page2-nav-btn" data-nav="screening" onclick="App.dashboard.selectMenu('screening', this)">
+              <div class="cs-nav-icon-box">
+                <img src="{{ asset('images/icon-check-btn.png') }}" alt="Check">
+              </div>
+              <span class="cs-nav-label">Check</span>
+            </button>
+
+            <button class="cs-page2-nav-btn" data-nav="chat" onclick="App.dashboard.selectMenu('chat', this)">
+              <div class="cs-nav-icon-box">
+                <img src="{{ asset('images/icon-chat-btn.png') }}" alt="Chat">
+              </div>
+              <span class="cs-nav-label">Chat</span>
+            </button>
+          </nav>
+        </div><!-- /.cs-page2-hero -->
+
+        <!-- Quick Stats & History Section -->
+        <div class="cs-dashboard-details">
+          <div class="quick-stats" id="quick-stats">
+            <!-- Filled dynamically -->
+          </div>
+
+          <div class="section-title cs-section-title">📊 Riwayat Skrining</div>
+          <div class="history-list" id="history-list">
+            <!-- Filled dynamically -->
+          </div>
         </div>
-        <button class="btn btn-secondary btn-sm" onclick="App.auth.logout()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); display: inline-flex; align-items: center; gap: 4px;">🚪 Keluar</button>
-      </div>
 
-      <!-- Quick Stats -->
-      <div class="quick-stats" id="quick-stats">
-        <!-- Filled dynamically -->
-      </div>
-
-      <!-- Menu utama (PNG 2) -->
-      <x-title-pill size="sm">Menu</x-title-pill>
-
-      <div class="cs-menu-grid">
-        <x-card-tech onclick="App.router.navigate('edu')">Edukasi</x-card-tech>
-        <x-card-tech onclick="App.router.navigate('screening')">Self Check</x-card-tech>
-        <x-card-tech onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('bk'),100)">Chat Anonim</x-card-tech>
-        <x-card-tech onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('ai'),100)">Chatbot</x-card-tech>
-      </div>
-
-      <!-- History -->
-      <div class="section-title cs-section-title">📊 Riwayat Skrining</div>
-      <div class="history-list" id="history-list">
-        <!-- Filled dynamically -->
-      </div>
+      </div><!-- /.cs-dashboard-page2-wrapper -->
     </section>
 
     <!-- ==================== SCREENING PAGE ==================== -->
