@@ -3775,6 +3775,7 @@ textarea.form-input {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.25s ease;
 }
 
