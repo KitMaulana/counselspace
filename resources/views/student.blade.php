@@ -374,19 +374,19 @@
 
     <!-- ==================== BOTTOM NAVIGATION ==================== -->
     <nav class="bottom-nav hidden" id="bottom-nav">
-      <button class="nav-item active" data-page="dashboard" onclick="App.dashboard.navClick('dashboard', this)">
+      <button class="nav-item active" data-page="dashboard" onclick="App.router.navigate('dashboard')">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Home</span>
       </button>
-      <button class="nav-item" data-page="screening" onclick="App.dashboard.navClick('screening', this)">
+      <button class="nav-item" data-page="screening" onclick="App.router.navigate('screening')">
         <span class="nav-icon">🧠</span>
         <span class="nav-label">Check</span>
       </button>
-      <button class="nav-item" data-page="edu" onclick="App.dashboard.navClick('edu', this)">
+      <button class="nav-item" data-page="edu" onclick="App.router.navigate('edu')">
         <span class="nav-icon">📚</span>
         <span class="nav-label">Edu</span>
       </button>
-      <button class="nav-item" data-page="chat" onclick="App.dashboard.navClick('chat', this)">
+      <button class="nav-item" data-page="chat" onclick="App.router.navigate('chat')">
         <span class="nav-icon">💬</span>
         <span class="nav-label">Chat</span>
       </button>

@@ -342,7 +342,7 @@ App.router = {
     console.log('CounselSpace.Ai: Routing to page ->', pageId);
     const targetEl = document.getElementById('page-' + pageId);
     if (!targetEl) {
-      this.showPage('dashboard');
+      if (pageId !== 'dashboard') this.showPage('dashboard');
       return;
     }
 
@@ -352,31 +352,19 @@ App.router = {
       if (this.history.length > 20) this.history.shift();
     }
 
-    // Exit current page
-    const currentEl = this.currentPage ? document.getElementById('page-' + this.currentPage) : null;
-    if (currentEl) {
-      currentEl.classList.remove('page-active');
-      currentEl.classList.add('page-exit');
-      setTimeout(() => {
-        currentEl.classList.remove('page-exit');
-      }, 250);
-    }
+    this.currentPage = pageId;
 
-    // Enter new page
+    // Show target page immediately, hide others
     document.querySelectorAll('.page').forEach(p => {
-      if (p !== targetEl) {
+      if (p === targetEl) {
+        p.classList.add('page-active');
+        p.classList.remove('page-exit');
+      } else {
         p.classList.remove('page-active', 'page-exit');
       }
     });
 
-    // Small delay for exit animation to start
-    setTimeout(() => {
-      console.log('CounselSpace.Ai: Adding page-active class to page-', pageId);
-      targetEl.classList.add('page-active');
-      window.scrollTo(0, 0);
-    }, currentEl ? 100 : 0);
-
-    this.currentPage = pageId;
+    window.scrollTo(0, 0);
 
     // Bottom nav visibility — hide on splash & login
     const nav = document.getElementById('bottom-nav');
@@ -386,7 +374,7 @@ App.router = {
       nav.classList.remove('hidden');
     }
 
-    // Update active nav item
+    // Update active nav item immediately
     document.querySelectorAll('.nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.page === pageId);
     });
@@ -457,72 +445,26 @@ App.dashboard = {
     if (bubble) bubble.classList.remove('active-speech');
   },
 
-  /** Called by bottom nav buttons. Animates robot if on dashboard, else navigates directly. */
+  /** Called by bottom nav buttons. Navigates instantly while reacting on speech bubble if on dashboard. */
   navClick(targetPage, btnElement) {
-    if (!btnElement) {
-      btnElement = document.querySelector(`.nav-item[data-page="${targetPage}"]`);
-    }
-
     const onDashboard = App.router.currentPage === 'dashboard';
 
-    if (!onDashboard || targetPage === 'dashboard') {
-      // Not on dashboard or clicking Home — navigate directly
-      App.router.navigate(targetPage);
-      return;
-    }
-
-    // Don't duplicate animation if already animating
-    if (this.isAnimatingRobot) {
-      App.router.navigate(targetPage);
-      return;
-    }
-    this.isAnimatingRobot = true;
-
-    try {
-      const robotWrap = document.getElementById('dashboard-robot-wrap');
+    if (onDashboard && targetPage !== 'dashboard') {
       const speechBubble = document.getElementById('robot-speech-bubble');
       const speechText = document.getElementById('robot-speech-text');
-
       const messages = {
         screening: 'Otw Self Check! 🧠⚡',
         edu: 'Yuk Belajar! 📚✨',
         chat: 'Yuk Curhat! 💬🤖'
       };
-
       if (speechText && messages[targetPage]) {
         speechText.textContent = messages[targetPage];
       }
       if (speechBubble) speechBubble.classList.add('active-speech');
-
-      if (robotWrap && btnElement) {
-        robotWrap.style.transition = 'none';
-        robotWrap.style.transform = 'none';
-        robotWrap.classList.remove('is-moving');
-        void robotWrap.offsetWidth;
-
-        const robotRect = robotWrap.getBoundingClientRect();
-        const btnRect = btnElement.getBoundingClientRect();
-        const deltaX = Math.round((btnRect.left + btnRect.width / 2) - (robotRect.left + robotRect.width / 2));
-        const deltaY = Math.round((btnRect.top) - (robotRect.top + robotRect.height / 2));
-        const tilt = deltaX > 10 ? 15 : deltaX < -10 ? -15 : 0;
-
-        robotWrap.style.transition = '';
-        robotWrap.classList.add('is-moving');
-        robotWrap.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.2) rotate(${tilt}deg)`;
-
-        setTimeout(() => {
-          this.isAnimatingRobot = false;
-          App.router.navigate(targetPage);
-        }, 550);
-      } else {
-        this.isAnimatingRobot = false;
-        App.router.navigate(targetPage);
-      }
-    } catch (err) {
-      console.error('CounselSpace.Ai: navClick animation error, falling back to instant navigate:', err);
-      this.isAnimatingRobot = false;
-      App.router.navigate(targetPage);
     }
+
+    // Always navigate instantly and reliably
+    App.router.navigate(targetPage);
   },
 
   renderGreeting() {
