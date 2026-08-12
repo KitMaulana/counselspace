@@ -77,11 +77,9 @@
     <section class="page" id="page-dashboard">
       <div class="cs-dashboard-page2-wrapper">
 
-        <!-- Main Hero Scene (Matching Design Page 2) -->
+        <!-- Main Hero Scene Card (Matching Design Page 2) -->
         <div class="cs-page2-hero">
-          <!-- Background Scene -->
-          <img src="{{ asset('images/page2-scene.png') }}" class="cs-page2-bg" alt="CounselSpace Scene">
-
+          
           <!-- Header Overlay (Avatar & Greeting) -->
           <div class="cs-page2-header">
             <button class="cs-page2-avatar-btn" onclick="App.auth.logout()" title="Logout / Keluar">
@@ -93,7 +91,7 @@
             </div>
           </div>
 
-          <!-- Animated Robot Stage -->
+          <!-- Animated Robot Stage (Center Area) -->
           <div class="cs-page2-robot-stage" id="robot-stage">
             <div class="cs-robot-wrapper" id="dashboard-robot-wrap">
               <!-- Speech / Action Bubble -->

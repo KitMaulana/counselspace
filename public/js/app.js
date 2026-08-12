@@ -477,7 +477,10 @@ App.dashboard = {
     }
 
     if (robotWrap && btnElement) {
-      // Calculate delta coordinates relative to stage
+      // Calculate delta from un-transformed base position
+      robotWrap.classList.remove('is-moving');
+      robotWrap.style.transform = 'none';
+
       const robotRect = robotWrap.getBoundingClientRect();
       const btnRect = btnElement.getBoundingClientRect();
 
@@ -487,10 +490,13 @@ App.dashboard = {
       const btnCenterX = btnRect.left + btnRect.width / 2;
       const btnCenterY = btnRect.top + btnRect.height / 2;
 
-      const deltaX = btnCenterX - robotCenterX;
-      const deltaY = btnCenterY - robotCenterY - 45; // Hover slightly above icon
+      const deltaX = Math.round(btnCenterX - robotCenterX);
+      const deltaY = Math.round(btnCenterY - robotCenterY - 45); // Hover right over icon
 
-      const tilt = deltaX > 0 ? 16 : deltaX < 0 ? -16 : 0;
+      const tilt = deltaX > 15 ? 18 : deltaX < -15 ? -18 : 0;
+
+      // Force layout reflow
+      void robotWrap.offsetWidth;
 
       robotWrap.classList.add('is-moving');
       robotWrap.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1.15) rotate(${tilt}deg)`;
@@ -505,7 +511,7 @@ App.dashboard = {
         } else {
           this.resetRobotPosition();
         }
-      }, 550);
+      }, 600);
     } else {
       this.isAnimatingRobot = false;
       App.router.navigate(targetPage);
