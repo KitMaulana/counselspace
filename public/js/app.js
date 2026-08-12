@@ -890,8 +890,19 @@ App.result = {
         setTimeout(() => App.utils.animateCounter(scoreEl, 0, score, 1500), 300);
       }
 
+      // Local category helper to avoid cross-module dependency
+      const getCategoryInfo = (cat) => {
+        const key = (cat || 'Aman').toLowerCase();
+        const map = {
+          'aman':    { icon: '✅', color: 'var(--green-400)' },
+          'waspada': { icon: '⚠️', color: 'var(--amber-400)' },
+          'bahaya':  { icon: '🚨', color: 'var(--red-400)' }
+        };
+        return map[key] || map['aman'];
+      };
+
       // Category badge
-      const catInfo = App.dashboard.getCategoryInfo(category);
+      const catInfo = getCategoryInfo(category);
       const categoryEl = document.getElementById('result-category');
       if (categoryEl) {
         categoryEl.innerHTML = `<span class="badge badge-${category.toLowerCase()}">${catInfo.icon} ${category}</span>`;
@@ -926,6 +937,9 @@ App.result = {
       }
     } catch (err) {
       console.error('App.result.render error:', err);
+      try {
+        App.utils.showToast('Gagal memuat hasil: ' + err.message, 'error');
+      } catch (e) {}
     }
   }
 };
