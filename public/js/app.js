@@ -860,68 +860,72 @@ App.screening = {
    =========================================== */
 App.result = {
   render() {
-    const result = App.utils.getStorage('last_result');
-    if (!result) {
-      App.router.navigate('dashboard');
-      return;
-    }
-
-    let score = result.score;
-    if (isNaN(score)) score = 0;
-    const category = result.category ? (result.category.charAt(0).toUpperCase() + result.category.slice(1).toLowerCase()) : 'Aman';
-
-    // Animate score circle
-    const circleFill = document.getElementById('result-circle-fill');
-    if (circleFill) {
-      circleFill.className = 'circle-fill ' + category.toLowerCase();
-      const circumference = 2 * Math.PI * 78; // r=78
-      circleFill.style.strokeDasharray = circumference;
-      circleFill.style.strokeDashoffset = circumference;
-      setTimeout(() => {
-        const offset = circumference - (circumference * score / 100);
-        circleFill.style.strokeDashoffset = offset;
-      }, 200);
-    }
-
-    // Animate counter
-    const scoreEl = document.getElementById('result-score-number');
-    if (scoreEl) {
-      setTimeout(() => App.utils.animateCounter(scoreEl, 0, score, 1500), 300);
-    }
-
-    // Category badge
-    const catInfo = App.dashboard.getCategoryInfo(category);
-    const categoryEl = document.getElementById('result-category');
-    if (categoryEl) {
-      categoryEl.innerHTML = `<span class="badge badge-${category.toLowerCase()}">${catInfo.icon} ${category}</span>`;
-    }
-
-    // Description
-    const descriptions = {
-      'Aman': 'Selamat! 🎉 Tingkat FOMO kamu tergolong rendah. Kamu sudah cukup bijak dalam menggunakan media sosial. Tetap jaga keseimbanganmu ya! Kunjungi Edu Corner untuk tips menjaga kesehatan digitalmu.',
-      'Waspada': 'Tingkat FOMO kamu berada di level sedang. ⚠️ Ada beberapa tanda bahwa media sosial mulai memengaruhi kesejahteraanmu. Coba baca materi di Edu Corner dan praktikkan tips dari AI Chatbot kami.',
-      'Bahaya': 'Tingkat FOMO kamu tergolong tinggi. 🚨 Media sosial tampaknya sangat memengaruhi emosi dan keseharianmu. Sangat disarankan untuk berbicara dengan guru BK atau konselor profesional.'
-    };
-    const descEl = document.getElementById('result-description');
-    if (descEl) {
-      descEl.textContent = descriptions[category] || '';
-    }
-
-    // Action buttons
-    const actionsEl = document.getElementById('result-actions');
-    if (actionsEl) {
-      if (category === 'Aman') {
-        actionsEl.innerHTML = `
-          <button class="btn btn-success btn-block" onclick="App.router.navigate('edu')">📚 Kunjungi Edu Corner</button>`;
-      } else if (category === 'Waspada') {
-        actionsEl.innerHTML = `
-          <button class="btn btn-warning btn-block" onclick="App.router.navigate('edu')">📚 Buka Edu Corner</button>
-          <button class="btn btn-primary btn-block" onclick="App.router.navigate('chat')">🤖 Chat dengan AI</button>`;
-      } else {
-        actionsEl.innerHTML = `
-          <button class="btn btn-danger btn-block" onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('bk'),100)">💬 Chat Anonim Guru BK</button>
-          <button class="btn btn-warning btn-block" onclick="App.router.navigate('emergency')">🆘 Kontak Darurat</button>`;
+    try {
+      const result = App.utils.getStorage('last_result');
+      if (!result) {
+        App.router.navigate('dashboard');
+        return;
       }
+
+      let score = result.score;
+      if (isNaN(score)) score = 0;
+      const category = result.category ? (result.category.charAt(0).toUpperCase() + result.category.slice(1).toLowerCase()) : 'Aman';
+
+      // Animate score circle (using setAttribute for SVG standards safety)
+      const circleFill = document.getElementById('result-circle-fill');
+      if (circleFill) {
+        circleFill.setAttribute('class', 'circle-fill ' + category.toLowerCase());
+        const circumference = 2 * Math.PI * 78; // r=78
+        circleFill.setAttribute('stroke-dasharray', circumference);
+        circleFill.setAttribute('stroke-dashoffset', circumference);
+        setTimeout(() => {
+          const offset = circumference - (circumference * score / 100);
+          circleFill.setAttribute('stroke-dashoffset', offset);
+        }, 200);
+      }
+
+      // Animate counter
+      const scoreEl = document.getElementById('result-score-number');
+      if (scoreEl) {
+        setTimeout(() => App.utils.animateCounter(scoreEl, 0, score, 1500), 300);
+      }
+
+      // Category badge
+      const catInfo = App.dashboard.getCategoryInfo(category);
+      const categoryEl = document.getElementById('result-category');
+      if (categoryEl) {
+        categoryEl.innerHTML = `<span class="badge badge-${category.toLowerCase()}">${catInfo.icon} ${category}</span>`;
+      }
+
+      // Description
+      const descriptions = {
+        'Aman': 'Selamat! 🎉 Tingkat FOMO kamu tergolong rendah. Kamu sudah cukup bijak dalam menggunakan media sosial. Tetap jaga keseimbanganmu ya! Kunjungi Edu Corner untuk tips menjaga kesehatan digitalmu.',
+        'Waspada': 'Tingkat FOMO kamu berada di level sedang. ⚠️ Ada beberapa tanda bahwa media sosial mulai memengaruhi kesejahteraanmu. Coba baca materi di Edu Corner dan praktikkan tips dari AI Chatbot kami.',
+        'Bahaya': 'Tingkat FOMO kamu tergolong tinggi. 🚨 Media sosial tampaknya sangat memengaruhi emosi dan keseharianmu. Sangat disarankan untuk berbicara dengan guru BK atau konselor profesional.'
+      };
+      const descEl = document.getElementById('result-description');
+      if (descEl) {
+        descEl.textContent = descriptions[category] || '';
+      }
+
+      // Action buttons
+      const actionsEl = document.getElementById('result-actions');
+      if (actionsEl) {
+        if (category === 'Aman') {
+          actionsEl.innerHTML = `
+            <button class="btn btn-success btn-block" onclick="App.router.navigate('edu')">📚 Kunjungi Edu Corner</button>`;
+        } else if (category === 'Waspada') {
+          actionsEl.innerHTML = `
+            <button class="btn btn-warning btn-block" onclick="App.router.navigate('edu')">📚 Buka Edu Corner</button>
+            <button class="btn btn-primary btn-block" onclick="App.router.navigate('chat')">🤖 Chat dengan AI</button>`;
+        } else {
+          actionsEl.innerHTML = `
+            <button class="btn btn-danger btn-block" onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('bk'),100)">💬 Chat Anonim Guru BK</button>
+            <button class="btn btn-warning btn-block" onclick="App.router.navigate('emergency')">🆘 Kontak Darurat</button>`;
+        }
+      }
+    } catch (err) {
+      console.error('App.result.render error:', err);
     }
   }
 };
