@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=1.1">
 </head>
 <body>
 
@@ -587,6 +587,6 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/admin.js') }}?v=1.4"></script>
+    <script src="{{ asset('js/admin.js') }}?v=1.5"></script>
 </body>
 </html>
