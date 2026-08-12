@@ -798,9 +798,11 @@ App.screening = {
 
   /** Calculate score and submit */
   async submitQuiz() {
-    const maxScore = this.questions.length * 4;
-    const rawScore = this.answers.reduce((sum, v) => sum + (v || 1), 0);
-    const percentage = Math.round((rawScore / maxScore) * 100);
+    const qLength = this.questions ? this.questions.length : 0;
+    const maxScore = qLength > 0 ? qLength * 4 : 80;
+    const rawScore = this.answers ? this.answers.reduce((sum, v) => sum + (v || 1), 0) : 20;
+    let percentage = Math.round((rawScore / maxScore) * 100);
+    if (isNaN(percentage)) percentage = 0;
 
     let category;
     if (percentage <= 40) {
@@ -818,9 +820,9 @@ App.screening = {
       maxScore,
       category,
       date: new Date().toISOString(),
-      name: this.studentName,
-      class: this.studentClass,
-      answerCount: this.questions.length
+      name: this.studentName || 'Sobat',
+      class: this.studentClass || '-',
+      answerCount: qLength
     };
 
     App.utils.setStorage('last_result', result);
@@ -828,23 +830,27 @@ App.screening = {
     history.push(result);
     App.utils.setStorage('screening_history', history);
 
-    // Try saving to API
-    try {
-      const formattedAnswers = this.questions.map((q, index) => ({
-        question_id: parseInt(q.id),
-        answer_value: parseInt(this.answers[index] || 1)
-      }));
+    // Save to API in background (do not await, to ensure instant result loading)
+    if (qLength > 0) {
+      try {
+        const formattedAnswers = this.questions.map((q, index) => ({
+          question_id: parseInt(q.id),
+          answer_value: parseInt(this.answers[index] || 1)
+        }));
 
-      await App.api('/api/screenings', 'POST', {
-        student_name: this.studentName || 'Anonim',
-        student_class: this.studentClass || '-',
-        answers: formattedAnswers
-      });
-    } catch (err) {
-      console.warn('Failed to save screening to API:', err);
+        App.api('/api/screenings', 'POST', {
+          student_name: this.studentName || 'Anonim',
+          student_class: this.studentClass || '-',
+          answers: formattedAnswers
+        }).catch(err => {
+          console.warn('Failed to save screening to API:', err);
+        });
+      } catch (err) {
+        console.warn('Error formatting answers for API:', err);
+      }
     }
 
-    // Navigate to result
+    // Navigate to result immediately
     App.router.navigate('result');
   }
 };
@@ -860,28 +866,35 @@ App.result = {
       return;
     }
 
-    const score = result.score;
+    let score = result.score;
+    if (isNaN(score)) score = 0;
     const category = result.category ? (result.category.charAt(0).toUpperCase() + result.category.slice(1).toLowerCase()) : 'Aman';
 
     // Animate score circle
     const circleFill = document.getElementById('result-circle-fill');
-    circleFill.className = 'circle-fill ' + category.toLowerCase();
-    const circumference = 2 * Math.PI * 78; // r=78
-    circleFill.style.strokeDasharray = circumference;
-    circleFill.style.strokeDashoffset = circumference;
-    setTimeout(() => {
-      const offset = circumference - (circumference * score / 100);
-      circleFill.style.strokeDashoffset = offset;
-    }, 200);
+    if (circleFill) {
+      circleFill.className = 'circle-fill ' + category.toLowerCase();
+      const circumference = 2 * Math.PI * 78; // r=78
+      circleFill.style.strokeDasharray = circumference;
+      circleFill.style.strokeDashoffset = circumference;
+      setTimeout(() => {
+        const offset = circumference - (circumference * score / 100);
+        circleFill.style.strokeDashoffset = offset;
+      }, 200);
+    }
 
     // Animate counter
     const scoreEl = document.getElementById('result-score-number');
-    setTimeout(() => App.utils.animateCounter(scoreEl, 0, score, 1500), 300);
+    if (scoreEl) {
+      setTimeout(() => App.utils.animateCounter(scoreEl, 0, score, 1500), 300);
+    }
 
     // Category badge
     const catInfo = App.dashboard.getCategoryInfo(category);
-    document.getElementById('result-category').innerHTML =
-      `<span class="badge badge-${category.toLowerCase()}">${catInfo.icon} ${category}</span>`;
+    const categoryEl = document.getElementById('result-category');
+    if (categoryEl) {
+      categoryEl.innerHTML = `<span class="badge badge-${category.toLowerCase()}">${catInfo.icon} ${category}</span>`;
+    }
 
     // Description
     const descriptions = {
@@ -889,21 +902,26 @@ App.result = {
       'Waspada': 'Tingkat FOMO kamu berada di level sedang. ⚠️ Ada beberapa tanda bahwa media sosial mulai memengaruhi kesejahteraanmu. Coba baca materi di Edu Corner dan praktikkan tips dari AI Chatbot kami.',
       'Bahaya': 'Tingkat FOMO kamu tergolong tinggi. 🚨 Media sosial tampaknya sangat memengaruhi emosi dan keseharianmu. Sangat disarankan untuk berbicara dengan guru BK atau konselor profesional.'
     };
-    document.getElementById('result-description').textContent = descriptions[category] || '';
+    const descEl = document.getElementById('result-description');
+    if (descEl) {
+      descEl.textContent = descriptions[category] || '';
+    }
 
     // Action buttons
     const actionsEl = document.getElementById('result-actions');
-    if (category === 'Aman') {
-      actionsEl.innerHTML = `
-        <button class="btn btn-success btn-block" onclick="App.router.navigate('edu')">📚 Kunjungi Edu Corner</button>`;
-    } else if (category === 'Waspada') {
-      actionsEl.innerHTML = `
-        <button class="btn btn-warning btn-block" onclick="App.router.navigate('edu')">📚 Buka Edu Corner</button>
-        <button class="btn btn-primary btn-block" onclick="App.router.navigate('chat')">🤖 Chat dengan AI</button>`;
-    } else {
-      actionsEl.innerHTML = `
-        <button class="btn btn-danger btn-block" onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('bk'),100)">💬 Chat Anonim Guru BK</button>
-        <button class="btn btn-warning btn-block" onclick="App.router.navigate('emergency')">🆘 Kontak Darurat</button>`;
+    if (actionsEl) {
+      if (category === 'Aman') {
+        actionsEl.innerHTML = `
+          <button class="btn btn-success btn-block" onclick="App.router.navigate('edu')">📚 Kunjungi Edu Corner</button>`;
+      } else if (category === 'Waspada') {
+        actionsEl.innerHTML = `
+          <button class="btn btn-warning btn-block" onclick="App.router.navigate('edu')">📚 Buka Edu Corner</button>
+          <button class="btn btn-primary btn-block" onclick="App.router.navigate('chat')">🤖 Chat dengan AI</button>`;
+      } else {
+        actionsEl.innerHTML = `
+          <button class="btn btn-danger btn-block" onclick="App.router.navigate('chat');setTimeout(()=>App.chat.switchTab('bk'),100)">💬 Chat Anonim Guru BK</button>
+          <button class="btn btn-warning btn-block" onclick="App.router.navigate('emergency')">🆘 Kontak Darurat</button>`;
+      }
     }
   }
 };
