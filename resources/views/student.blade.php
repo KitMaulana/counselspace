@@ -75,79 +75,38 @@
 
     <!-- ==================== DASHBOARD PAGE ==================== -->
     <section class="page" id="page-dashboard">
-      <div class="cs-dashboard-page2-wrapper">
-
-        <!-- Main Hero Scene Card (Matching Design Page 2) -->
-        <div class="cs-page2-hero">
-          
-          <!-- Header Overlay (Avatar & Greeting) -->
-          <div class="cs-page2-header">
-            <button class="cs-page2-avatar-btn" onclick="App.auth.logout()" title="Logout / Keluar">
-              <span class="cs-avatar-icon">👤</span>
-            </button>
-            <div class="cs-page2-greeting-wrap">
-              <h2 class="cs-page2-title" id="greeting-text">Halo sobat Counselspace</h2>
-              <p class="cs-page2-subtitle" id="greeting-date">Bagaimana Harimu?</p>
-            </div>
-          </div>
-
-          <!-- Animated Robot Stage (Center Area) -->
-          <div class="cs-page2-robot-stage" id="robot-stage">
-            <div class="cs-robot-wrapper" id="dashboard-robot-wrap">
-              <!-- Speech / Action Bubble -->
-              <div class="cs-robot-bubble" id="robot-speech-bubble">
-                <span class="cs-bubble-text" id="robot-speech-text">Pilih menu di bawah! 👋</span>
-              </div>
-              <div class="cs-robot-glow"></div>
-              <img src="{{ asset('images/spacebot.png') }}" class="cs-robot-img" id="dashboard-robot" alt="Robot Spacebot">
-            </div>
-          </div>
-
-          <!-- Page 2 Bottom Navigation Bar -->
-          <nav class="cs-page2-navbar" id="page2-navbar">
-            <button class="cs-page2-nav-btn active" data-nav="dashboard" onclick="App.dashboard.selectMenu('dashboard', this)">
-              <div class="cs-nav-icon-box">
-                <img src="{{ asset('images/icon-home-btn.png') }}" alt="Home">
-              </div>
-              <span class="cs-nav-label">Home</span>
-            </button>
-
-            <button class="cs-page2-nav-btn" data-nav="edu" onclick="App.dashboard.selectMenu('edu', this)">
-              <div class="cs-nav-icon-box">
-                <img src="{{ asset('images/icon-edu-btn.png') }}" alt="Edu">
-              </div>
-              <span class="cs-nav-label">Edu</span>
-            </button>
-
-            <button class="cs-page2-nav-btn" data-nav="screening" onclick="App.dashboard.selectMenu('screening', this)">
-              <div class="cs-nav-icon-box">
-                <img src="{{ asset('images/icon-check-btn.png') }}" alt="Check">
-              </div>
-              <span class="cs-nav-label">Check</span>
-            </button>
-
-            <button class="cs-page2-nav-btn" data-nav="chat" onclick="App.dashboard.selectMenu('chat', this)">
-              <div class="cs-nav-icon-box">
-                <img src="{{ asset('images/icon-chat-btn.png') }}" alt="Chat">
-              </div>
-              <span class="cs-nav-label">Chat</span>
-            </button>
-          </nav>
-        </div><!-- /.cs-page2-hero -->
-
-        <!-- Quick Stats & History Section -->
-        <div class="cs-dashboard-details">
-          <div class="quick-stats" id="quick-stats">
-            <!-- Filled dynamically -->
-          </div>
-
-          <div class="section-title cs-section-title">📊 Riwayat Skrining</div>
-          <div class="history-list" id="history-list">
-            <!-- Filled dynamically -->
-          </div>
+      <!-- Greeting Header -->
+      <div class="cs-dash-header">
+        <button class="cs-page2-avatar-btn" onclick="App.auth.logout()" title="Logout / Keluar">
+          <span class="cs-avatar-icon">👤</span>
+        </button>
+        <div class="cs-page2-greeting-wrap">
+          <h2 class="cs-page2-title" id="greeting-text">Halo sobat Counselspace</h2>
+          <p class="cs-page2-subtitle" id="greeting-date">Bagaimana Harimu?</p>
         </div>
+      </div>
 
-      </div><!-- /.cs-dashboard-page2-wrapper -->
+      <!-- Animated Robot Stage -->
+      <div class="cs-robot-stage-dashboard" id="robot-stage">
+        <div class="cs-robot-wrapper" id="dashboard-robot-wrap">
+          <div class="cs-robot-bubble" id="robot-speech-bubble">
+            <span class="cs-bubble-text" id="robot-speech-text">Pilih menu di bawah! 👋</span>
+          </div>
+          <div class="cs-robot-glow"></div>
+          <img src="{{ asset('images/spacebot.png') }}" class="cs-robot-img" id="dashboard-robot" alt="Robot Spacebot">
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="quick-stats" id="quick-stats">
+        <!-- Filled dynamically -->
+      </div>
+
+      <!-- History -->
+      <div class="section-title cs-section-title">📊 Riwayat Skrining</div>
+      <div class="history-list" id="history-list">
+        <!-- Filled dynamically -->
+      </div>
     </section>
 
     <!-- ==================== SCREENING PAGE ==================== -->
@@ -415,19 +374,19 @@
 
     <!-- ==================== BOTTOM NAVIGATION ==================== -->
     <nav class="bottom-nav hidden" id="bottom-nav">
-      <button class="nav-item active" data-page="dashboard" onclick="App.router.navigate('dashboard')">
+      <button class="nav-item active" data-page="dashboard" onclick="App.dashboard.navClick('dashboard', this)">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Home</span>
       </button>
-      <button class="nav-item" data-page="screening" onclick="App.router.navigate('screening')">
+      <button class="nav-item" data-page="screening" onclick="App.dashboard.navClick('screening', this)">
         <span class="nav-icon">🧠</span>
         <span class="nav-label">Check</span>
       </button>
-      <button class="nav-item" data-page="edu" onclick="App.router.navigate('edu')">
+      <button class="nav-item" data-page="edu" onclick="App.dashboard.navClick('edu', this)">
         <span class="nav-icon">📚</span>
         <span class="nav-label">Edu</span>
       </button>
-      <button class="nav-item" data-page="chat" onclick="App.router.navigate('chat')">
+      <button class="nav-item" data-page="chat" onclick="App.dashboard.navClick('chat', this)">
         <span class="nav-icon">💬</span>
         <span class="nav-label">Chat</span>
       </button>

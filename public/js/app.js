@@ -367,9 +367,9 @@ App.router = {
 
     this.currentPage = pageId;
 
-    // Bottom nav visibility
+    // Bottom nav visibility — hide on splash & login
     const nav = document.getElementById('bottom-nav');
-    if (pageId === 'splash') {
+    if (pageId === 'splash' || pageId === 'login') {
       nav.classList.add('hidden');
     } else {
       nav.classList.remove('hidden');
@@ -378,9 +378,6 @@ App.router = {
     // Update active nav item
     document.querySelectorAll('.nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.page === pageId);
-    });
-    document.querySelectorAll('.cs-page2-nav-btn').forEach(item => {
-      item.classList.toggle('active', item.dataset.nav === pageId);
     });
 
     // Page-specific initialization
@@ -436,27 +433,32 @@ App.dashboard = {
   resetRobotPosition() {
     const robotWrap = document.getElementById('dashboard-robot-wrap');
     if (robotWrap) {
+      robotWrap.style.transition = 'none';
       robotWrap.style.transform = 'none';
       robotWrap.classList.remove('is-moving');
+      // Re-enable transition after reflow
+      void robotWrap.offsetWidth;
+      robotWrap.style.transition = '';
     }
     const bubble = document.getElementById('robot-speech-bubble');
     const bubbleText = document.getElementById('robot-speech-text');
-    if (bubbleText) {
-      bubbleText.textContent = 'Pilih menu di bawah! 👋';
-    }
-    if (bubble) {
-      bubble.classList.remove('active-speech');
-    }
+    if (bubbleText) bubbleText.textContent = 'Pilih menu di bawah! 👋';
+    if (bubble) bubble.classList.remove('active-speech');
   },
 
-  selectMenu(targetPage, btnElement) {
+  /** Called by bottom nav buttons. Animates robot if on dashboard, else navigates directly. */
+  navClick(targetPage, btnElement) {
+    const onDashboard = App.router.currentPage === 'dashboard';
+
+    if (!onDashboard || targetPage === 'dashboard') {
+      // Not on dashboard or clicking Home — just navigate
+      App.router.navigate(targetPage);
+      return;
+    }
+
+    // We are on dashboard and user wants to go somewhere else — animate!
     if (this.isAnimatingRobot) return;
     this.isAnimatingRobot = true;
-
-    // Highlight active nav item
-    const allBtns = document.querySelectorAll('.cs-page2-nav-btn');
-    allBtns.forEach(b => b.classList.remove('active'));
-    if (btnElement) btnElement.classList.add('active');
 
     const robotWrap = document.getElementById('dashboard-robot-wrap');
     const speechBubble = document.getElementById('robot-speech-bubble');
@@ -464,54 +466,40 @@ App.dashboard = {
 
     const messages = {
       screening: 'Otw Self Check! 🧠⚡',
-      edu: 'Yuk Belajar Edukasi! 📚✨',
-      chat: 'Mari Curhat Anonim! 💬🤖',
-      dashboard: 'Menu Utama! 🏠💙'
+      edu: 'Yuk Belajar! 📚✨',
+      chat: 'Yuk Curhat! 💬🤖'
     };
 
+    // Show speech bubble
     if (speechText && messages[targetPage]) {
       speechText.textContent = messages[targetPage];
     }
-    if (speechBubble) {
-      speechBubble.classList.add('active-speech');
-    }
+    if (speechBubble) speechBubble.classList.add('active-speech');
 
     if (robotWrap && btnElement) {
-      // Calculate delta from un-transformed base position
-      robotWrap.classList.remove('is-moving');
+      // Reset to base position first (no animation)
+      robotWrap.style.transition = 'none';
       robotWrap.style.transform = 'none';
+      robotWrap.classList.remove('is-moving');
+      void robotWrap.offsetWidth; // force reflow
 
+      // Measure positions
       const robotRect = robotWrap.getBoundingClientRect();
       const btnRect = btnElement.getBoundingClientRect();
+      const deltaX = Math.round((btnRect.left + btnRect.width / 2) - (robotRect.left + robotRect.width / 2));
+      const deltaY = Math.round((btnRect.top) - (robotRect.top + robotRect.height / 2));
+      const tilt = deltaX > 10 ? 15 : deltaX < -10 ? -15 : 0;
 
-      const robotCenterX = robotRect.left + robotRect.width / 2;
-      const robotCenterY = robotRect.top + robotRect.height / 2;
-
-      const btnCenterX = btnRect.left + btnRect.width / 2;
-      const btnCenterY = btnRect.top + btnRect.height / 2;
-
-      const deltaX = Math.round(btnCenterX - robotCenterX);
-      const deltaY = Math.round(btnCenterY - robotCenterY - 45); // Hover right over icon
-
-      const tilt = deltaX > 15 ? 18 : deltaX < -15 ? -18 : 0;
-
-      // Force layout reflow
-      void robotWrap.offsetWidth;
-
+      // Re-enable transition and animate
+      robotWrap.style.transition = '';
       robotWrap.classList.add('is-moving');
-      robotWrap.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1.15) rotate(${tilt}deg)`;
+      robotWrap.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.2) rotate(${tilt}deg)`;
 
-      btnElement.classList.add('btn-pulse');
-      setTimeout(() => btnElement.classList.remove('btn-pulse'), 600);
-
+      // Navigate after animation
       setTimeout(() => {
         this.isAnimatingRobot = false;
-        if (targetPage !== 'dashboard') {
-          App.router.navigate(targetPage);
-        } else {
-          this.resetRobotPosition();
-        }
-      }, 600);
+        App.router.navigate(targetPage);
+      }, 650);
     } else {
       this.isAnimatingRobot = false;
       App.router.navigate(targetPage);
