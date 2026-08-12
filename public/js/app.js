@@ -911,7 +911,7 @@ App.result = {
       // Description
       const descriptions = {
         'Aman': 'Selamat! 🎉 Tingkat FOMO kamu tergolong rendah. Kamu sudah cukup bijak dalam menggunakan media sosial. Tetap jaga keseimbanganmu ya! Kunjungi Edu Corner untuk tips menjaga kesehatan digitalmu.',
-        'Waspada': 'Tingkat FOMO kamu berada di level sedang. ⚠️ Ada beberapa tanda bahwa media sosial mulai memengaruhi kesejahteraanmu. Coba baca materi di Edu Corner dan praktikkan tips dari AI Chatbot kami.',
+        'Waspada': 'Tingkat FOMO kamu berada di level sedang. ⚠️ Ada beberapa tanda bahwa media sosial mulai memengaruhi kehidupanmu. Coba baca materi di Edu Corner dan praktikkan tips dari AI Chatbot kami.',
         'Bahaya': 'Tingkat FOMO kamu tergolong tinggi. 🚨 Media sosial tampaknya sangat memengaruhi emosi dan keseharianmu. Sangat disarankan untuk berbicara dengan guru BK atau konselor profesional.'
       };
       const descEl = document.getElementById('result-description');
