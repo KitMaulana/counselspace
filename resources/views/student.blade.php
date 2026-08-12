@@ -211,6 +211,10 @@
         <button class="edu-tab" data-filter="artikel">Artikel</button>
       </div>
 
+      <div class="edu-category-pills" id="edu-category-pills">
+        <!-- Filled dynamically -->
+      </div>
+
       <div class="edu-grid" id="edu-grid">
         <!-- Filled dynamically -->
       </div>

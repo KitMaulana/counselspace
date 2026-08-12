@@ -6,10 +6,12 @@ use App\Http\Controllers\Api\EduContentController;
 use App\Http\Controllers\Api\ScreeningController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\EduCategoryController;
 
 // Public Student API
 Route::get('/questions', [QuestionController::class, 'index']);
 Route::get('/edu', [EduContentController::class, 'index']);
+Route::get('/edu-categories', [EduCategoryController::class, 'index']);
 Route::post('/screenings', [ScreeningController::class, 'store']);
 Route::get('/counselors', [UserController::class, 'counselorsPublic']);
 Route::post('/ping', [UserController::class, 'ping'])->middleware('role:siswa,guru,admin');
@@ -57,6 +59,10 @@ Route::prefix('admin')->middleware('role:admin,guru')->group(function () {
         Route::put('/edu/{id}', [EduContentController::class, 'update']);
         Route::delete('/edu/{id}', [EduContentController::class, 'destroy']);
         Route::patch('/edu/{id}/toggle', [EduContentController::class, 'toggle']);
+
+        // Kelola Kategori Edukasi
+        Route::post('/edu-categories', [EduCategoryController::class, 'store']);
+        Route::delete('/edu-categories/{id}', [EduCategoryController::class, 'destroy']);
 
         // Rekapitulasi Data Anggota (Siswa, Guru BK, & Aktivitasnya)
         Route::get('/users/recap', [UserController::class, 'recap']);

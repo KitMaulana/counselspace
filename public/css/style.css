@@ -3749,3 +3749,44 @@ textarea.form-input {
   border-color: rgba(239, 68, 68, 0.4);
   color: #ef4444;
 }
+
+/* Category filter pills in Edu Corner */
+.edu-category-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 16px var(--space-sm);
+  margin-bottom: var(--space-md);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.edu-category-pills::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.edu-category-pill {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.edu-category-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.edu-category-pill.active {
+  background: var(--gradient-glossy);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 10px rgba(21, 101, 216, 0.35);
+}

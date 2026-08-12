@@ -932,6 +932,8 @@ App.result = {
 App.edu = {
   content: [],
   activeFilter: 'semua',
+  activeCategory: 'semua',
+  categories: [],
   tabsBound: false,
 
   /** Fallback content if API unavailable */
@@ -940,45 +942,49 @@ App.edu = {
       id: 1, type: 'video', title: 'Apa itu FOMO? Kenali Tandanya!',
       snippet: 'Video edukasi singkat tentang Fear of Missing Out dan dampaknya bagi remaja.',
       thumbnail: '', youtube_id: 'dQw4w9WgXcQ',
-      content: 'FOMO (Fear of Missing Out) adalah perasaan cemas atau takut ketinggalan momen, pengalaman, atau informasi yang dialami orang lain.'
+      content: 'FOMO (Fear of Missing Out) adalah perasaan cemas atau takut ketinggalan momen, pengalaman, atau informasi yang dialami orang lain.',
+      category: 'fomo'
     },
     {
       id: 2, type: 'video', title: '5 Cara Mengatasi Kecanduan Media Sosial',
       snippet: 'Tips praktis yang bisa kamu lakukan untuk mengurangi waktu di media sosial.',
       thumbnail: '', youtube_id: 'sYZvgaGCm8g',
-      content: 'Lima langkah mengurangi kecanduan: 1. Atur batas waktu, 2. Matikan notifikasi, 3. Hapus aplikasi dari home screen, 4. Temukan hobi offline, 5. Gunakan mode fokus.'
+      content: 'Lima langkah mengurangi kecanduan: 1. Atur batas waktu, 2. Matikan notifikasi, 3. Hapus aplikasi dari home screen, 4. Temukan hobi offline, 5. Gunakan mode fokus.',
+      category: 'digital-wellness'
     },
     {
       id: 3, type: 'poster', title: 'Infografis: Dampak FOMO pada Kesehatan Mental',
       snippet: 'Poster informatif tentang hubungan FOMO dengan stres, kecemasan, dan gangguan tidur.',
       thumbnail: '', image_url: '',
-      content: 'FOMO dapat menyebabkan: kecemasan meningkat, gangguan tidur, penurunan konsentrasi belajar, rendahnya kepercayaan diri, dan isolasi sosial.'
+      content: 'FOMO dapat menyebabkan: kecemasan meningkat, gangguan tidur, penurunan konsentrasi belajar, rendahnya kepercayaan diri, dan isolasi sosial.',
+      category: 'fomo'
     },
     {
       id: 4, type: 'poster', title: 'Tips Digital Wellness untuk Pelajar',
       snippet: 'Panduan visual tentang kebiasaan sehat menggunakan teknologi.',
       thumbnail: '', image_url: '',
-      content: '1. Batasi screen time 2 jam per hari. 2. No phone 1 jam sebelum tidur. 3. Lakukan aktivitas fisik setiap hari. 4. Buat jadwal media sosial. 5. Prioritaskan interaksi tatap muka.'
+      content: '1. Batasi screen time 2 jam per hari. 2. No phone 1 jam sebelum tidur. 3. Lakukan aktivitas fisik setiap hari. 4. Buat jadwal media sosial. 5. Prioritaskan interaksi tatap muka.',
+      category: 'digital-wellness'
     },
     {
       id: 5, type: 'artikel', title: 'Mengapa Remaja Rentan FOMO?',
       snippet: 'Artikel tentang faktor psikologis yang membuat remaja lebih mudah mengalami FOMO.',
       thumbnail: '',
-      content: 'Masa remaja adalah periode perkembangan identitas di mana kebutuhan akan penerimaan sosial sangat tinggi. Media sosial menciptakan ilusi bahwa semua orang menjalani kehidupan yang sempurna. Otak remaja yang masih berkembang, terutama bagian prefrontal cortex, membuat mereka lebih impulsif dalam menggunakan teknologi.\n\nBeberapa faktor yang membuat remaja rentan FOMO:\n• Kebutuhan tinggi akan validasi sosial\n• Kemudahan akses media sosial 24/7\n• Tekanan teman sebaya (peer pressure)\n• Kurangnya literasi digital\n• Perbandingan sosial yang tidak realistis\n\nYang bisa dilakukan:\n1. Sadari bahwa media sosial hanya menampilkan highlight reel\n2. Fokus pada hubungan nyata dan bermakna\n3. Praktikkan gratitude journaling\n4. Batasi penggunaan media sosial\n5. Cari bantuan profesional jika diperlukan'
+      content: 'Masa remaja adalah periode perkembangan identitas di mana kebutuhan akan penerimaan sosial sangat tinggi. Media sosial menciptakan ilusi bahwa semua orang menjalani kehidupan yang sempurna. Otak remaja yang masih berkembang, terutama bagian prefrontal cortex, membuat mereka lebih impulsif dalam menggunakan teknologi.\n\nBeberapa faktor yang membuat remaja rentan FOMO:\n• Kebutuhan tinggi akan validasi sosial\n• Kemudahan akses media sosial 24/7\n• Tekanan teman sebaya (peer pressure)\n• Kurangnya literasi digital\n• Perbandingan sosial yang tidak realistis\n\nYang bisa dilakukan:\n1. Sadari bahwa media sosial hanya menampilkan highlight reel\n2. Fokus pada hubungan nyata dan bermakna\n3. Praktikkan gratitude journaling\n4. Batasi penggunaan media sosial\n5. Cari bantuan profesional jika diperlukan',
+      category: 'fomo'
     },
     {
       id: 6, type: 'artikel', title: 'Digital Detox: Panduan Lengkap untuk Pelajar',
       snippet: 'Langkah-langkah melakukan digital detox yang efektif tanpa merasa tersiksa.',
       thumbnail: '',
-      content: 'Digital detox bukan berarti harus menghentikan semua penggunaan teknologi. Ini tentang menemukan keseimbangan yang sehat.\n\nPanduan Digital Detox:\n\n📱 Mulai dari yang kecil:\n• Coba 30 menit tanpa handphone setiap hari\n• Matikan notifikasi media sosial\n• Gunakan mode "Jangan Ganggu" saat belajar\n\n🏃 Ganti dengan aktivitas positif:\n• Olahraga atau jalan-jalan di alam\n• Membaca buku fisik\n• Bermain dengan hewan peliharaan\n• Memasak atau membuat kerajinan tangan\n\n😴 Jaga kualitas tidur:\n• Letakkan handphone di luar kamar tidur\n• Berhenti menggunakan gadget 1 jam sebelum tidur\n• Gunakan alarm fisik, bukan alarm handphone\n\n📊 Evaluasi kemajuan:\n• Catat waktu penggunaan media sosial\n• Perhatikan perubahan mood\n• Rayakan setiap kemajuan kecil!'
+      content: 'Digital detox bukan berarti harus menghentikan semua penggunaan teknologi. Ini tentang menemukan keseimbangan yang sehat.\n\nPanduan Digital Detox:\n\n📱 Mulai dari yang kecil:\n• Coba 30 menit tanpa handphone setiap hari\n• Matikan notifikasi media sosial\n• Gunakan mode "Jangan Ganggu" saat belajar\n\n🏃 Ganti dengan aktivitas positif:\n• Olahraga atau jalan-jalan di alam\n• Membaca buku fisik\n• Bermain dengan hewan peliharaan\n• Memasak atau membuat kerajinan tangan\n\n😴 Jaga kualitas tidur:\n• Letakkan handphone di luar kamar tidur\n• Berhenti menggunakan gadget 1 jam sebelum tidur\n• Gunakan alarm fisik, bukan alarm handphone\n\n📊 Evaluasi kemajuan:\n• Catat waktu penggunaan media sosial\n• Perhatikan perubahan mood\n• Rayakan setiap kemajuan kecil!',
+      category: 'digital-wellness'
     }
   ],
 
   /** Initialize */
   async init() {
     // Set up tab listeners.
-    // init() dipanggil setiap kali halaman Edu dibuka, jadi listener hanya
-    // dipasang sekali agar tidak menumpuk dan memanggil renderContent berkali-kali.
     if (!this.tabsBound) {
       document.querySelectorAll('.edu-tab').forEach(tab => {
         tab.addEventListener('click', () => {
@@ -991,6 +997,32 @@ App.edu = {
       this.tabsBound = true;
     }
 
+    // Load categories
+    try {
+      const catRes = await App.api('/api/edu-categories');
+      if (catRes && catRes.data && catRes.data.length > 0) {
+        this.categories = catRes.data;
+      } else {
+        this.categories = [
+          { name: 'FOMO', slug: 'fomo' },
+          { name: 'JOMO', slug: 'jomo' },
+          { name: 'Kecemasan', slug: 'kecemasan' },
+          { name: 'Digital Wellness', slug: 'digital-wellness' },
+          { name: 'Umum', slug: 'umum' }
+        ];
+      }
+    } catch (e) {
+      this.categories = [
+        { name: 'FOMO', slug: 'fomo' },
+        { name: 'JOMO', slug: 'jomo' },
+        { name: 'Kecemasan', slug: 'kecemasan' },
+        { name: 'Digital Wellness', slug: 'digital-wellness' },
+        { name: 'Umum', slug: 'umum' }
+      ];
+    }
+
+    this.renderCategories();
+
     // Load content
     if (this.content.length === 0) {
       try {
@@ -1002,11 +1034,11 @@ App.edu = {
               type: item.content_type || 'artikel',
               title: item.title,
               snippet: item.description || '',
-              thumbnail: item.thumbnail_url || ''
+              thumbnail: item.thumbnail_url || '',
+              category: item.category || 'umum'
             };
 
             if (normalized.type === 'video') {
-              // Extract youtube id from URL
               let ytId = '';
               const url = item.content_url || '';
               if (url.includes('embed/')) {
@@ -1027,14 +1059,41 @@ App.edu = {
             return normalized;
           });
         } else {
-          this.content = [...this.fallbackContent];
+          this.content = this.fallbackContent.map(item => ({
+            ...item,
+            category: item.category || 'umum'
+          }));
         }
       } catch (err) {
         console.warn('Failed to load online edu content, using fallback:', err);
-        this.content = [...this.fallbackContent];
+        this.content = this.fallbackContent.map(item => ({
+          ...item,
+          category: item.category || 'umum'
+        }));
       }
     }
 
+    this.renderContent();
+  },
+
+  /** Render category filter pills */
+  renderCategories() {
+    const container = document.getElementById('edu-category-pills');
+    if (!container) return;
+
+    const allPills = [{ name: 'Semua Kategori', slug: 'semua' }, ...this.categories];
+    
+    container.innerHTML = allPills.map(cat => {
+      const isActive = this.activeCategory === cat.slug;
+      return `<button class="edu-category-pill ${isActive ? 'active' : ''}" 
+        onclick="App.edu.selectCategory('${cat.slug}')">${cat.name}</button>`;
+    }).join('');
+  },
+
+  /** Select category filter */
+  selectCategory(slug) {
+    this.activeCategory = slug;
+    this.renderCategories();
     this.renderContent();
   },
 
@@ -1045,6 +1104,10 @@ App.edu = {
 
     if (this.activeFilter !== 'semua') {
       items = items.filter(c => c.type === this.activeFilter);
+    }
+
+    if (this.activeCategory !== 'semua') {
+      items = items.filter(c => c.category && c.category.toLowerCase() === this.activeCategory.toLowerCase());
     }
 
     if (items.length === 0) {

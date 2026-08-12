@@ -78,6 +78,9 @@
                     <div class="nav-item" data-page="edu">
                         <span class="nav-icon">📚</span> Konten Edukasi
                     </div>
+                    <div class="nav-item" data-page="edu-categories" id="nav-edu-categories" style="display:none">
+                        <span class="nav-icon">🏷️</span> Kategori Edukasi
+                    </div>
                     <div class="nav-item" data-page="chat">
                         <span class="nav-icon">💬</span> Chat Konseling
                     </div>
@@ -243,6 +246,38 @@
                         </div>
                         <div class="edu-grid" id="edu-grid">
                             <div class="spinner-overlay"><div class="spinner"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== EDU CATEGORY PAGE ===== -->
+                <div class="page" id="page-edu-categories">
+                    <div class="page-header">
+                        <div>
+                            <h1>🏷️ Kategori Edukasi</h1>
+                            <p>Kelola kategori untuk konten edukasi (Poster, Video, Artikel)</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-add-category">+ Tambah Kategori</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Kategori</th>
+                                            <th>Slug</th>
+                                            <th style="width: 120px; text-align: center;">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categories-table-body">
+                                        <tr id="categories-loading-row">
+                                            <td colspan="3" style="text-align: center;">Memuat kategori...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

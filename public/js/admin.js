@@ -20,6 +20,7 @@
         questions: [],
         eduContent: [],
         eduFilter: 'all',
+        categories: [],
         chatSessions: [],
         activeChatSessionId: null,
         chatMessages: [],
@@ -83,6 +84,9 @@
         eduTabs: $('#edu-tabs'),
         eduGrid: $('#edu-grid'),
         btnAddEdu: $('#btn-add-edu'),
+        navEduCategories: $('#nav-edu-categories'),
+        categoriesBody: $('#categories-table-body'),
+        btnAddCategory: $('#btn-add-category'),
         // Chat
         chatSessions: $('#chat-sessions'),
         chatConversation: $('#chat-conversation'),
@@ -321,16 +325,18 @@
         if (role === 'admin') {
             dom.navRecap.style.display = 'flex';
             dom.navCounselors.style.display = 'flex';
+            dom.navEduCategories.style.display = 'flex';
             dom.navProfile.style.display = 'none';
             if (dom.btnAddQuestion) dom.btnAddQuestion.style.display = 'inline-block';
             if (dom.btnAddEdu) dom.btnAddEdu.style.display = 'inline-block';
         } else {
             dom.navRecap.style.display = 'none';
             dom.navCounselors.style.display = 'none';
+            dom.navEduCategories.style.display = 'none';
             dom.navProfile.style.display = 'flex';
             if (dom.btnAddQuestion) dom.btnAddQuestion.style.display = 'none';
             if (dom.btnAddEdu) dom.btnAddEdu.style.display = 'none';
-            if (state.currentPage === 'recap' || state.currentPage === 'counselors') {
+            if (state.currentPage === 'recap' || state.currentPage === 'counselors' || state.currentPage === 'edu-categories') {
                 state.currentPage = 'dashboard';
             }
         }
@@ -411,6 +417,7 @@
             case 'dashboard': loadDashboard(); break;
             case 'questions': loadQuestions(); break;
             case 'edu': loadEduContent(); break;
+            case 'edu-categories': loadEduCategories(); break;
             case 'chat': loadChatSessions(); break;
             case 'screenings': loadScreenings(); break;
             case 'recap': fetchRecapData(); break;
@@ -425,7 +432,7 @@
     function handleHashChange() {
         if (!isAuthenticated()) return;
         const hash = window.location.hash.replace('#admin-', '');
-        const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap', 'counselors', 'profile'];
+        const validPages = ['dashboard', 'questions', 'edu', 'edu-categories', 'chat', 'screenings', 'recap', 'counselors', 'profile'];
         if (validPages.includes(hash)) {
             navigateTo(hash);
         }
@@ -780,17 +787,36 @@
         }).join('');
     }
 
-    function showAddEduModal() {
-        showEduModal();
+    async function showAddEduModal() {
+        await showEduModal();
     }
 
-    function showEditEduModal(id) {
+    async function showEditEduModal(id) {
         const c = state.eduContent.find((x) => x.id == id);
         if (!c) return showToast('Konten tidak ditemukan', 'error');
-        showEduModal(c);
+        await showEduModal(c);
     }
 
-    function showEduModal(data = null) {
+    async function ensureCategoriesLoaded() {
+        if (!state.categories || state.categories.length === 0) {
+            try {
+                const data = await api('edu-categories');
+                state.categories = data.data || [];
+            } catch (err) {
+                console.warn('Failed to load categories:', err);
+                state.categories = [
+                    { name: 'FOMO', slug: 'fomo' },
+                    { name: 'JOMO', slug: 'jomo' },
+                    { name: 'Kecemasan', slug: 'kecemasan' },
+                    { name: 'Digital Wellness', slug: 'digital-wellness' },
+                    { name: 'Umum', slug: 'umum' }
+                ];
+            }
+        }
+    }
+
+    async function showEduModal(data = null) {
+        await ensureCategoriesLoaded();
         const isEdit = !!data;
         const title = isEdit ? 'Edit Konten' : 'Tambah Konten Baru';
         const type = data ? data.content_type : '';
@@ -823,8 +849,15 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Kategori</label>
-                            <input type="text" class="form-control" id="ef-category" value="${escapeHtml(data?.category || '')}" placeholder="cth: fomo">
+                            <label>Kategori *</label>
+                            <select class="form-control" id="ef-category" required>
+                                <option value="">Pilih kategori</option>
+                                ${state.categories.map(cat => `
+                                    <option value="${cat.slug}" ${(data?.category === cat.slug || (!data && cat.slug === 'umum')) ? 'selected' : ''}>
+                                        ${cat.name}
+                                    </option>
+                                `).join('')}
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -1528,6 +1561,11 @@
             });
         }
 
+        // Edu Categories
+        if (dom.btnAddCategory) {
+            dom.btnAddCategory.addEventListener('click', showAddCategoryModal);
+        }
+
         // Close modal on Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && dom.modalOverlay.classList.contains('show')) {
@@ -1997,6 +2035,112 @@
         }
     }
 
+    // ============================================
+    // KATEGORI EDUKASI CRUD MODULE
+    // ============================================
+    async function loadEduCategories() {
+        if (!dom.categoriesBody) return;
+        dom.categoriesBody.innerHTML = `
+            <tr id="categories-loading-row">
+                <td colspan="3" style="text-align: center;">Memuat kategori...</td>
+            </tr>`;
+        
+        try {
+            const data = await api('edu-categories');
+            state.categories = data.data || [];
+            renderEduCategories();
+        } catch (err) {
+            state.categories = [];
+            dom.categoriesBody.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center; color: var(--red-400);">Gagal memuat kategori: ${err.message}</td>
+                </tr>`;
+        }
+    }
+
+    function renderEduCategories() {
+        if (!dom.categoriesBody) return;
+        
+        if (!state.categories.length) {
+            dom.categoriesBody.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center; color: var(--text-muted);">Belum ada kategori yang ditambahkan.</td>
+                </tr>`;
+            return;
+        }
+
+        const isAdmin = getUserRole() === 'admin';
+
+        dom.categoriesBody.innerHTML = state.categories.map((cat) => {
+            const isProtected = ['fomo', 'jomo', 'kecemasan', 'digital-wellness', 'umum'].includes(cat.slug);
+            const deleteBtn = isAdmin 
+                ? `<button class="btn btn-danger btn-sm" onclick="window.adminApp.deleteCategory(${cat.id})" ${isProtected ? 'disabled title="Kategori sistem tidak dapat dihapus"' : ''}>Hapus</button>`
+                : `<span class="text-muted" style="font-size:0.8rem;">Hanya Admin</span>`;
+
+            return `
+                <tr>
+                    <td><strong>${escapeHtml(cat.name)}</strong></td>
+                    <td><code>${escapeHtml(cat.slug)}</code></td>
+                    <td style="text-align: center;">
+                        ${deleteBtn}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function showAddCategoryModal() {
+        showModal(`
+            <div class="modal-header">
+                <h3>Tambah Kategori Baru</h3>
+                <button class="modal-close" onclick="window.adminApp.hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="category-form" onsubmit="event.preventDefault(); window.adminApp.saveCategory();">
+                    <div class="form-group">
+                        <label>Nama Kategori *</label>
+                        <input type="text" class="form-control" id="cat-name" placeholder="cth: FOMO, JOMO, Regulasi Diri" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.adminApp.hideModal()">Batal</button>
+                <button class="btn btn-primary" onclick="window.adminApp.saveCategory()">Simpan</button>
+            </div>
+        `);
+    }
+
+    async function saveCategory() {
+        const nameEl = document.getElementById('cat-name');
+        if (!nameEl) return;
+        const name = nameEl.value.trim();
+        if (!name) {
+            showToast('Nama kategori wajib diisi.', 'error');
+            return;
+        }
+
+        try {
+            await api('admin/edu-categories', 'POST', { name });
+            hideModal();
+            showToast('Kategori berhasil ditambahkan!', 'success');
+            loadEduCategories();
+        } catch (err) {
+            showToast('Gagal menambahkan kategori: ' + err.message, 'error');
+        }
+    }
+
+    async function deleteCategory(id) {
+        if (!confirm('Apakah Anda yakin ingin menghapus kategori ini? Konten yang menggunakan kategori ini tidak akan terhapus, namun tidak akan muncul dalam filter kategori ini.')) return;
+
+        try {
+            await api('admin/edu-categories/' + id, 'DELETE');
+            showToast('Kategori berhasil dihapus!', 'success');
+            loadEduCategories();
+        } catch (err) {
+            showToast('Gagal menghapus kategori: ' + err.message, 'error');
+        }
+    }
+
     function init() {
         bindEvents();
 
@@ -2005,7 +2149,7 @@
             showApp();
             // Periksa hash saat ini
             const hash = window.location.hash.replace('#admin-', '');
-            const validPages = ['dashboard', 'questions', 'edu', 'chat', 'screenings', 'recap', 'counselors', 'profile'];
+            const validPages = ['dashboard', 'questions', 'edu', 'edu-categories', 'chat', 'screenings', 'recap', 'counselors', 'profile'];
             if (validPages.includes(hash)) {
                 navigateTo(hash);
             } else {
@@ -2031,6 +2175,10 @@
         saveEduContent,
         deleteEduContent,
         updateEduPreview,
+        // Edu Categories
+        deleteCategory,
+        saveCategory,
+        showAddCategoryModal,
         // Chat
         openChat,
         // Chat Theme Customization
