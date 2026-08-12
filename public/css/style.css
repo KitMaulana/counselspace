@@ -3753,16 +3753,10 @@ textarea.form-input {
 /* Category filter pills in Edu Corner */
 .edu-category-pills {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 4px 16px var(--space-sm);
+  flex-wrap: wrap;
+  gap: 8px 10px;
   margin-bottom: var(--space-md);
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-.edu-category-pills::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  padding: 4px 0 var(--space-sm);
 }
 
 .edu-category-pill {
