@@ -935,12 +935,85 @@ App.result = {
             <button class="btn btn-warning btn-block" onclick="App.router.navigate('emergency')">🆘 Kontak Darurat</button>`;
         }
       }
+
+      // Load and display AI Advice
+      this.loadAiAdvice(category, score);
+
     } catch (err) {
       console.error('App.result.render error:', err);
       try {
         App.utils.showToast('Gagal memuat hasil: ' + err.message, 'error');
       } catch (e) {}
     }
+  },
+
+  async loadAiAdvice(category, score) {
+    const container = document.getElementById('result-ai-advice-container');
+    const body = document.getElementById('result-ai-advice-body');
+    if (!container || !body) return;
+
+    // Show panel with shimmering loader
+    container.classList.remove('hidden');
+    body.innerHTML = `
+      <div style="margin-bottom: 12px; font-style: italic; font-size: 0.8rem; color: var(--text-muted);">
+        BK AI sedang menganalisis jawabanmu untuk merumuskan saran terbaik...
+      </div>
+      <div class="shimmer-loader" style="width: 100%;"></div>
+      <div class="shimmer-loader" style="width: 90%;"></div>
+      <div class="shimmer-loader" style="width: 95%;"></div>
+      <div class="shimmer-loader" style="width: 60%;"></div>
+    `;
+
+    // Map answers if present in App.screening
+    let answersPayload = [];
+    if (App.screening && App.screening.questions && App.screening.questions.length > 0 && App.screening.answers && App.screening.answers.length > 0) {
+      answersPayload = App.screening.questions.map((q, idx) => {
+        const val = App.screening.answers[idx] || 1;
+        const labels = ['Sangat Tidak Setuju', 'Tidak Setuju', 'Setuju', 'Sangat Setuju'];
+        return {
+          question: q.question,
+          answer: labels[val - 1] || 'Tidak Setuju'
+        };
+      });
+    }
+
+    try {
+      const res = await App.api('/api/screenings/ai-advice', 'POST', {
+        category: category.toLowerCase(),
+        score: parseInt(score),
+        answers: answersPayload.length > 0 ? answersPayload : null
+      });
+
+      if (res && res.success && res.advice) {
+        body.innerHTML = this.parseMarkdown(res.advice);
+      } else {
+        throw new Error('Response data invalid');
+      }
+    } catch (err) {
+      console.warn('Failed to load AI advice:', err);
+      body.innerHTML = `<p style="color:var(--text-muted); font-style:italic; margin:0;">Gagal memuat saran kustom AI. Silakan periksa koneksi internet Anda.</p>`;
+    }
+  },
+
+  parseMarkdown(text) {
+    if (!text) return '';
+    let html = text;
+    
+    // Bold: **text**
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Headings: ### text
+    html = html.replace(/^### (.*?)$/gm, '<h3 style="margin-top:14px; margin-bottom:6px; font-weight:700; color:#1e9bf0; font-size:0.95rem;">$1</h3>');
+    html = html.replace(/^## (.*?)$/gm, '<h2 style="margin-top:18px; margin-bottom:8px; font-weight:700; color:#16223F; font-size:1.05rem;">$1</h2>');
+    html = html.replace(/^# (.*?)$/gm, '<h1 style="margin-top:22px; margin-bottom:10px; font-weight:800; color:#16223F; font-size:1.15rem;">$1</h1>');
+    
+    // Bullet lists: - text or * text
+    html = html.replace(/^\s*[-*]\s+(.*?)$/gm, '<li style="margin-bottom:6px; list-style-type: disc; margin-left: 16px; color:#3C4A63;">$1</li>');
+    
+    // Line breaks: \n
+    html = html.replace(/\n/g, '<br>');
+    
+    return html;
   }
 };
 

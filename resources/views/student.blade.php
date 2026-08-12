@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4.1">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4.2">
 </head>
 <body>
 
@@ -188,6 +188,16 @@
         <p class="result-description" id="result-description">
           <!-- Description rendered dynamically -->
         </p>
+
+        <!-- AI advice panel -->
+        <div class="cs-ai-advice-panel hidden" id="result-ai-advice-container">
+          <div class="cs-ai-advice-header">
+            <span>🤖</span> Rekomendasi BK AI Untukmu
+          </div>
+          <div class="cs-ai-advice-body" id="result-ai-advice-body">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
 
         <div class="result-actions" id="result-actions">
           <!-- Buttons rendered dynamically -->
@@ -454,6 +464,6 @@
   <!-- Celebration Overlay -->
   <div class="celebration-overlay" id="celebration-overlay"></div>
 
-  <script src="{{ asset('js/app.js') }}?v=4.1"></script>
+  <script src="{{ asset('js/app.js') }}?v=4.2"></script>
 </body>
 </html>

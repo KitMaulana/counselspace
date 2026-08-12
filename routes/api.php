@@ -13,6 +13,7 @@ Route::get('/questions', [QuestionController::class, 'index']);
 Route::get('/edu', [EduContentController::class, 'index']);
 Route::get('/edu-categories', [EduCategoryController::class, 'index']);
 Route::post('/screenings', [ScreeningController::class, 'store']);
+Route::post('/screenings/ai-advice', [ScreeningController::class, 'generateAiAdvice']);
 Route::get('/counselors', [UserController::class, 'counselorsPublic']);
 Route::post('/ping', [UserController::class, 'ping'])->middleware('role:siswa,guru,admin');
 
