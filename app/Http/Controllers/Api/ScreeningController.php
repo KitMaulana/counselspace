@@ -216,7 +216,10 @@ class ScreeningController extends Controller
                 ],
                 'generationConfig' => [
                     'temperature' => 0.7,
-                    'maxOutputTokens' => 1000
+                    'maxOutputTokens' => 2048,
+                    'thinkingConfig' => [
+                        'thinkingBudget' => 0
+                    ]
                 ]
             ]);
 
