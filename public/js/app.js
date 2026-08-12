@@ -296,7 +296,12 @@ App.router = {
 
   /** Navigate to a page */
   navigate(page) {
-    window.location.hash = '#' + page;
+    const currentHash = window.location.hash.replace('#', '');
+    if (currentHash === page) {
+      this.handleRoute();
+    } else {
+      window.location.hash = '#' + page;
+    }
   },
 
   /** Handle hash route changes */
@@ -306,14 +311,20 @@ App.router = {
     // Auth guard: Jika belum login dan mencoba ke halaman lain, arahkan ke login
     if (hash !== 'splash' && hash !== 'login' && !App.auth.isAuthenticated()) {
       hash = 'login';
-      window.location.hash = '#login';
+      if (window.location.hash !== '#login') {
+        window.location.hash = '#login';
+      }
+      this.showPage('login');
       return;
     }
     
     // Jika sudah login dan mencoba ke splash atau login, arahkan ke dashboard
     if ((hash === 'login' || hash === 'splash') && App.auth.isAuthenticated()) {
       hash = 'dashboard';
-      window.location.hash = '#dashboard';
+      if (window.location.hash !== '#dashboard') {
+        window.location.hash = '#dashboard';
+      }
+      this.showPage('dashboard');
       return;
     }
 
@@ -448,59 +459,67 @@ App.dashboard = {
 
   /** Called by bottom nav buttons. Animates robot if on dashboard, else navigates directly. */
   navClick(targetPage, btnElement) {
+    if (!btnElement) {
+      btnElement = document.querySelector(`.nav-item[data-page="${targetPage}"]`);
+    }
+
     const onDashboard = App.router.currentPage === 'dashboard';
 
     if (!onDashboard || targetPage === 'dashboard') {
-      // Not on dashboard or clicking Home — just navigate
+      // Not on dashboard or clicking Home — navigate directly
       App.router.navigate(targetPage);
       return;
     }
 
-    // We are on dashboard and user wants to go somewhere else — animate!
-    if (this.isAnimatingRobot) return;
+    // Don't duplicate animation if already animating
+    if (this.isAnimatingRobot) {
+      App.router.navigate(targetPage);
+      return;
+    }
     this.isAnimatingRobot = true;
 
-    const robotWrap = document.getElementById('dashboard-robot-wrap');
-    const speechBubble = document.getElementById('robot-speech-bubble');
-    const speechText = document.getElementById('robot-speech-text');
+    try {
+      const robotWrap = document.getElementById('dashboard-robot-wrap');
+      const speechBubble = document.getElementById('robot-speech-bubble');
+      const speechText = document.getElementById('robot-speech-text');
 
-    const messages = {
-      screening: 'Otw Self Check! 🧠⚡',
-      edu: 'Yuk Belajar! 📚✨',
-      chat: 'Yuk Curhat! 💬🤖'
-    };
+      const messages = {
+        screening: 'Otw Self Check! 🧠⚡',
+        edu: 'Yuk Belajar! 📚✨',
+        chat: 'Yuk Curhat! 💬🤖'
+      };
 
-    // Show speech bubble
-    if (speechText && messages[targetPage]) {
-      speechText.textContent = messages[targetPage];
-    }
-    if (speechBubble) speechBubble.classList.add('active-speech');
+      if (speechText && messages[targetPage]) {
+        speechText.textContent = messages[targetPage];
+      }
+      if (speechBubble) speechBubble.classList.add('active-speech');
 
-    if (robotWrap && btnElement) {
-      // Reset to base position first (no animation)
-      robotWrap.style.transition = 'none';
-      robotWrap.style.transform = 'none';
-      robotWrap.classList.remove('is-moving');
-      void robotWrap.offsetWidth; // force reflow
+      if (robotWrap && btnElement) {
+        robotWrap.style.transition = 'none';
+        robotWrap.style.transform = 'none';
+        robotWrap.classList.remove('is-moving');
+        void robotWrap.offsetWidth;
 
-      // Measure positions
-      const robotRect = robotWrap.getBoundingClientRect();
-      const btnRect = btnElement.getBoundingClientRect();
-      const deltaX = Math.round((btnRect.left + btnRect.width / 2) - (robotRect.left + robotRect.width / 2));
-      const deltaY = Math.round((btnRect.top) - (robotRect.top + robotRect.height / 2));
-      const tilt = deltaX > 10 ? 15 : deltaX < -10 ? -15 : 0;
+        const robotRect = robotWrap.getBoundingClientRect();
+        const btnRect = btnElement.getBoundingClientRect();
+        const deltaX = Math.round((btnRect.left + btnRect.width / 2) - (robotRect.left + robotRect.width / 2));
+        const deltaY = Math.round((btnRect.top) - (robotRect.top + robotRect.height / 2));
+        const tilt = deltaX > 10 ? 15 : deltaX < -10 ? -15 : 0;
 
-      // Re-enable transition and animate
-      robotWrap.style.transition = '';
-      robotWrap.classList.add('is-moving');
-      robotWrap.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.2) rotate(${tilt}deg)`;
+        robotWrap.style.transition = '';
+        robotWrap.classList.add('is-moving');
+        robotWrap.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.2) rotate(${tilt}deg)`;
 
-      // Navigate after animation
-      setTimeout(() => {
+        setTimeout(() => {
+          this.isAnimatingRobot = false;
+          App.router.navigate(targetPage);
+        }, 550);
+      } else {
         this.isAnimatingRobot = false;
         App.router.navigate(targetPage);
-      }, 650);
-    } else {
+      }
+    } catch (err) {
+      console.error('CounselSpace.Ai: navClick animation error, falling back to instant navigate:', err);
       this.isAnimatingRobot = false;
       App.router.navigate(targetPage);
     }
