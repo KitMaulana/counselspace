@@ -120,7 +120,10 @@
         const url = API_BASE + endpoint;
         const options = {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
         };
 
         // Sertakan token jika ada
@@ -1744,13 +1747,15 @@
     }
 
     async function uploadFile(file) {
-        const url = API_BASE + 'upload';
+        const url = API_BASE + 'admin/upload';
         const formData = new FormData();
         formData.append('photo', file);
 
         const options = {
             method: 'POST',
-            headers: {},
+            headers: {
+                'Accept': 'application/json'
+            },
         };
 
         const token = sessionStorage.getItem('admin_token');
@@ -1775,7 +1780,9 @@
 
         const options = {
             method: 'POST',
-            headers: {},
+            headers: {
+                'Accept': 'application/json'
+            },
         };
 
         const token = sessionStorage.getItem('admin_token');

@@ -587,6 +587,6 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/admin.js') }}?v=1.6"></script>
+    <script src="{{ asset('js/admin.js') }}?v=1.7"></script>
 </body>
 </html>
