@@ -427,44 +427,96 @@ App.dashboard = {
     this.renderQuickStats();
     this.renderHistory();
     this.resetRobotPosition();
+    this.attachNavListeners();
   },
 
   resetRobotPosition() {
     const robotWrap = document.getElementById('dashboard-robot-wrap');
     if (robotWrap) {
       robotWrap.style.transition = 'none';
-      robotWrap.style.transform = 'none';
+      robotWrap.style.transform = '';
       robotWrap.classList.remove('is-moving');
-      // Re-enable transition after reflow
       void robotWrap.offsetWidth;
       robotWrap.style.transition = '';
     }
+    this.isAnimatingRobot = false;
     const bubble = document.getElementById('robot-speech-bubble');
     const bubbleText = document.getElementById('robot-speech-text');
     if (bubbleText) bubbleText.textContent = 'Pilih menu di bawah! 👋';
     if (bubble) bubble.classList.remove('active-speech');
   },
 
-  /** Called by bottom nav buttons. Navigates instantly while reacting on speech bubble if on dashboard. */
-  navClick(targetPage, btnElement) {
-    const onDashboard = App.router.currentPage === 'dashboard';
-
-    if (onDashboard && targetPage !== 'dashboard') {
-      const speechBubble = document.getElementById('robot-speech-bubble');
-      const speechText = document.getElementById('robot-speech-text');
-      const messages = {
-        screening: 'Otw Self Check! 🧠⚡',
-        edu: 'Yuk Belajar! 📚✨',
-        chat: 'Yuk Curhat! 💬🤖'
+  /** Attach click listeners to bottom-nav for robot animation */
+  attachNavListeners() {
+    const navBtns = document.querySelectorAll('#bottom-nav .nav-item');
+    navBtns.forEach(btn => {
+      // Remove old onclick to avoid double-fire
+      const page = btn.dataset.page;
+      btn.onclick = (e) => {
+        e.preventDefault();
+        this.animateRobotTo(page, btn);
       };
-      if (speechText && messages[targetPage]) {
-        speechText.textContent = messages[targetPage];
-      }
-      if (speechBubble) speechBubble.classList.add('active-speech');
+    });
+  },
+
+  /** Animate robot toward a nav button, then navigate */
+  animateRobotTo(targetPage, btnElement) {
+    // If already on target page & it's dashboard, just re-init
+    if (targetPage === 'dashboard') {
+      App.router.navigate('dashboard');
+      return;
     }
 
-    // Always navigate instantly and reliably
-    App.router.navigate(targetPage);
+    const robotWrap = document.getElementById('dashboard-robot-wrap');
+    const onDashboard = App.router.currentPage === 'dashboard';
+
+    // Not on dashboard — navigate directly
+    if (!onDashboard || !robotWrap || !btnElement) {
+      App.router.navigate(targetPage);
+      return;
+    }
+
+    // Prevent double animation
+    if (this.isAnimatingRobot) {
+      App.router.navigate(targetPage);
+      return;
+    }
+    this.isAnimatingRobot = true;
+
+    // Show speech bubble reaction
+    const speechBubble = document.getElementById('robot-speech-bubble');
+    const speechText = document.getElementById('robot-speech-text');
+    const messages = {
+      screening: 'Otw Self Check! 🧠⚡',
+      edu: 'Yuk Belajar! 📚✨',
+      chat: 'Yuk Curhat! 💬🤖'
+    };
+    if (speechText && messages[targetPage]) speechText.textContent = messages[targetPage];
+    if (speechBubble) speechBubble.classList.add('active-speech');
+
+    // Reset position without animation
+    robotWrap.style.transition = 'none';
+    robotWrap.style.transform = '';
+    robotWrap.classList.remove('is-moving');
+    void robotWrap.offsetWidth;
+
+    // Calculate target position
+    const robotRect = robotWrap.getBoundingClientRect();
+    const btnRect = btnElement.getBoundingClientRect();
+    const deltaX = Math.round((btnRect.left + btnRect.width / 2) - (robotRect.left + robotRect.width / 2));
+    const deltaY = Math.round((btnRect.top - 10) - (robotRect.top + robotRect.height / 2));
+    const tilt = deltaX > 10 ? 12 : deltaX < -10 ? -12 : 0;
+
+    // Animate!
+    robotWrap.style.transition = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    robotWrap.classList.add('is-moving');
+    robotWrap.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.15) rotate(${tilt}deg)`;
+
+    // Navigate after animation completes
+    setTimeout(() => {
+      this.isAnimatingRobot = false;
+      App.router.navigate(targetPage);
+    }, 600);
   },
 
   renderGreeting() {

@@ -75,38 +75,37 @@
 
     <!-- ==================== DASHBOARD PAGE ==================== -->
     <section class="page" id="page-dashboard">
-      <!-- Greeting Header -->
-      <div class="cs-dash-header">
-        <button class="cs-page2-avatar-btn" onclick="App.auth.logout()" title="Logout / Keluar">
-          <span class="cs-avatar-icon">👤</span>
-        </button>
-        <div class="cs-page2-greeting-wrap">
-          <h2 class="cs-page2-title" id="greeting-text">Halo sobat Counselspace</h2>
-          <p class="cs-page2-subtitle" id="greeting-date">Bagaimana Harimu?</p>
-        </div>
-      </div>
-
-      <!-- Animated Robot Stage -->
-      <div class="cs-robot-stage-dashboard" id="robot-stage">
-        <div class="cs-robot-wrapper" id="dashboard-robot-wrap">
-          <div class="cs-robot-bubble" id="robot-speech-bubble">
-            <span class="cs-bubble-text" id="robot-speech-text">Pilih menu di bawah! 👋</span>
+      <!-- Full-screen Hero Card -->
+      <div class="cs-hero-card" id="dashboard-hero">
+        <!-- Header -->
+        <div class="cs-hero-header">
+          <button class="cs-hero-avatar" onclick="App.auth.logout()" title="Logout">
+            <span>👤</span>
+          </button>
+          <div class="cs-hero-greeting">
+            <h2 id="greeting-text">Halo sobat Counselspace</h2>
+            <p id="greeting-date">Bagaimana Harimu?</p>
           </div>
-          <div class="cs-robot-glow"></div>
-          <img src="{{ asset('images/spacebot.png') }}" class="cs-robot-img" id="dashboard-robot" alt="Robot Spacebot">
+        </div>
+
+        <!-- Robot floating in the scene -->
+        <div class="cs-hero-robot-area" id="robot-stage">
+          <div class="cs-robot-wrapper" id="dashboard-robot-wrap">
+            <div class="cs-robot-bubble" id="robot-speech-bubble">
+              <span class="cs-bubble-text" id="robot-speech-text">Pilih menu di bawah! 👋</span>
+            </div>
+            <img src="{{ asset('images/spacebot.png') }}" class="cs-robot-img" id="dashboard-robot" alt="Robot Spacebot">
+            <div class="cs-robot-glow"></div>
+          </div>
         </div>
       </div>
 
       <!-- Quick Stats -->
-      <div class="quick-stats" id="quick-stats">
-        <!-- Filled dynamically -->
-      </div>
+      <div class="quick-stats" id="quick-stats"></div>
 
       <!-- History -->
       <div class="section-title cs-section-title">📊 Riwayat Skrining</div>
-      <div class="history-list" id="history-list">
-        <!-- Filled dynamically -->
-      </div>
+      <div class="history-list" id="history-list"></div>
     </section>
 
     <!-- ==================== SCREENING PAGE ==================== -->
