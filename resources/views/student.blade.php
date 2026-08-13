@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4.2">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4.4">
 </head>
 <body>
 
@@ -113,34 +113,26 @@
 
     <!-- ==================== SCREENING PAGE ==================== -->
     <section class="page" id="page-screening">
-      <!-- Identity Form (shown first) -->
       <div id="screening-identity">
         <x-title-pill>Self Check</x-title-pill>
-
+        
         <div class="cs-selfcheck-hero">
           <div class="cs-selfcheck-copy">
-            <h2 class="cs-hero-title">Cek Level<br>FOMO<br>Minggu Ini! ⚡</h2>
+            <h2 class="cs-hero-title">Cek Level FOMO Minggu Ini! ⚡</h2>
             <p class="cs-hero-sub">Cuma 2 menit, yuk liat kondisi mentalmu</p>
           </div>
-          <picture class="cs-selfcheck-img">
-            <source srcset="{{ asset('images/siswi-fomo.webp') }}" type="image/webp">
-            <img src="{{ asset('images/siswi-fomo.png') }}" alt="Ilustrasi siswi memegang ponsel">
-          </picture>
+          <div class="cs-selfcheck-illustration-crop"></div>
         </div>
 
-        <div class="cs-form cs-selfcheck-form">
-          <p class="cs-form-note">Isi data singkat ini (opsional) agar hasilmu tersimpan.</p>
-          <x-input label="Nama (opsional)" id="input-name" placeholder="Contoh: Andi" />
-          <x-input label="Kelas (opsional)" id="input-class" placeholder="Contoh: XII IPA 3" />
+        <div style="margin-top: var(--space-md);">
+          <x-btn shape="pill" size="lg" :block="true" onclick="App.screening.startQuiz()">
+            Mulai Self Check
+          </x-btn>
+          <x-btn variant="ghost" shape="pill" :block="true" class="cs-mt-sm"
+                 onclick="App.router.navigate('dashboard')">
+            Kembali
+          </x-btn>
         </div>
-
-        <x-btn shape="pill" size="lg" :block="true" onclick="App.screening.startQuiz()">
-          Mulai Self Check
-        </x-btn>
-        <x-btn variant="ghost" shape="pill" :block="true" class="cs-mt-sm"
-               onclick="App.router.navigate('dashboard')">
-          Kembali
-        </x-btn>
       </div>
 
       <!-- Quiz Section (hidden initially) -->
@@ -464,6 +456,6 @@
   <!-- Celebration Overlay -->
   <div class="celebration-overlay" id="celebration-overlay"></div>
 
-  <script src="{{ asset('js/app.js') }}?v=4.2"></script>
+  <script src="{{ asset('js/app.js') }}?v=4.5"></script>
 </body>
 </html>

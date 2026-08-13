@@ -678,20 +678,42 @@ App.screening = {
     document.getElementById('screening-identity').classList.remove('hidden');
     document.getElementById('screening-quiz').classList.add('hidden');
 
-    // Restore saved identity
-    const savedName = App.utils.getStorage('student_name', '');
-    const savedClass = App.utils.getStorage('student_class', '');
-    document.getElementById('input-name').value = savedName;
-    document.getElementById('input-class').value = savedClass;
+    // Retrieve name/class from localStorage user if available
+    const userJson = localStorage.getItem('student_user');
+    if (userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        this.studentName = user.name || '';
+        this.studentClass = user.student_class || '';
+      } catch (e) {
+        console.warn('Failed to parse student_user:', e);
+      }
+    }
+    if (!this.studentName) {
+      this.studentName = App.utils.getStorage('student_name', 'Anonim');
+    }
+    if (!this.studentClass) {
+      this.studentClass = App.utils.getStorage('student_class', '-');
+    }
   },
 
   /** Start the quiz after identity */
   async startQuiz() {
-    // Save identity
-    this.studentName = document.getElementById('input-name').value.trim();
-    this.studentClass = document.getElementById('input-class').value.trim();
-    if (this.studentName) App.utils.setStorage('student_name', this.studentName);
-    if (this.studentClass) App.utils.setStorage('student_class', this.studentClass);
+    // Retrieve name/class from localStorage user if available
+    const userJson = localStorage.getItem('student_user');
+    if (userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        this.studentName = user.name || 'Anonim';
+        this.studentClass = user.student_class || '-';
+      } catch (e) {
+        this.studentName = App.utils.getStorage('student_name', 'Anonim');
+        this.studentClass = App.utils.getStorage('student_class', '-');
+      }
+    } else {
+      this.studentName = App.utils.getStorage('student_name', 'Anonim');
+      this.studentClass = App.utils.getStorage('student_class', '-');
+    }
 
     // Load questions
     App.utils.showLoading();
@@ -1125,7 +1147,7 @@ App.edu = {
               type: item.content_type || 'artikel',
               title: item.title,
               snippet: item.description || '',
-              thumbnail: item.thumbnail_url || '',
+              thumbnail: item.thumbnail_url || (item.content_type === 'poster' ? item.content_url : ''),
               category: item.category || 'umum',
               source: item.source || ''
             };
@@ -1228,9 +1250,10 @@ App.edu = {
             <div class="play-icon">▶</div>
           </div>`;
       } else if (item.type === 'poster') {
+        const posterThumb = item.thumbnail || item.image_url || '';
         thumbHTML = `
           <div class="edu-card-thumb">
-            ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" onerror="this.style.display='none'">` : ''}
+            ${posterThumb ? `<img src="${posterThumb}" alt="${item.title}" onerror="this.style.display='none'">` : ''}
             <div class="poster-icon">🖼️</div>
           </div>`;
       } else if (item.type === 'artikel') {
@@ -1421,7 +1444,7 @@ App.chat = {
     const container = document.getElementById('chat-messages-ai');
     container.innerHTML = this.aiHistory.map(msg => `
       <div class="chat-bubble ${msg.type}">
-        ${msg.text}
+        ${this.formatMarkdown(msg.text)}
         <span class="bubble-time">${msg.time || ''}</span>
       </div>
     `).join('');
@@ -1461,17 +1484,45 @@ App.chat = {
     container.appendChild(typingEl);
     this.scrollToBottom(container);
 
-    // Generate response after delay
-    setTimeout(() => {
+    // Generate response
+    setTimeout(async () => {
       const typing = document.getElementById('ai-typing');
       if (typing) typing.remove();
 
-      const response = this.getAiResponse(text);
-      this.addAiMessage('received', response);
-    }, 800 + Math.random() * 1200);
+      try {
+        // Map history to Gemini format (user vs model)
+        const historyContext = this.aiHistory
+          .filter(msg => msg.type === 'sent' || msg.type === 'received')
+          .slice(-10) // last 10 messages
+          .map(msg => ({
+            sender: msg.type === 'sent' ? 'user' : 'ai',
+            message: msg.text
+          }));
+
+        // Remove current message from history (since it was just added to this.aiHistory)
+        if (historyContext.length > 0 && historyContext[historyContext.length - 1].sender === 'user') {
+          historyContext.pop();
+        }
+
+        const res = await App.api('/api/chat/ai', 'POST', {
+          message: text,
+          history: historyContext
+        });
+
+        if (res && res.success && res.reply) {
+          this.addAiMessage('received', res.reply);
+        } else {
+          throw new Error('API request failed');
+        }
+      } catch (err) {
+        console.warn('Gemini API chatbot failed, using fallback:', err);
+        const response = this.getAiResponse(text);
+        this.addAiMessage('received', response);
+      }
+    }, 500);
   },
 
-  /** Get AI response based on keywords */
+  /** Get AI response based on keywords (Fallback) */
   getAiResponse(input) {
     const lower = input.toLowerCase();
 
@@ -1484,6 +1535,27 @@ App.chat = {
 
     // Default response
     return this.defaultResponses[Math.floor(Math.random() * this.defaultResponses.length)];
+  },
+
+  /** Simple Markdown Formatter to render HTML safely */
+  formatMarkdown(text) {
+    if (!text) return '';
+    let html = text;
+    // Escape HTML characters to prevent XSS
+    html = html
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+    
+    // Bold: **text** -> <strong>text</strong>
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Italic: *text* -> <em>text</em>
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // Line breaks
+    html = html.replace(/\n/g, '<br>');
+    return html;
   },
 
   /** Add message to AI chat */
@@ -1499,7 +1571,7 @@ App.chat = {
     const container = document.getElementById('chat-messages-ai');
     const bubble = document.createElement('div');
     bubble.className = `chat-bubble ${type}`;
-    bubble.innerHTML = `${text}<span class="bubble-time">${msg.time}</span>`;
+    bubble.innerHTML = `${this.formatMarkdown(text)}<span class="bubble-time">${msg.time}</span>`;
     container.appendChild(bubble);
     this.scrollToBottom(container);
   },

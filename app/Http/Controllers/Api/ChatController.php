@@ -137,4 +137,97 @@ class ChatController extends Controller
 
         return response()->json(['success' => true, 'updated' => $updated]);
     }
+
+    // Chat with AI Chatbot using Gemini API
+    public function chatWithAi(Request $request)
+    {
+        $request->validate([
+            'message' => 'required|string|max:5000',
+            'history' => 'nullable|array',
+            'history.*.sender' => 'required_with:history|string|in:user,ai',
+            'history.*.message' => 'required_with:history|string',
+        ]);
+
+        $message = $request->input('message');
+        $history = $request->input('history', []);
+
+        $apiKey = env('GEMINI_API_KEY');
+
+        if (!$apiKey) {
+            return response()->json([
+                'success' => false,
+                'message' => 'API Key Gemini belum dikonfigurasi di file .env'
+            ], 500);
+        }
+
+        // Build the conversation history for Gemini API
+        $contents = [];
+
+        // System Instruction / Context
+        $systemInstruction = "Kamu adalah Spacebot, Asisten Konseling Virtual / Chatbot AI yang ramah, hangat, berempati tinggi, dan suportif di CounselSpace.Ai.\n"
+            . "Tugasmu adalah mendengarkan keluh kesah siswa, membantu mendeteksi tingkat stres/FOMO mereka, memberikan motivasi, serta membagikan tips kesehatan mental (digital wellness) secara interaktif.\n"
+            . "Gunakan bahasa Indonesia yang santun, ramah, bersahabat, gaul ala remaja masa kini namun tetap sopan, serta sertakan emoji yang relevan agar siswa merasa nyaman.\n"
+            . "Posisikan dirimu sebagai teman curhat sekaligus Konselor BK Virtual yang tidak menghakimi. Hindari diagnosis klinis medis, dan sarankan mereka berbicara dengan Guru BK di sekolah jika masalahnya cukup berat.";
+
+        // Format history into Gemini format
+        foreach ($history as $chat) {
+            $role = $chat['sender'] === 'user' ? 'user' : 'model';
+            $contents[] = [
+                'role' => $role,
+                'parts' => [
+                    ['text' => $chat['message']]
+                ]
+            ];
+        }
+
+        // Add the current message
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [
+                ['text' => $message]
+            ]
+        ];
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Content-Type' => 'application/json'
+            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
+                'contents' => $contents,
+                'systemInstruction' => [
+                    'parts' => [
+                        ['text' => $systemInstruction]
+                    ]
+                ],
+                'generationConfig' => [
+                    'temperature' => 0.7,
+                    'maxOutputTokens' => 1024,
+                    'thinkingConfig' => [
+                        'thinkingBudget' => 0
+                    ]
+                ]
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
+                if ($reply) {
+                    return response()->json([
+                        'success' => true,
+                        'reply' => trim($reply)
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mendapatkan respon dari AI'
+            ], 500);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -22,6 +22,7 @@ Route::get('/chats/sessions', [ChatController::class, 'sessions']);
 Route::get('/chats/{sessionId}', [ChatController::class, 'messages']);
 Route::post('/chats', [ChatController::class, 'store']);
 Route::put('/chats/{sessionId}/read', [ChatController::class, 'markRead']);
+Route::post('/chat/ai', [ChatController::class, 'chatWithAi']);
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);

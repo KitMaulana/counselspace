@@ -762,7 +762,7 @@
             const typeLabels = { video: 'Video', poster: 'Poster', artikel: 'Artikel' };
             const thumbUrl = c.thumbnail_url || '';
             const ytId = type === 'video' ? extractYoutubeId(c.content_url || '') : null;
-            const thumbSrc = thumbUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '');
+            const thumbSrc = thumbUrl || (type === 'poster' ? c.content_url : '') || (ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '');
 
             return `
                 <div class="edu-card">
@@ -893,10 +893,10 @@
                             <input type="file" id="ef-thumb-file" accept="image/*" style="display:none;" onchange="window.adminApp.handleEduUpload('thumbnail')">
                             <button type="button" class="btn btn-secondary" onclick="document.getElementById('ef-thumb-file').click()">Pilih Gambar Thumbnail</button>
                             <span id="ef-thumb-filename" style="font-size:0.85rem; color:var(--text-muted);">
-                                ${(data?.thumbnail_url && type === 'artikel') ? 'Thumbnail sudah diupload' : 'Belum ada file dipilih'}
+                                ${(data?.thumbnail_url && (type === 'artikel' || type === 'poster')) ? 'Thumbnail sudah diupload' : 'Belum ada file dipilih'}
                             </span>
                         </div>
-                        <input type="hidden" id="ef-thumb-url" value="${type === 'artikel' ? escapeHtml(data?.thumbnail_url || '') : ''}">
+                        <input type="hidden" id="ef-thumb-url" value="${(type === 'artikel' || type === 'poster') ? escapeHtml(data?.thumbnail_url || '') : ''}">
                     </div>
 
                     <div id="ef-preview"></div>
@@ -941,7 +941,7 @@
                 urlInput.value = '';
             }
             if (posterContainer) posterContainer.style.display = 'block';
-            if (thumbContainer) thumbContainer.style.display = 'none';
+            if (thumbContainer) thumbContainer.style.display = 'block';
         } else if (type === 'artikel') {
             if (urlContainer) {
                 urlContainer.style.display = 'block';
@@ -1035,9 +1035,13 @@
             }
         } else if (content_type === 'poster') {
             content_url = document.getElementById('ef-poster-url').value.trim();
-            thumbnail_url = content_url;
+            thumbnail_url = document.getElementById('ef-thumb-url').value.trim();
             if (!content_url) {
                 showToast('Gambar poster wajib diupload.', 'error');
+                return;
+            }
+            if (!thumbnail_url) {
+                showToast('Gambar thumbnail wajib diupload.', 'error');
                 return;
             }
         } else if (content_type === 'artikel') {
