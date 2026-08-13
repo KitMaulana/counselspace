@@ -2740,11 +2740,11 @@ textarea.form-input {
 .cs-selfcheck-illustration-crop {
   width: 100%;
   max-width: 360px;
-  height: 360px;
+  height: 380px;
   background-image: url('../images/selfcek.png');
   background-repeat: no-repeat;
   background-position: center 53%;
-  background-size: 135%;
+  background-size: 100% auto;
   border-radius: 20px;
   filter: drop-shadow(0 8px 24px rgba(4, 16, 40, 0.45));
   margin: var(--space-sm) auto;
@@ -2752,8 +2752,8 @@ textarea.form-input {
 
 @media (max-width: 480px) {
   .cs-selfcheck-illustration-crop {
-    height: 300px;
-    background-size: 140%;
+    height: 320px;
+    background-size: 100% auto;
   }
 }
 
