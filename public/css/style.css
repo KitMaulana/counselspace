@@ -3308,7 +3308,7 @@ textarea.form-input {
   max-height: 680px;
   border-radius: 0 0 28px 28px;
   overflow: visible;
-  background: #0f182e url('../images/page2-scene.png?v=1.1') center top / cover no-repeat;
+  background: #0f182e url('../images/page2-scene.png?v=1.2') center top / cover no-repeat;
   display: flex;
   flex-direction: column;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(41, 171, 226, 0.2);
