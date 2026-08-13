@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>CounselSpace.Ai - Teman Kesehatan Mentalmu</title>
   <meta name="description" content="Aplikasi konseling digital untuk membantu siswa mengatasi FOMO dan menjaga kesehatan mental">
-  <meta name="theme-color" content="#1E2C50">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CounselSpace">
+  <link rel="apple-touch-icon" href="{{ asset('images/icon-192.png') }}">
+  <link rel="manifest" href="{{ asset('manifest.json') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -460,5 +465,14 @@
   <div class="celebration-overlay" id="celebration-overlay"></div>
 
   <script src="{{ asset('js/app.js') }}?v=4.6"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register("{{ asset('sw.js') }}")
+          .then((reg) => console.log('Service Worker registered successfully with scope:', reg.scope))
+          .catch((err) => console.error('Service Worker registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>
