@@ -79,9 +79,6 @@
       <div class="cs-hero-card" id="dashboard-hero">
         <!-- Header -->
         <div class="cs-hero-header">
-          <button class="cs-hero-avatar" onclick="App.auth.logout()" title="Logout">
-            <span>👤</span>
-          </button>
           <div class="cs-hero-greeting">
             <h2 id="greeting-text">Halo sobat Counselspace</h2>
             <p id="greeting-date">Bagaimana Harimu?</p>
