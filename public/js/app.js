@@ -238,7 +238,7 @@ App.auth = {
     localStorage.removeItem('student_token');
     localStorage.removeItem('student_user');
     App.utils.showToast('Berhasil keluar.', 'info');
-    App.router.navigate('login');
+    App.router.navigate('splash');
   }
 };
 

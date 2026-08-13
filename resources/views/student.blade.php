@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4.9">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=5.0">
 </head>
 <body>
 
@@ -83,6 +83,9 @@
             <h2 id="greeting-text">Halo sobat Counselspace</h2>
             <p id="greeting-date">Bagaimana Harimu?</p>
           </div>
+          <button class="cs-logout-btn" onclick="App.auth.logout()" title="Keluar">
+            <span class="cs-logout-icon">🚪</span> Keluar
+          </button>
         </div>
 
         <!-- Robot floating in the scene -->
@@ -456,6 +459,6 @@
   <!-- Celebration Overlay -->
   <div class="celebration-overlay" id="celebration-overlay"></div>
 
-  <script src="{{ asset('js/app.js') }}?v=4.5"></script>
+  <script src="{{ asset('js/app.js') }}?v=4.6"></script>
 </body>
 </html>

@@ -3341,6 +3341,41 @@ textarea.form-input {
   padding: 24px 20px 12px;
 }
 
+.cs-logout-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.cs-logout-btn:hover {
+  background: rgba(255, 59, 48, 0.35); /* Red glass glow on hover */
+  border-color: rgba(255, 59, 48, 0.45);
+  box-shadow: 0 4px 16px rgba(255, 59, 48, 0.25);
+  transform: translateY(-1px);
+}
+
+.cs-logout-btn:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cs-logout-icon {
+  font-size: 0.9rem;
+}
+
 .cs-hero-avatar {
   width: 52px;
   height: 52px;
