@@ -2737,24 +2737,18 @@ textarea.form-input {
   margin: 0;
 }
 
-.cs-selfcheck-illustration-crop {
+.cs-selfcheck-img-new {
   width: 100%;
-  max-width: 360px;
-  height: 380px;
-  background-image: url('../images/selfcek.png');
-  background-repeat: no-repeat;
-  background-position: center 53%;
-  background-size: 100% auto;
-  border-radius: 20px;
-  filter: drop-shadow(0 8px 24px rgba(4, 16, 40, 0.45));
-  margin: var(--space-sm) auto;
+  max-width: 320px;
+  margin: 0 auto;
+  display: block;
 }
 
-@media (max-width: 480px) {
-  .cs-selfcheck-illustration-crop {
-    height: 320px;
-    background-size: 100% auto;
-  }
+.cs-selfcheck-img-new img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  filter: drop-shadow(0 8px 24px rgba(4, 16, 40, 0.45));
 }
 
 .cs-form {

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4.6">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4.7">
 </head>
 <body>
 
@@ -121,7 +121,10 @@
             <h2 class="cs-hero-title">Cek Level FOMO Minggu Ini! ⚡</h2>
             <p class="cs-hero-sub">Cuma 2 menit, yuk liat kondisi mentalmu</p>
           </div>
-          <div class="cs-selfcheck-illustration-crop"></div>
+          <picture class="cs-selfcheck-img-new">
+            <source srcset="{{ asset('images/selfcek_cropped.png') }}?v=1.0" type="image/png">
+            <img src="{{ asset('images/selfcek_cropped.png') }}?v=1.0" alt="Ilustrasi Self Check">
+          </picture>
         </div>
 
         <div style="margin-top: var(--space-md);">
